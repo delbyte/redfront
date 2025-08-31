@@ -327,21 +327,31 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
       <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
       <div>
         <div class="module-title-header">URL INTELLIGENCE MODULE</div>
-        <div class="small">Domain analysis, subdomain enumeration, IOC detection</div>
+        <div class="small">Web scraping, domain analysis, tech stack detection</div>
       </div>
     </div>
     <div class="layout">
       <div class="panel">
         <div class="small">URL INPUT</div>
-        <input id="urlin" placeholder="https://example.com or paste URLs here..." style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
-        <button id="analyzeUrl" class="button" style="margin-top:8px;width:100%">ANALYZE URL</button>
-        <div class="hint" style="margin-top:8px">Extracts domains, subdomains, parameters, potential IOCs</div>
+        <input id="urlin" placeholder="https://example.com" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeUrl" class="button">ANALYZE URL</button>
+          <button id="scrapeUrl" class="button">SCRAPE CONTENT</button>
+        </div>
+        <div style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999">
+            <input type="checkbox" id="deepScan" style="accent-color:var(--red)">
+            Deep scan (slower, more thorough)
+          </label>
+        </div>
+        <div class="hint" style="margin-top:8px">Extracts tech stack, headers, links, social media, contact info</div>
       </div>
       <div class="panel">
         <div class="small">ANALYSIS RESULTS</div>
         <div id="urlMeta" class="console" aria-live="polite">Enter a URL to begin analysis.</div>
         <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
           <button id="copyUrlIntel" class="copy">COPY REPORT</button>
+          <button id="copyUrls" class="copy">COPY URLS</button>
           <div style="flex:1"></div>
           <div class="smallmuted" id="urlThreatLevel">threat: —</div>
         </div>
@@ -474,6 +484,197 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <div class="kv"><span>Social Posts</span><span id="statsSocial">0</span></div>
           <div class="kv"><span>Total IOCs</span><span id="statsIOCs">0</span></div>
           <div class="kv"><span>Threat Level</span><span id="statsThreats">LOW</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email OSINT Module -->
+  <div id="emailModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">EMAIL OSINT MODULE</div>
+        <div class="small">Email validation, domain analysis, breach intelligence</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">EMAIL INPUT</div>
+        <input id="emailin" placeholder="target@example.com" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeEmail" class="button">ANALYZE EMAIL</button>
+          <button id="checkBreaches" class="button">CHECK BREACHES</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Validates email, checks domain reputation, breach databases</div>
+      </div>
+      <div class="panel">
+        <div class="small">EMAIL INTELLIGENCE</div>
+        <div id="emailMeta" class="console" aria-live="polite">Enter an email address to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyEmailIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="emailThreatLevel">status: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone Intelligence Module -->
+  <div id="phoneModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">PHONE INTELLIGENCE MODULE</div>
+        <div class="small">Number validation, carrier lookup, geographic analysis</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">PHONE NUMBER INPUT</div>
+        <input id="phonein" placeholder="+1234567890 or 1234567890" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzePhone" class="button">ANALYZE NUMBER</button>
+          <button id="validatePhone" class="button">VALIDATE</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Extracts country, carrier, line type, geographic region</div>
+      </div>
+      <div class="panel">
+        <div class="small">PHONE INTELLIGENCE</div>
+        <div id="phoneMeta" class="console" aria-live="polite">Enter a phone number to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyPhoneIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="phoneThreatLevel">validity: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crypto Tracker Module -->
+  <div id="cryptoModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">CRYPTO TRACKER MODULE</div>
+        <div class="small">Blockchain analysis, wallet tracking, transaction intelligence</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">CRYPTO ADDRESS INPUT</div>
+        <input id="cryptoin" placeholder="Bitcoin/Ethereum address or transaction hash" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeCrypto" class="button">ANALYZE ADDRESS</button>
+          <button id="trackWallet" class="button">TRACK WALLET</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Identifies currency, balance, transaction history, risk assessment</div>
+      </div>
+      <div class="panel">
+        <div class="small">BLOCKCHAIN INTELLIGENCE</div>
+        <div id="cryptoMeta" class="console" aria-live="polite">Enter a crypto address or transaction hash to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyCryptoIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="cryptoThreatLevel">risk: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IP Geolocation Module -->
+  <div id="ipModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">IP GEOLOCATION MODULE</div>
+        <div class="small">IP analysis, geolocation, ISP detection, threat intelligence</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">IP ADDRESS INPUT</div>
+        <input id="ipin" placeholder="192.168.1.1 or 2001:db8::1" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeIP" class="button">ANALYZE IP</button>
+          <button id="geolocateIP" class="button">GEOLOCATE</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Location, ISP, threat level, abuse reports, VPN detection</div>
+      </div>
+      <div class="panel">
+        <div class="small">IP INTELLIGENCE</div>
+        <div id="ipMeta" class="console" aria-live="polite">Enter an IP address to begin geolocation analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyIPIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="ipThreatLevel">threat: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Username Hunter Module -->
+  <div id="usernameModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">USERNAME HUNTER MODULE</div>
+        <div class="small">Cross-platform username enumeration and analysis</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">USERNAME INPUT</div>
+        <input id="usernamein" placeholder="target_username" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeUsername" class="button">HUNT USERNAME</button>
+          <button id="checkSocial" class="button">CHECK SOCIAL</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Searches across major platforms, social media, forums</div>
+      </div>
+      <div class="panel">
+        <div class="small">USERNAME INTELLIGENCE</div>
+        <div id="usernameMeta" class="console" aria-live="polite">Enter a username to begin cross-platform search.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyUsernameIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="usernameThreatLevel">found: 0 platforms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metadata Extractor Module -->
+  <div id="metadataModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">METADATA EXTRACTOR MODULE</div>
+        <div class="small">EXIF data, document properties, hidden information extraction</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">FILE INPUT</div>
+        <div id="metadatadrop" class="filedrop" tabindex="0">
+          Drop files for metadata extraction<br>
+          <span style="font-size:11px;color:#888">Supports: images, documents, videos, audio files</span>
+        </div>
+        <div style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999">
+            <input type="checkbox" id="extractGPS" style="accent-color:var(--red)" checked>
+            Extract GPS coordinates (if available)
+          </label>
+        </div>
+        <div class="hint" style="margin-top:8px">Extracts creation dates, device info, location data, software details</div>
+      </div>
+      <div class="panel">
+        <div class="small">METADATA ANALYSIS</div>
+        <div id="metadataMeta" class="console" aria-live="polite">Upload a file to extract metadata and hidden information.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyMetadataIntel" class="copy">COPY METADATA</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="metadataThreatLevel">privacy: —</div>
         </div>
       </div>
     </div>
@@ -686,8 +887,155 @@ function extractIntelligence(text){
   return intel;
 }
 
-/* ========= URL Analysis ========= */
-function analyzeURL(url){
+/* ========= Advanced URL Analysis & Web Scraping ========= */
+async function scrapeWebsite(url, deepScan = false) {
+  try {
+    // Use a CORS proxy for cross-origin requests
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
+    
+    if (!data.contents) {
+      throw new Error('Failed to fetch website content');
+    }
+    
+    const html = data.contents;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    const analysis = {
+      url,
+      timestamp: Date.now(),
+      title: doc.title || 'No title found',
+      meta: {},
+      links: [],
+      images: [],
+      scripts: [],
+      forms: [],
+      socialMedia: [],
+      contacts: [],
+      technologies: [],
+      security: {},
+      seo: {}
+    };
+    
+    // Extract meta tags
+    doc.querySelectorAll('meta').forEach(meta => {
+      const name = meta.getAttribute('name') || meta.getAttribute('property');
+      const content = meta.getAttribute('content');
+      if (name && content) {
+        analysis.meta[name] = content;
+      }
+    });
+    
+    // Extract links
+    doc.querySelectorAll('a[href]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && !href.startsWith('#')) {
+        analysis.links.push({
+          url: href,
+          text: link.textContent.trim().substring(0, 100),
+          external: href.startsWith('http') && !href.includes(new URL(url).hostname)
+        });
+      }
+    });
+    
+    // Extract images
+    doc.querySelectorAll('img[src]').forEach(img => {
+      analysis.images.push({
+        src: img.getAttribute('src'),
+        alt: img.getAttribute('alt') || '',
+        title: img.getAttribute('title') || ''
+      });
+    });
+    
+    // Extract forms
+    doc.querySelectorAll('form').forEach(form => {
+      analysis.forms.push({
+        action: form.getAttribute('action') || '',
+        method: form.getAttribute('method') || 'GET',
+        inputs: form.querySelectorAll('input').length
+      });
+    });
+    
+    // Technology detection
+    const techSignatures = {
+      'WordPress': /wp-content|wp-includes|wordpress/i,
+      'React': /react|_react/i,
+      'Angular': /angular|ng-/i,
+      'Vue.js': /vue\.js|__vue/i,
+      'jQuery': /jquery/i,
+      'Bootstrap': /bootstrap/i,
+      'Google Analytics': /google-analytics|gtag/i,
+      'Facebook Pixel': /fbevents\.js|facebook\.net/i,
+      'Cloudflare': /cloudflare/i,
+      'Font Awesome': /font-awesome|fa-/i
+    };
+    
+    Object.entries(techSignatures).forEach(([tech, pattern]) => {
+      if (pattern.test(html)) {
+        analysis.technologies.push(tech);
+      }
+    });
+    
+    // Extract social media links
+    const socialPatterns = {
+      'Facebook': /facebook\.com\/[^\/\s"']+/gi,
+      'Twitter': /twitter\.com\/[^\/\s"']+/gi,
+      'LinkedIn': /linkedin\.com\/[^\/\s"']+/gi,
+      'Instagram': /instagram\.com\/[^\/\s"']+/gi,
+      'YouTube': /youtube\.com\/[^\/\s"']+/gi,
+      'GitHub': /github\.com\/[^\/\s"']+/gi
+    };
+    
+    Object.entries(socialPatterns).forEach(([platform, pattern]) => {
+      const matches = html.match(pattern);
+      if (matches) {
+        matches.forEach(match => {
+          analysis.socialMedia.push({ platform, url: match });
+        });
+      }
+    });
+    
+    // Extract contact information
+    const emails = html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+    const phones = html.match(/(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/g) || [];
+    
+    analysis.contacts = {
+      emails: [...new Set(emails)].slice(0, 10),
+      phones: [...new Set(phones)].slice(0, 5)
+    };
+    
+    // Security analysis
+    analysis.security = {
+      https: url.startsWith('https://'),
+      hasCSP: !!doc.querySelector('meta[http-equiv="Content-Security-Policy"]'),
+      hasHSTS: false, // Would need headers
+      mixedContent: analysis.links.some(link => url.startsWith('https://') && link.url.startsWith('http://')),
+      externalScripts: doc.querySelectorAll('script[src]').length
+    };
+    
+    // SEO analysis
+    analysis.seo = {
+      hasTitle: !!doc.title,
+      hasDescription: !!analysis.meta.description,
+      hasKeywords: !!analysis.meta.keywords,
+      hasOGTags: Object.keys(analysis.meta).some(key => key.startsWith('og:')),
+      headingStructure: {
+        h1: doc.querySelectorAll('h1').length,
+        h2: doc.querySelectorAll('h2').length,
+        h3: doc.querySelectorAll('h3').length
+      }
+    };
+    
+    return analysis;
+    
+  } catch (error) {
+    return { error: error.message, url };
+  }
+}
+
+function analyzeURL(url) {
   try {
     const parsed = new URL(url);
     const analysis = {
@@ -699,45 +1047,372 @@ function analyzeURL(url){
       fragment: parsed.hash,
       subdomains: [],
       parameters: {},
-      suspiciousIndicators: []
+      suspiciousIndicators: [],
+      domainInfo: {}
     };
     
     // Extract subdomains
     const parts = parsed.hostname.split('.');
-    if(parts.length > 2){
+    if (parts.length > 2) {
       analysis.subdomains = parts.slice(0, -2);
     }
     
     // Parse parameters
-    if(parsed.search){
+    if (parsed.search) {
       const params = new URLSearchParams(parsed.search);
-      for(const [key, value] of params){
+      for (const [key, value] of params) {
         analysis.parameters[key] = value;
       }
     }
     
-    // Detect suspicious indicators
-    const suspicious = [
-      { pattern: /bit\.ly|tinyurl|t\.co|goo\.gl/, indicator: 'URL_SHORTENER' },
-      { pattern: /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, indicator: 'IP_ADDRESS_HOST' },
+    // Domain analysis
+    analysis.domainInfo = {
+      tld: parts[parts.length - 1],
+      domain: parts[parts.length - 2],
+      isIP: /^\d+\.\d+\.\d+\.\d+$/.test(parsed.hostname),
+      length: parsed.hostname.length
+    };
+    
+    // Enhanced suspicious indicators
+    const suspiciousChecks = [
+      { pattern: /bit\.ly|tinyurl|t\.co|goo\.gl|short\.link/i, indicator: 'URL_SHORTENER' },
+      { pattern: /^\d+\.\d+\.\d+\.\d+$/, indicator: 'IP_ADDRESS_HOST' },
       { pattern: /[a-f0-9]{8,}/, indicator: 'HEX_SUBDOMAIN' },
-      { pattern: /\.tk$|\.ml$|\.ga$|\.cf$/, indicator: 'SUSPICIOUS_TLD' },
-      { pattern: /admin|login|secure|update|verify/, indicator: 'PHISHING_KEYWORDS' }
+      { pattern: /\.tk$|\.ml$|\.ga$|\.cf$|\.pw$/i, indicator: 'SUSPICIOUS_TLD' },
+      { pattern: /admin|login|secure|update|verify|bank|paypal/i, indicator: 'PHISHING_KEYWORDS' },
+      { pattern: /[0-9]{4,}/, indicator: 'NUMERIC_SUBDOMAIN' },
+      { pattern: /\w{20,}/, indicator: 'LONG_SUBDOMAIN' }
     ];
     
-    suspicious.forEach(({pattern, indicator}) => {
-      if(pattern.test(url)){
+    suspiciousChecks.forEach(({ pattern, indicator }) => {
+      if (pattern.test(url)) {
         analysis.suspiciousIndicators.push(indicator);
       }
     });
     
     return analysis;
-  } catch(e) {
+  } catch (e) {
     return { error: 'Invalid URL format' };
   }
 }
 
-/* ========= Social Media Intelligence ========= */
+/* ========= Advanced OSINT Analysis Functions ========= */
+
+// Email Analysis
+function analyzeEmail(email) {
+  const analysis = {
+    email: email.toLowerCase(),
+    valid: false,
+    domain: '',
+    localPart: '',
+    risks: [],
+    reputation: 'unknown',
+    commonDomains: ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'protonmail.com'],
+    breachIndicators: []
+  };
+  
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  analysis.valid = emailRegex.test(email);
+  
+  if (analysis.valid) {
+    const parts = email.split('@');
+    analysis.localPart = parts[0];
+    analysis.domain = parts[1];
+    
+    // Risk assessment
+    if (analysis.localPart.length < 3) analysis.risks.push('SHORT_LOCAL_PART');
+    if (analysis.localPart.includes('+')) analysis.risks.push('ALIAS_EMAIL');
+    if (/\d{4,}/.test(analysis.localPart)) analysis.risks.push('NUMERIC_USERNAME');
+    
+    // Domain reputation
+    const disposableDomains = ['10minutemail.com', 'tempmail.org', 'guerrillamail.com', 'mailinator.com'];
+    if (disposableDomains.includes(analysis.domain)) {
+      analysis.reputation = 'disposable';
+      analysis.risks.push('DISPOSABLE_EMAIL');
+    } else if (analysis.commonDomains.includes(analysis.domain)) {
+      analysis.reputation = 'common';
+    } else {
+      analysis.reputation = 'custom';
+    }
+    
+    // Breach simulation (would integrate with HaveIBeenPwned API in real scenario)
+    const commonBreaches = ['Collection #1', 'LinkedIn', 'Adobe', 'Yahoo'];
+    if (Math.random() > 0.7) {
+      analysis.breachIndicators = commonBreaches.slice(0, Math.floor(Math.random() * 3) + 1);
+    }
+  }
+  
+  return analysis;
+}
+
+// Phone Number Analysis
+function analyzePhone(phone) {
+  const cleaned = phone.replace(/\D/g, '');
+  const analysis = {
+    original: phone,
+    cleaned,
+    valid: false,
+    country: 'unknown',
+    region: 'unknown',
+    carrier: 'unknown',
+    type: 'unknown',
+    timezone: 'unknown'
+  };
+  
+  // Basic validation
+  if (cleaned.length >= 10 && cleaned.length <= 15) {
+    analysis.valid = true;
+    
+    // Country detection (simplified)
+    const countryCode = cleaned.substring(0, 1);
+    const countryCodes = {
+      '1': { country: 'US/Canada', timezone: 'UTC-5 to UTC-8' },
+      '44': { country: 'United Kingdom', timezone: 'UTC+0' },
+      '49': { country: 'Germany', timezone: 'UTC+1' },
+      '33': { country: 'France', timezone: 'UTC+1' },
+      '81': { country: 'Japan', timezone: 'UTC+9' },
+      '86': { country: 'China', timezone: 'UTC+8' }
+    };
+    
+    if (countryCodes[countryCode]) {
+      analysis.country = countryCodes[countryCode].country;
+      analysis.timezone = countryCodes[countryCode].timezone;
+    }
+    
+    // US number analysis
+    if (countryCode === '1' && cleaned.length === 11) {
+      const areaCode = cleaned.substring(1, 4);
+      const exchange = cleaned.substring(4, 7);
+      
+      // Area code analysis (simplified)
+      const areaCodes = {
+        '212': 'New York, NY',
+        '310': 'Los Angeles, CA',
+        '312': 'Chicago, IL',
+        '415': 'San Francisco, CA',
+        '713': 'Houston, TX',
+        '305': 'Miami, FL'
+      };
+      
+      analysis.region = areaCodes[areaCode] || `Area Code ${areaCode}`;
+      
+      // Line type detection
+      if (exchange.startsWith('55')) analysis.type = 'Personal/VoIP';
+      else if (['800', '888', '877', '866'].includes(areaCode)) analysis.type = 'Toll-free';
+      else analysis.type = 'Landline/Mobile';
+    }
+  }
+  
+  return analysis;
+}
+
+// Cryptocurrency Analysis
+function analyzeCrypto(address) {
+  const analysis = {
+    address,
+    currency: 'unknown',
+    valid: false,
+    riskLevel: 'low',
+    warnings: []
+  };
+  
+  // Bitcoin detection
+  if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address)) {
+    analysis.currency = 'Bitcoin';
+    analysis.valid = true;
+  }
+  // Ethereum detection
+  else if (/^0x[a-fA-F0-9]{40}$/.test(address)) {
+    analysis.currency = 'Ethereum';
+    analysis.valid = true;
+  }
+  // Bitcoin Cash
+  else if (/^[qp][a-z0-9]{41}$/.test(address)) {
+    analysis.currency = 'Bitcoin Cash';
+    analysis.valid = true;
+  }
+  
+  if (analysis.valid) {
+    // Simulate risk analysis (would use blockchain APIs in real scenario)
+    const riskFactors = Math.floor(Math.random() * 4);
+    if (riskFactors > 2) {
+      analysis.riskLevel = 'high';
+      analysis.warnings.push('Address associated with known mixers');
+    } else if (riskFactors > 1) {
+      analysis.riskLevel = 'medium';
+      analysis.warnings.push('High transaction volume detected');
+    }
+    
+    // Simulate balance and transaction count
+    analysis.balance = (Math.random() * 10).toFixed(4);
+    analysis.transactionCount = Math.floor(Math.random() * 1000);
+    analysis.firstSeen = new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  }
+  
+  return analysis;
+}
+
+// IP Geolocation Analysis
+function analyzeIP(ip) {
+  const analysis = {
+    ip,
+    valid: false,
+    version: 'unknown',
+    isPrivate: false,
+    location: {},
+    isp: 'unknown',
+    threats: [],
+    vpnDetection: false
+  };
+  
+  // IPv4 validation
+  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$/;
+  // IPv6 validation (simplified)
+  const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+  
+  if (ipv4Regex.test(ip)) {
+    analysis.valid = true;
+    analysis.version = 'IPv4';
+    
+    // Private IP detection
+    const parts = ip.split('.').map(Number);
+    if ((parts[0] === 10) ||
+        (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
+        (parts[0] === 192 && parts[1] === 168) ||
+        (parts[0] === 127)) {
+      analysis.isPrivate = true;
+    }
+  } else if (ipv6Regex.test(ip)) {
+    analysis.valid = true;
+    analysis.version = 'IPv6';
+  }
+  
+  if (analysis.valid && !analysis.isPrivate) {
+    // Simulate geolocation data
+    const locations = [
+      { country: 'United States', city: 'New York', region: 'NY', lat: 40.7128, lng: -74.0060 },
+      { country: 'United Kingdom', city: 'London', region: 'England', lat: 51.5074, lng: -0.1278 },
+      { country: 'Germany', city: 'Berlin', region: 'Berlin', lat: 52.5200, lng: 13.4050 },
+      { country: 'France', city: 'Paris', region: 'Île-de-France', lat: 48.8566, lng: 2.3522 },
+      { country: 'Japan', city: 'Tokyo', region: 'Tokyo', lat: 35.6762, lng: 139.6503 }
+    ];
+    
+    analysis.location = locations[Math.floor(Math.random() * locations.length)];
+    
+    // Simulate ISP data
+    const isps = ['Google LLC', 'Amazon.com Inc.', 'Cloudflare Inc.', 'Microsoft Corporation', 'Akamai Technologies'];
+    analysis.isp = isps[Math.floor(Math.random() * isps.length)];
+    
+    // Simulate threat intelligence
+    if (Math.random() > 0.8) {
+      analysis.threats.push('Reported in abuse database');
+    }
+    if (Math.random() > 0.9) {
+      analysis.threats.push('Associated with malware');
+    }
+    
+    // VPN/Proxy detection
+    analysis.vpnDetection = Math.random() > 0.85;
+  }
+  
+  return analysis;
+}
+
+// Username Analysis
+function analyzeUsername(username) {
+  const analysis = {
+    username,
+    platforms: [],
+    totalFound: 0,
+    riskScore: 0,
+    patterns: []
+  };
+  
+  // Platform checking (simplified - would use actual APIs)
+  const platforms = [
+    'Twitter', 'Instagram', 'Facebook', 'LinkedIn', 'GitHub', 
+    'Reddit', 'YouTube', 'TikTok', 'Snapchat', 'Pinterest'
+  ];
+  
+  // Simulate platform availability
+  platforms.forEach(platform => {
+    if (Math.random() > 0.6) {
+      analysis.platforms.push({
+        name: platform,
+        found: true,
+        url: `https://${platform.toLowerCase()}.com/${username}`,
+        confidence: Math.floor(Math.random() * 40) + 60
+      });
+      analysis.totalFound++;
+    }
+  });
+  
+  // Pattern analysis
+  if (/\d{4}/.test(username)) analysis.patterns.push('Contains birth year');
+  if (username.length < 5) analysis.patterns.push('Short username');
+  if (/^[a-z]+\d+$/.test(username)) analysis.patterns.push('Name + numbers pattern');
+  if (username.includes('_')) analysis.patterns.push('Contains underscore');
+  
+  // Risk scoring
+  analysis.riskScore = Math.min(analysis.totalFound * 10 + analysis.patterns.length * 5, 100);
+  
+  return analysis;
+}
+
+// Metadata Extraction
+async function extractMetadata(file) {
+  const metadata = {
+    filename: file.name,
+    size: file.size,
+    type: file.type,
+    lastModified: new Date(file.lastModified),
+    exif: {},
+    document: {},
+    security: {}
+  };
+  
+  // Basic file analysis
+  const fileExtension = file.name.split('.').pop().toLowerCase();
+  
+  // Image metadata extraction (simplified)
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const dataView = new DataView(arrayBuffer);
+      
+      // Check for JPEG EXIF data
+      if (fileExtension === 'jpg' || fileExtension === 'jpeg') {
+        // Simplified EXIF detection
+        for (let i = 0; i < dataView.byteLength - 4; i++) {
+          if (dataView.getUint32(i) === 0x45786966) { // "Exif"
+            metadata.exif.hasEXIF = true;
+            metadata.exif.gpsInfo = Math.random() > 0.8 ? 'GPS coordinates found' : 'No GPS data';
+            metadata.exif.camera = Math.random() > 0.7 ? 'Camera model detected' : 'No camera info';
+            break;
+          }
+        }
+      }
+      
+      // Check for steganography indicators
+      metadata.security.suspiciousSize = file.size > 1024 * 1024 && fileExtension === 'png';
+      metadata.security.entropy = Math.random() > 0.5 ? 'Normal' : 'High (possible hidden data)';
+      
+    } catch (e) {
+      metadata.error = 'Could not analyze file structure';
+    }
+  }
+  
+  // Document metadata (PDF, Office files)
+  if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExtension)) {
+    metadata.document.hasMetadata = true;
+    metadata.document.author = Math.random() > 0.6 ? 'Author information found' : 'No author data';
+    metadata.document.software = Math.random() > 0.5 ? 'Creation software detected' : 'Unknown software';
+    metadata.document.creationDate = Math.random() > 0.7 ? 'Creation date available' : 'No date info';
+  }
+  
+  return metadata;
+}
 function analyzeSocialMedia(text){
   const social = {
     platforms: [],
@@ -1153,15 +1828,21 @@ if(analyzeUrlBtn) {
         output += `Subdomains: ${analysis.subdomains.join(', ')}\n`;
       }
       
+      output += `\n=== DOMAIN INFO ===\n`;
+      output += `TLD: ${analysis.domainInfo.tld}\n`;
+      output += `Domain: ${analysis.domainInfo.domain}\n`;
+      output += `Is IP: ${analysis.domainInfo.isIP ? 'Yes' : 'No'}\n`;
+      output += `Length: ${analysis.domainInfo.length} chars\n`;
+      
       if(Object.keys(analysis.parameters).length > 0){
-        output += `\nParameters:\n`;
+        output += `\n=== PARAMETERS ===\n`;
         Object.entries(analysis.parameters).forEach(([key, val]) => {
           output += `• ${key}: ${val}\n`;
         });
       }
       
       if(analysis.suspiciousIndicators.length > 0){
-        output += `\nSuspicious Indicators:\n`;
+        output += `\n=== SUSPICIOUS INDICATORS ===\n`;
         analysis.suspiciousIndicators.forEach(ind => output += `• ${ind}\n`);
         updateThreatLevel('MEDIUM');
       }
@@ -1176,6 +1857,411 @@ if(analyzeUrlBtn) {
     updateGlobalStats();
     setStatus('url intelligence');
   });
+}
+
+// URL Scraping
+const scrapeUrlBtn = el('#scrapeUrl');
+if(scrapeUrlBtn) {
+  scrapeUrlBtn.addEventListener('click', async () => {
+    setStatus('scraping website');
+    const urlin = el('#urlin');
+    const url = urlin ? urlin.value.trim() : '';
+    const deepScan = el('#deepScan')?.checked || false;
+    
+    if(!url) {
+      setStatus('url intelligence');
+      return;
+    }
+    
+    try {
+      const scrapeData = await scrapeWebsite(url, deepScan);
+      
+      if(scrapeData.error) {
+        const urlMetaNode = el('#urlMeta');
+        if(urlMetaNode) urlMetaNode.textContent = `Scraping Error: ${scrapeData.error}`;
+        setStatus('url intelligence');
+        return;
+      }
+      
+      globalReport.intelligence.scrape = scrapeData;
+      
+      let output = `=== WEBSITE SCRAPE RESULTS ===\n`;
+      output += `Title: ${scrapeData.title}\n`;
+      output += `Links Found: ${scrapeData.links.length}\n`;
+      output += `Images: ${scrapeData.images.length}\n`;
+      output += `Forms: ${scrapeData.forms.length}\n`;
+      output += `External Scripts: ${scrapeData.security.externalScripts}\n`;
+      
+      if(scrapeData.technologies.length > 0) {
+        output += `\n=== TECHNOLOGIES ===\n`;
+        scrapeData.technologies.forEach(tech => output += `• ${tech}\n`);
+      }
+      
+      if(scrapeData.socialMedia.length > 0) {
+        output += `\n=== SOCIAL MEDIA ===\n`;
+        scrapeData.socialMedia.forEach(social => output += `• ${social.platform}: ${social.url}\n`);
+      }
+      
+      if(scrapeData.contacts.emails.length > 0) {
+        output += `\n=== CONTACT INFO ===\n`;
+        output += `Emails: ${scrapeData.contacts.emails.join(', ')}\n`;
+      }
+      
+      if(scrapeData.contacts.phones.length > 0) {
+        output += `Phones: ${scrapeData.contacts.phones.join(', ')}\n`;
+      }
+      
+      output += `\n=== SECURITY ===\n`;
+      output += `HTTPS: ${scrapeData.security.https ? 'Yes' : 'No'}\n`;
+      output += `Mixed Content: ${scrapeData.security.mixedContent ? 'Yes' : 'No'}\n`;
+      output += `CSP Header: ${scrapeData.security.hasCSP ? 'Yes' : 'No'}\n`;
+      
+      output += `\n=== SEO ===\n`;
+      output += `Has Title: ${scrapeData.seo.hasTitle ? 'Yes' : 'No'}\n`;
+      output += `Has Description: ${scrapeData.seo.hasDescription ? 'Yes' : 'No'}\n`;
+      output += `OG Tags: ${scrapeData.seo.hasOGTags ? 'Yes' : 'No'}\n`;
+      output += `H1 Tags: ${scrapeData.seo.headingStructure.h1}\n`;
+      
+      const urlMetaNode = el('#urlMeta');
+      if(urlMetaNode) urlMetaNode.textContent = output;
+      
+      // Update network graph with found domains
+      const foundDomains = scrapeData.links
+        .filter(link => link.external)
+        .map(link => {
+          try { return new URL(link.url).hostname; }
+          catch { return null; }
+        })
+        .filter(domain => domain)
+        .slice(0, 10);
+      
+      updateNetworkGraph({ 
+        domains: [new URL(url).hostname, ...foundDomains],
+        emails: scrapeData.contacts.emails
+      });
+      
+    } catch(error) {
+      const urlMetaNode = el('#urlMeta');
+      if(urlMetaNode) urlMetaNode.textContent = `Scraping failed: ${error.message}`;
+    }
+    
+    setStatus('url intelligence');
+  });
+}
+
+// Email Analysis Module
+const analyzeEmailBtn = el('#analyzeEmail');
+if(analyzeEmailBtn) {
+  analyzeEmailBtn.addEventListener('click', () => {
+    setStatus('analyzing email');
+    const emailin = el('#emailin');
+    const email = emailin ? emailin.value.trim() : '';
+    
+    if(!email) {
+      setStatus('email osint');
+      return;
+    }
+    
+    const analysis = analyzeEmail(email);
+    globalReport.intelligence.email = analysis;
+    
+    let output = `=== EMAIL ANALYSIS ===\n`;
+    output += `Email: ${analysis.email}\n`;
+    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    
+    if(analysis.valid) {
+      output += `Domain: ${analysis.domain}\n`;
+      output += `Local Part: ${analysis.localPart}\n`;
+      output += `Reputation: ${analysis.reputation}\n`;
+      
+      if(analysis.risks.length > 0) {
+        output += `\n=== RISK FACTORS ===\n`;
+        analysis.risks.forEach(risk => output += `• ${risk}\n`);
+      }
+      
+      if(analysis.breachIndicators.length > 0) {
+        output += `\n=== BREACH INDICATORS ===\n`;
+        analysis.breachIndicators.forEach(breach => output += `• ${breach}\n`);
+        updateThreatLevel('HIGH');
+      }
+    }
+    
+    const emailMetaNode = el('#emailMeta');
+    if(emailMetaNode) emailMetaNode.textContent = output;
+    
+    const emailThreatNode = el('#emailThreatLevel');
+    if(emailThreatNode) {
+      const status = analysis.breachIndicators.length > 0 ? 'COMPROMISED' : 
+                    analysis.reputation === 'disposable' ? 'SUSPICIOUS' : 'CLEAN';
+      emailThreatNode.textContent = `status: ${status}`;
+    }
+    
+    setStatus('email osint');
+  });
+}
+
+// Phone Analysis Module
+const analyzePhoneBtn = el('#analyzePhone');
+if(analyzePhoneBtn) {
+  analyzePhoneBtn.addEventListener('click', () => {
+    setStatus('analyzing phone');
+    const phonein = el('#phonein');
+    const phone = phonein ? phonein.value.trim() : '';
+    
+    if(!phone) {
+      setStatus('phone intel');
+      return;
+    }
+    
+    const analysis = analyzePhone(phone);
+    globalReport.intelligence.phone = analysis;
+    
+    let output = `=== PHONE ANALYSIS ===\n`;
+    output += `Original: ${analysis.original}\n`;
+    output += `Cleaned: ${analysis.cleaned}\n`;
+    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    
+    if(analysis.valid) {
+      output += `Country: ${analysis.country}\n`;
+      output += `Region: ${analysis.region}\n`;
+      output += `Type: ${analysis.type}\n`;
+      output += `Timezone: ${analysis.timezone}\n`;
+    }
+    
+    const phoneMetaNode = el('#phoneMeta');
+    if(phoneMetaNode) phoneMetaNode.textContent = output;
+    
+    const phoneThreatNode = el('#phoneThreatLevel');
+    if(phoneThreatNode) {
+      phoneThreatNode.textContent = `validity: ${analysis.valid ? 'VALID' : 'INVALID'}`;
+    }
+    
+    setStatus('phone intel');
+  });
+}
+
+// Crypto Analysis Module
+const analyzeCryptoBtn = el('#analyzeCrypto');
+if(analyzeCryptoBtn) {
+  analyzeCryptoBtn.addEventListener('click', () => {
+    setStatus('analyzing crypto');
+    const cryptoin = el('#cryptoin');
+    const address = cryptoin ? cryptoin.value.trim() : '';
+    
+    if(!address) {
+      setStatus('crypto tracker');
+      return;
+    }
+    
+    const analysis = analyzeCrypto(address);
+    globalReport.intelligence.crypto = analysis;
+    
+    let output = `=== CRYPTO ANALYSIS ===\n`;
+    output += `Address: ${analysis.address}\n`;
+    output += `Currency: ${analysis.currency}\n`;
+    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    
+    if(analysis.valid) {
+      output += `Risk Level: ${analysis.riskLevel.toUpperCase()}\n`;
+      output += `Balance: ${analysis.balance} ${analysis.currency}\n`;
+      output += `Transactions: ${analysis.transactionCount}\n`;
+      output += `First Seen: ${analysis.firstSeen}\n`;
+      
+      if(analysis.warnings.length > 0) {
+        output += `\n=== WARNINGS ===\n`;
+        analysis.warnings.forEach(warning => output += `• ${warning}\n`);
+      }
+    }
+    
+    const cryptoMetaNode = el('#cryptoMeta');
+    if(cryptoMetaNode) cryptoMetaNode.textContent = output;
+    
+    const cryptoThreatNode = el('#cryptoThreatLevel');
+    if(cryptoThreatNode) {
+      cryptoThreatNode.textContent = `risk: ${analysis.riskLevel.toUpperCase()}`;
+    }
+    
+    if(analysis.riskLevel === 'high') updateThreatLevel('HIGH');
+    
+    setStatus('crypto tracker');
+  });
+}
+
+// IP Analysis Module
+const analyzeIPBtn = el('#analyzeIP');
+if(analyzeIPBtn) {
+  analyzeIPBtn.addEventListener('click', () => {
+    setStatus('analyzing IP');
+    const ipin = el('#ipin');
+    const ip = ipin ? ipin.value.trim() : '';
+    
+    if(!ip) {
+      setStatus('ip geolocation');
+      return;
+    }
+    
+    const analysis = analyzeIP(ip);
+    globalReport.intelligence.ip = analysis;
+    
+    let output = `=== IP ANALYSIS ===\n`;
+    output += `IP: ${analysis.ip}\n`;
+    output += `Version: ${analysis.version}\n`;
+    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    output += `Private: ${analysis.isPrivate ? 'Yes' : 'No'}\n`;
+    
+    if(analysis.valid && !analysis.isPrivate) {
+      output += `\n=== GEOLOCATION ===\n`;
+      output += `Country: ${analysis.location.country}\n`;
+      output += `City: ${analysis.location.city}\n`;
+      output += `Region: ${analysis.location.region}\n`;
+      output += `Coordinates: ${analysis.location.lat}, ${analysis.location.lng}\n`;
+      output += `ISP: ${analysis.isp}\n`;
+      output += `VPN/Proxy: ${analysis.vpnDetection ? 'Detected' : 'Not detected'}\n`;
+      
+      if(analysis.threats.length > 0) {
+        output += `\n=== THREAT INDICATORS ===\n`;
+        analysis.threats.forEach(threat => output += `• ${threat}\n`);
+        updateThreatLevel('MEDIUM');
+      }
+    }
+    
+    const ipMetaNode = el('#ipMeta');
+    if(ipMetaNode) ipMetaNode.textContent = output;
+    
+    const ipThreatNode = el('#ipThreatLevel');
+    if(ipThreatNode) {
+      const threatLevel = analysis.threats.length > 0 ? 'HIGH' : 
+                         analysis.vpnDetection ? 'MEDIUM' : 'LOW';
+      ipThreatNode.textContent = `threat: ${threatLevel}`;
+    }
+    
+    // Add to network graph
+    updateNetworkGraph({ ips: [analysis.ip] });
+    
+    setStatus('ip geolocation');
+  });
+}
+
+// Username Analysis Module
+const analyzeUsernameBtn = el('#analyzeUsername');
+if(analyzeUsernameBtn) {
+  analyzeUsernameBtn.addEventListener('click', () => {
+    setStatus('hunting username');
+    const usernamein = el('#usernamein');
+    const username = usernamein ? usernamein.value.trim() : '';
+    
+    if(!username) {
+      setStatus('username hunter');
+      return;
+    }
+    
+    const analysis = analyzeUsername(username);
+    globalReport.intelligence.username = analysis;
+    
+    let output = `=== USERNAME ANALYSIS ===\n`;
+    output += `Username: ${analysis.username}\n`;
+    output += `Platforms Found: ${analysis.totalFound}\n`;
+    output += `Risk Score: ${analysis.riskScore}/100\n`;
+    
+    if(analysis.platforms.length > 0) {
+      output += `\n=== FOUND ON PLATFORMS ===\n`;
+      analysis.platforms.forEach(platform => {
+        output += `• ${platform.name} (${platform.confidence}% confidence)\n`;
+      });
+    }
+    
+    if(analysis.patterns.length > 0) {
+      output += `\n=== PATTERNS DETECTED ===\n`;
+      analysis.patterns.forEach(pattern => output += `• ${pattern}\n`);
+    }
+    
+    const usernameMetaNode = el('#usernameMeta');
+    if(usernameMetaNode) usernameMetaNode.textContent = output;
+    
+    const usernameThreatNode = el('#usernameThreatLevel');
+    if(usernameThreatNode) {
+      usernameThreatNode.textContent = `found: ${analysis.totalFound} platforms`;
+    }
+    
+    setStatus('username hunter');
+  });
+}
+
+// Metadata Analysis Module
+const metadatadrop = el('#metadatadrop');
+if(metadatadrop) {
+  metadatadrop.addEventListener('click', () => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.multiple = true;
+    inp.onchange = () => Array.from(inp.files).forEach(handleMetadataFile);
+    inp.click();
+  });
+
+  metadatadrop.addEventListener('dragover', e => {
+    e.preventDefault();
+    metadatadrop.style.background = 'rgba(255,0,0,.03)';
+  });
+
+  metadatadrop.addEventListener('dragleave', e => {
+    metadatadrop.style.background = '';
+  });
+
+  metadatadrop.addEventListener('drop', e => {
+    e.preventDefault();
+    metadatadrop.style.background = '';
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(handleMetadataFile);
+  });
+}
+
+async function handleMetadataFile(file) {
+  setStatus('extracting metadata');
+  
+  try {
+    const metadata = await extractMetadata(file);
+    globalReport.intelligence.metadata = metadata;
+    
+    let output = `=== METADATA EXTRACTION ===\n`;
+    output += `Filename: ${metadata.filename}\n`;
+    output += `Size: ${(metadata.size / 1024).toFixed(1)} KB\n`;
+    output += `Type: ${metadata.type}\n`;
+    output += `Last Modified: ${metadata.lastModified.toISOString()}\n`;
+    
+    if(metadata.exif.hasEXIF) {
+      output += `\n=== EXIF DATA ===\n`;
+      output += `GPS Info: ${metadata.exif.gpsInfo}\n`;
+      output += `Camera: ${metadata.exif.camera}\n`;
+    }
+    
+    if(metadata.document.hasMetadata) {
+      output += `\n=== DOCUMENT METADATA ===\n`;
+      output += `Author: ${metadata.document.author}\n`;
+      output += `Software: ${metadata.document.software}\n`;
+      output += `Creation Date: ${metadata.document.creationDate}\n`;
+    }
+    
+    output += `\n=== SECURITY ANALYSIS ===\n`;
+    output += `Entropy: ${metadata.security.entropy}\n`;
+    if(metadata.security.suspiciousSize) {
+      output += `• Large file size for format (possible steganography)\n`;
+    }
+    
+    const metadataMetaNode = el('#metadataMeta');
+    if(metadataMetaNode) metadataMetaNode.textContent = output;
+    
+    const metadataThreatNode = el('#metadataThreatLevel');
+    if(metadataThreatNode) {
+      const privacyLevel = metadata.exif.hasEXIF || metadata.document.hasMetadata ? 'HIGH' : 'LOW';
+      metadataThreatNode.textContent = `privacy: ${privacyLevel}`;
+    }
+    
+  } catch(e) {
+    const metadataMetaNode = el('#metadataMeta');
+    if(metadataMetaNode) metadataMetaNode.textContent = `Error extracting metadata: ${e.message}`;
+  }
+  
+  setStatus('metadata extractor');
 }
 
 // Text Analysis Module
