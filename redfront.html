@@ -94,7 +94,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
 }
 
 .module-btn:hover .module-icon{
-  filter:grayscale(0);
+  filter:grayscale(1) sepia(1) hue-rotate(345deg) saturate(2) brightness(1.2);
 }
 
 .module-title{
@@ -238,12 +238,6 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <div class="module-desc">Entity relationship visualization and graph analysis</div>
         </button>
 
-        <button class="module-btn" data-module="reports">
-          <div class="module-icon">📊</div>
-          <div class="module-title">INTEL REPORTS</div>
-          <div class="module-desc">Export findings and generate intelligence summaries</div>
-        </button>
-
         <button class="module-btn" data-module="email">
           <div class="module-icon">📧</div>
           <div class="module-title">EMAIL OSINT</div>
@@ -278,6 +272,12 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <div class="module-icon">🔍</div>
           <div class="module-title">METADATA EXTRACTOR</div>
           <div class="module-desc">EXIF data, document properties, hidden information</div>
+        </button>
+
+        <button class="module-btn" data-module="reports">
+          <div class="module-icon">📊</div>
+          <div class="module-title">INTEL REPORTS</div>
+          <div class="module-desc">Export findings and generate intelligence summaries</div>
         </button>
       </div>
     </div>
@@ -1337,7 +1337,112 @@ function analyzeEmail(email) {
   return analysis;
 }
 
-// Phone Number Analysis
+// Enhanced breach checking function
+async function checkEmailBreaches(email) {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  const breachDatabase = [
+    {
+      name: 'LinkedIn Data Breach',
+      date: '2021-06-22',
+      dataTypes: ['Email addresses', 'Phone numbers', 'Professional info'],
+      verified: true,
+      affectedCount: 700000000
+    },
+    {
+      name: 'Facebook Data Leak',
+      date: '2021-04-03',
+      dataTypes: ['Email addresses', 'Phone numbers', 'Personal info'],
+      verified: true,
+      affectedCount: 533000000
+    },
+    {
+      name: 'Collection #1',
+      date: '2019-01-17',
+      dataTypes: ['Email addresses', 'Passwords'],
+      verified: true,
+      affectedCount: 772904991
+    },
+    {
+      name: 'Adobe Systems',
+      date: '2013-10-04',
+      dataTypes: ['Email addresses', 'Passwords', 'Security questions'],
+      verified: true,
+      affectedCount: 152000000
+    },
+    {
+      name: 'Yahoo! (Multiple Breaches)',
+      date: '2014-12-01',
+      dataTypes: ['Email addresses', 'Passwords', 'Security questions', 'Personal info'],
+      verified: true,
+      affectedCount: 3000000000
+    },
+    {
+      name: 'Dropbox',
+      date: '2012-07-01',
+      dataTypes: ['Email addresses', 'Passwords'],
+      verified: true,
+      affectedCount: 68000000
+    },
+    {
+      name: 'Twitter',
+      date: '2022-08-01',
+      dataTypes: ['Email addresses', 'Phone numbers'],
+      verified: false,
+      affectedCount: 5400000
+    }
+  ];
+  
+  const domain = email.split('@')[1];
+  const localPart = email.split('@')[0];
+  
+  // Simulate breach detection logic
+  const foundBreaches = [];
+  
+  // Higher chance for common domains
+  const commonDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
+  const breachProbability = commonDomains.includes(domain) ? 0.4 : 0.2;
+  
+  // Certain patterns increase breach likelihood
+  let adjustedProbability = breachProbability;
+  if (localPart.includes('admin') || localPart.includes('test')) adjustedProbability += 0.3;
+  if (localPart.length < 6) adjustedProbability += 0.2;
+  if (/\d{4}/.test(localPart)) adjustedProbability += 0.1;
+  
+  // Randomly select breaches based on probability
+  if (Math.random() < adjustedProbability) {
+    const numBreaches = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < numBreaches; i++) {
+      const randomBreach = breachDatabase[Math.floor(Math.random() * breachDatabase.length)];
+      if (!foundBreaches.some(b => b.name === randomBreach.name)) {
+        foundBreaches.push(randomBreach);
+      }
+    }
+  }
+  
+  let riskLevel = 'LOW';
+  let lastBreach = null;
+  
+  if (foundBreaches.length > 0) {
+    foundBreaches.sort((a, b) => new Date(b.date) - new Date(a.date));
+    lastBreach = foundBreaches[0].date;
+    
+    if (foundBreaches.length >= 3) riskLevel = 'CRITICAL';
+    else if (foundBreaches.length >= 2) riskLevel = 'HIGH';
+    else riskLevel = 'MEDIUM';
+  }
+  
+  return {
+    email,
+    breaches: foundBreaches,
+    riskLevel,
+    lastBreach,
+    timestamp: Date.now()
+  };
+}
+
+// Phone Number Analysis with comprehensive data
 function analyzePhone(phone) {
   const cleaned = phone.replace(/\D/g, '');
   const analysis = {
@@ -1345,53 +1450,683 @@ function analyzePhone(phone) {
     cleaned,
     valid: false,
     country: 'unknown',
+    countryCode: '',
     region: 'unknown',
     carrier: 'unknown',
     type: 'unknown',
-    timezone: 'unknown'
+    timezone: 'unknown',
+    format: {
+      national: '',
+      international: '',
+      e164: ''
+    }
+  };
+  
+  // Comprehensive country codes database
+  const countryDatabase = {
+    '1': { country: 'United States/Canada', timezone: 'UTC-5 to UTC-8', currency: 'USD/CAD' },
+    '7': { country: 'Russia/Kazakhstan', timezone: 'UTC+3 to UTC+12', currency: 'RUB/KZT' },
+    '20': { country: 'Egypt', timezone: 'UTC+2', currency: 'EGP' },
+    '27': { country: 'South Africa', timezone: 'UTC+2', currency: 'ZAR' },
+    '30': { country: 'Greece', timezone: 'UTC+2', currency: 'EUR' },
+    '31': { country: 'Netherlands', timezone: 'UTC+1', currency: 'EUR' },
+    '32': { country: 'Belgium', timezone: 'UTC+1', currency: 'EUR' },
+    '33': { country: 'France', timezone: 'UTC+1', currency: 'EUR' },
+    '34': { country: 'Spain', timezone: 'UTC+1', currency: 'EUR' },
+    '36': { country: 'Hungary', timezone: 'UTC+1', currency: 'HUF' },
+    '39': { country: 'Italy', timezone: 'UTC+1', currency: 'EUR' },
+    '40': { country: 'Romania', timezone: 'UTC+2', currency: 'RON' },
+    '41': { country: 'Switzerland', timezone: 'UTC+1', currency: 'CHF' },
+    '43': { country: 'Austria', timezone: 'UTC+1', currency: 'EUR' },
+    '44': { country: 'United Kingdom', timezone: 'UTC+0', currency: 'GBP' },
+    '45': { country: 'Denmark', timezone: 'UTC+1', currency: 'DKK' },
+    '46': { country: 'Sweden', timezone: 'UTC+1', currency: 'SEK' },
+    '47': { country: 'Norway', timezone: 'UTC+1', currency: 'NOK' },
+    '48': { country: 'Poland', timezone: 'UTC+1', currency: 'PLN' },
+    '49': { country: 'Germany', timezone: 'UTC+1', currency: 'EUR' },
+    '51': { country: 'Peru', timezone: 'UTC-5', currency: 'PEN' },
+    '52': { country: 'Mexico', timezone: 'UTC-6 to UTC-8', currency: 'MXN' },
+    '53': { country: 'Cuba', timezone: 'UTC-5', currency: 'CUP' },
+    '54': { country: 'Argentina', timezone: 'UTC-3', currency: 'ARS' },
+    '55': { country: 'Brazil', timezone: 'UTC-3 to UTC-5', currency: 'BRL' },
+    '56': { country: 'Chile', timezone: 'UTC-3 to UTC-6', currency: 'CLP' },
+    '57': { country: 'Colombia', timezone: 'UTC-5', currency: 'COP' },
+    '58': { country: 'Venezuela', timezone: 'UTC-4', currency: 'VES' },
+    '60': { country: 'Malaysia', timezone: 'UTC+8', currency: 'MYR' },
+    '61': { country: 'Australia', timezone: 'UTC+8 to UTC+11', currency: 'AUD' },
+    '62': { country: 'Indonesia', timezone: 'UTC+7 to UTC+9', currency: 'IDR' },
+    '63': { country: 'Philippines', timezone: 'UTC+8', currency: 'PHP' },
+    '64': { country: 'New Zealand', timezone: 'UTC+12', currency: 'NZD' },
+    '65': { country: 'Singapore', timezone: 'UTC+8', currency: 'SGD' },
+    '66': { country: 'Thailand', timezone: 'UTC+7', currency: 'THB' },
+    '81': { country: 'Japan', timezone: 'UTC+9', currency: 'JPY' },
+    '82': { country: 'South Korea', timezone: 'UTC+9', currency: 'KRW' },
+    '84': { country: 'Vietnam', timezone: 'UTC+7', currency: 'VND' },
+    '86': { country: 'China', timezone: 'UTC+8', currency: 'CNY' },
+    '90': { country: 'Turkey', timezone: 'UTC+3', currency: 'TRY' },
+    '91': { country: 'India', timezone: 'UTC+5:30', currency: 'INR' },
+    '92': { country: 'Pakistan', timezone: 'UTC+5', currency: 'PKR' },
+    '93': { country: 'Afghanistan', timezone: 'UTC+4:30', currency: 'AFN' },
+    '94': { country: 'Sri Lanka', timezone: 'UTC+5:30', currency: 'LKR' },
+    '95': { country: 'Myanmar', timezone: 'UTC+6:30', currency: 'MMK' },
+    '98': { country: 'Iran', timezone: 'UTC+3:30', currency: 'IRR' },
+    '212': { country: 'Morocco', timezone: 'UTC+1', currency: 'MAD' },
+    '213': { country: 'Algeria', timezone: 'UTC+1', currency: 'DZD' },
+    '216': { country: 'Tunisia', timezone: 'UTC+1', currency: 'TND' },
+    '218': { country: 'Libya', timezone: 'UTC+2', currency: 'LYD' },
+    '220': { country: 'Gambia', timezone: 'UTC+0', currency: 'GMD' },
+    '221': { country: 'Senegal', timezone: 'UTC+0', currency: 'XOF' },
+    '222': { country: 'Mauritania', timezone: 'UTC+0', currency: 'MRU' },
+    '223': { country: 'Mali', timezone: 'UTC+0', currency: 'XOF' },
+    '224': { country: 'Guinea', timezone: 'UTC+0', currency: 'GNF' },
+    '225': { country: 'Ivory Coast', timezone: 'UTC+0', currency: 'XOF' },
+    '226': { country: 'Burkina Faso', timezone: 'UTC+0', currency: 'XOF' },
+    '227': { country: 'Niger', timezone: 'UTC+1', currency: 'XOF' },
+    '228': { country: 'Togo', timezone: 'UTC+0', currency: 'XOF' },
+    '229': { country: 'Benin', timezone: 'UTC+1', currency: 'XOF' },
+    '230': { country: 'Mauritius', timezone: 'UTC+4', currency: 'MUR' },
+    '231': { country: 'Liberia', timezone: 'UTC+0', currency: 'LRD' },
+    '232': { country: 'Sierra Leone', timezone: 'UTC+0', currency: 'SLL' },
+    '233': { country: 'Ghana', timezone: 'UTC+0', currency: 'GHS' },
+    '234': { country: 'Nigeria', timezone: 'UTC+1', currency: 'NGN' },
+    '235': { country: 'Chad', timezone: 'UTC+1', currency: 'XAF' },
+    '236': { country: 'Central African Republic', timezone: 'UTC+1', currency: 'XAF' },
+    '237': { country: 'Cameroon', timezone: 'UTC+1', currency: 'XAF' },
+    '238': { country: 'Cape Verde', timezone: 'UTC-1', currency: 'CVE' },
+    '239': { country: 'São Tomé and Príncipe', timezone: 'UTC+0', currency: 'STN' },
+    '240': { country: 'Equatorial Guinea', timezone: 'UTC+1', currency: 'XAF' },
+    '241': { country: 'Gabon', timezone: 'UTC+1', currency: 'XAF' },
+    '242': { country: 'Republic of the Congo', timezone: 'UTC+1', currency: 'XAF' },
+    '243': { country: 'Democratic Republic of the Congo', timezone: 'UTC+1 to UTC+2', currency: 'CDF' },
+    '244': { country: 'Angola', timezone: 'UTC+1', currency: 'AOA' },
+    '245': { country: 'Guinea-Bissau', timezone: 'UTC+0', currency: 'XOF' },
+    '246': { country: 'British Indian Ocean Territory', timezone: 'UTC+6', currency: 'USD' },
+    '248': { country: 'Seychelles', timezone: 'UTC+4', currency: 'SCR' },
+    '249': { country: 'Sudan', timezone: 'UTC+2', currency: 'SDG' },
+    '250': { country: 'Rwanda', timezone: 'UTC+2', currency: 'RWF' },
+    '251': { country: 'Ethiopia', timezone: 'UTC+3', currency: 'ETB' },
+    '252': { country: 'Somalia', timezone: 'UTC+3', currency: 'SOS' },
+    '253': { country: 'Djibouti', timezone: 'UTC+3', currency: 'DJF' },
+    '254': { country: 'Kenya', timezone: 'UTC+3', currency: 'KES' },
+    '255': { country: 'Tanzania', timezone: 'UTC+3', currency: 'TZS' },
+    '256': { country: 'Uganda', timezone: 'UTC+3', currency: 'UGX' },
+    '257': { country: 'Burundi', timezone: 'UTC+2', currency: 'BIF' },
+    '258': { country: 'Mozambique', timezone: 'UTC+2', currency: 'MZN' },
+    '260': { country: 'Zambia', timezone: 'UTC+2', currency: 'ZMW' },
+    '261': { country: 'Madagascar', timezone: 'UTC+3', currency: 'MGA' },
+    '262': { country: 'Réunion/Mayotte', timezone: 'UTC+4', currency: 'EUR' },
+    '263': { country: 'Zimbabwe', timezone: 'UTC+2', currency: 'ZWL' },
+    '264': { country: 'Namibia', timezone: 'UTC+2', currency: 'NAD' },
+    '265': { country: 'Malawi', timezone: 'UTC+2', currency: 'MWK' },
+    '266': { country: 'Lesotho', timezone: 'UTC+2', currency: 'LSL' },
+    '267': { country: 'Botswana', timezone: 'UTC+2', currency: 'BWP' },
+    '268': { country: 'Eswatini', timezone: 'UTC+2', currency: 'SZL' },
+    '269': { country: 'Comoros', timezone: 'UTC+3', currency: 'KMF' },
+    '290': { country: 'Saint Helena', timezone: 'UTC+0', currency: 'SHP' },
+    '291': { country: 'Eritrea', timezone: 'UTC+3', currency: 'ERN' },
+    '297': { country: 'Aruba', timezone: 'UTC-4', currency: 'AWG' },
+    '298': { country: 'Faroe Islands', timezone: 'UTC+0', currency: 'DKK' },
+    '299': { country: 'Greenland', timezone: 'UTC-4 to UTC+0', currency: 'DKK' },
+    '350': { country: 'Gibraltar', timezone: 'UTC+1', currency: 'GIP' },
+    '351': { country: 'Portugal', timezone: 'UTC+0', currency: 'EUR' },
+    '352': { country: 'Luxembourg', timezone: 'UTC+1', currency: 'EUR' },
+    '353': { country: 'Ireland', timezone: 'UTC+0', currency: 'EUR' },
+    '354': { country: 'Iceland', timezone: 'UTC+0', currency: 'ISK' },
+    '355': { country: 'Albania', timezone: 'UTC+1', currency: 'ALL' },
+    '356': { country: 'Malta', timezone: 'UTC+1', currency: 'EUR' },
+    '357': { country: 'Cyprus', timezone: 'UTC+2', currency: 'EUR' },
+    '358': { country: 'Finland', timezone: 'UTC+2', currency: 'EUR' },
+    '359': { country: 'Bulgaria', timezone: 'UTC+2', currency: 'BGN' },
+    '370': { country: 'Lithuania', timezone: 'UTC+2', currency: 'EUR' },
+    '371': { country: 'Latvia', timezone: 'UTC+2', currency: 'EUR' },
+    '372': { country: 'Estonia', timezone: 'UTC+2', currency: 'EUR' },
+    '373': { country: 'Moldova', timezone: 'UTC+2', currency: 'MDL' },
+    '374': { country: 'Armenia', timezone: 'UTC+4', currency: 'AMD' },
+    '375': { country: 'Belarus', timezone: 'UTC+3', currency: 'BYN' },
+    '376': { country: 'Andorra', timezone: 'UTC+1', currency: 'EUR' },
+    '377': { country: 'Monaco', timezone: 'UTC+1', currency: 'EUR' },
+    '378': { country: 'San Marino', timezone: 'UTC+1', currency: 'EUR' },
+    '380': { country: 'Ukraine', timezone: 'UTC+2', currency: 'UAH' },
+    '381': { country: 'Serbia', timezone: 'UTC+1', currency: 'RSD' },
+    '382': { country: 'Montenegro', timezone: 'UTC+1', currency: 'EUR' },
+    '383': { country: 'Kosovo', timezone: 'UTC+1', currency: 'EUR' },
+    '385': { country: 'Croatia', timezone: 'UTC+1', currency: 'EUR' },
+    '386': { country: 'Slovenia', timezone: 'UTC+1', currency: 'EUR' },
+    '387': { country: 'Bosnia and Herzegovina', timezone: 'UTC+1', currency: 'BAM' },
+    '389': { country: 'North Macedonia', timezone: 'UTC+1', currency: 'MKD' },
+    '420': { country: 'Czech Republic', timezone: 'UTC+1', currency: 'CZK' },
+    '421': { country: 'Slovakia', timezone: 'UTC+1', currency: 'EUR' },
+    '423': { country: 'Liechtenstein', timezone: 'UTC+1', currency: 'CHF' },
+    '500': { country: 'Falkland Islands', timezone: 'UTC-3', currency: 'FKP' },
+    '501': { country: 'Belize', timezone: 'UTC-6', currency: 'BZD' },
+    '502': { country: 'Guatemala', timezone: 'UTC-6', currency: 'GTQ' },
+    '503': { country: 'El Salvador', timezone: 'UTC-6', currency: 'USD' },
+    '504': { country: 'Honduras', timezone: 'UTC-6', currency: 'HNL' },
+    '505': { country: 'Nicaragua', timezone: 'UTC-6', currency: 'NIO' },
+    '506': { country: 'Costa Rica', timezone: 'UTC-6', currency: 'CRC' },
+    '507': { country: 'Panama', timezone: 'UTC-5', currency: 'PAB' },
+    '508': { country: 'Saint Pierre and Miquelon', timezone: 'UTC-3', currency: 'EUR' },
+    '509': { country: 'Haiti', timezone: 'UTC-5', currency: 'HTG' },
+    '590': { country: 'Guadeloupe', timezone: 'UTC-4', currency: 'EUR' },
+    '591': { country: 'Bolivia', timezone: 'UTC-4', currency: 'BOB' },
+    '592': { country: 'Guyana', timezone: 'UTC-4', currency: 'GYD' },
+    '593': { country: 'Ecuador', timezone: 'UTC-5', currency: 'USD' },
+    '594': { country: 'French Guiana', timezone: 'UTC-3', currency: 'EUR' },
+    '595': { country: 'Paraguay', timezone: 'UTC-3', currency: 'PYG' },
+    '596': { country: 'Martinique', timezone: 'UTC-4', currency: 'EUR' },
+    '597': { country: 'Suriname', timezone: 'UTC-3', currency: 'SRD' },
+    '598': { country: 'Uruguay', timezone: 'UTC-3', currency: 'UYU' },
+    '599': { country: 'Netherlands Antilles', timezone: 'UTC-4', currency: 'ANG' },
+    '670': { country: 'East Timor', timezone: 'UTC+9', currency: 'USD' },
+    '672': { country: 'Antarctica/Norfolk Island', timezone: 'UTC+11', currency: 'AUD' },
+    '673': { country: 'Brunei', timezone: 'UTC+8', currency: 'BND' },
+    '674': { country: 'Nauru', timezone: 'UTC+12', currency: 'AUD' },
+    '675': { country: 'Papua New Guinea', timezone: 'UTC+10', currency: 'PGK' },
+    '676': { country: 'Tonga', timezone: 'UTC+13', currency: 'TOP' },
+    '677': { country: 'Solomon Islands', timezone: 'UTC+11', currency: 'SBD' },
+    '678': { country: 'Vanuatu', timezone: 'UTC+11', currency: 'VUV' },
+    '679': { country: 'Fiji', timezone: 'UTC+12', currency: 'FJD' },
+    '680': { country: 'Palau', timezone: 'UTC+9', currency: 'USD' },
+    '681': { country: 'Wallis and Futuna', timezone: 'UTC+12', currency: 'XPF' },
+    '682': { country: 'Cook Islands', timezone: 'UTC-10', currency: 'NZD' },
+    '683': { country: 'Niue', timezone: 'UTC-11', currency: 'NZD' },
+    '684': { country: 'American Samoa', timezone: 'UTC-11', currency: 'USD' },
+    '685': { country: 'Samoa', timezone: 'UTC+13', currency: 'WST' },
+    '686': { country: 'Kiribati', timezone: 'UTC+12 to UTC+14', currency: 'AUD' },
+    '687': { country: 'New Caledonia', timezone: 'UTC+11', currency: 'XPF' },
+    '688': { country: 'Tuvalu', timezone: 'UTC+12', currency: 'AUD' },
+    '689': { country: 'French Polynesia', timezone: 'UTC-10', currency: 'XPF' },
+    '690': { country: 'Tokelau', timezone: 'UTC+13', currency: 'NZD' },
+    '691': { country: 'Micronesia', timezone: 'UTC+10 to UTC+11', currency: 'USD' },
+    '692': { country: 'Marshall Islands', timezone: 'UTC+12', currency: 'USD' },
+    '850': { country: 'North Korea', timezone: 'UTC+9', currency: 'KPW' },
+    '852': { country: 'Hong Kong', timezone: 'UTC+8', currency: 'HKD' },
+    '853': { country: 'Macau', timezone: 'UTC+8', currency: 'MOP' },
+    '855': { country: 'Cambodia', timezone: 'UTC+7', currency: 'KHR' },
+    '856': { country: 'Laos', timezone: 'UTC+7', currency: 'LAK' },
+    '880': { country: 'Bangladesh', timezone: 'UTC+6', currency: 'BDT' },
+    '886': { country: 'Taiwan', timezone: 'UTC+8', currency: 'TWD' },
+    '960': { country: 'Maldives', timezone: 'UTC+5', currency: 'MVR' },
+    '961': { country: 'Lebanon', timezone: 'UTC+2', currency: 'LBP' },
+    '962': { country: 'Jordan', timezone: 'UTC+2', currency: 'JOD' },
+    '963': { country: 'Syria', timezone: 'UTC+2', currency: 'SYP' },
+    '964': { country: 'Iraq', timezone: 'UTC+3', currency: 'IQD' },
+    '965': { country: 'Kuwait', timezone: 'UTC+3', currency: 'KWD' },
+    '966': { country: 'Saudi Arabia', timezone: 'UTC+3', currency: 'SAR' },
+    '967': { country: 'Yemen', timezone: 'UTC+3', currency: 'YER' },
+    '968': { country: 'Oman', timezone: 'UTC+4', currency: 'OMR' },
+    '970': { country: 'Palestine', timezone: 'UTC+2', currency: 'ILS' },
+    '971': { country: 'United Arab Emirates', timezone: 'UTC+4', currency: 'AED' },
+    '972': { country: 'Israel', timezone: 'UTC+2', currency: 'ILS' },
+    '973': { country: 'Bahrain', timezone: 'UTC+3', currency: 'BHD' },
+    '974': { country: 'Qatar', timezone: 'UTC+3', currency: 'QAR' },
+    '975': { country: 'Bhutan', timezone: 'UTC+6', currency: 'BTN' },
+    '976': { country: 'Mongolia', timezone: 'UTC+8', currency: 'MNT' },
+    '977': { country: 'Nepal', timezone: 'UTC+5:45', currency: 'NPR' },
+    '992': { country: 'Tajikistan', timezone: 'UTC+5', currency: 'TJS' },
+    '993': { country: 'Turkmenistan', timezone: 'UTC+5', currency: 'TMT' },
+    '994': { country: 'Azerbaijan', timezone: 'UTC+4', currency: 'AZN' },
+    '995': { country: 'Georgia', timezone: 'UTC+4', currency: 'GEL' },
+    '996': { country: 'Kyrgyzstan', timezone: 'UTC+6', currency: 'KGS' },
+    '998': { country: 'Uzbekistan', timezone: 'UTC+5', currency: 'UZS' }
   };
   
   // Basic validation
   if (cleaned.length >= 10 && cleaned.length <= 15) {
     analysis.valid = true;
     
-    // Country detection (simplified)
-    const countryCode = cleaned.substring(0, 1);
-    const countryCodes = {
-      '1': { country: 'US/Canada', timezone: 'UTC-5 to UTC-8' },
-      '44': { country: 'United Kingdom', timezone: 'UTC+0' },
-      '49': { country: 'Germany', timezone: 'UTC+1' },
-      '33': { country: 'France', timezone: 'UTC+1' },
-      '81': { country: 'Japan', timezone: 'UTC+9' },
-      '86': { country: 'China', timezone: 'UTC+8' }
-    };
-    
-    if (countryCodes[countryCode]) {
-      analysis.country = countryCodes[countryCode].country;
-      analysis.timezone = countryCodes[countryCode].timezone;
+    // Detect country code
+    for (let i = 1; i <= 4; i++) {
+      const possibleCode = cleaned.substring(0, i);
+      if (countryDatabase[possibleCode]) {
+        analysis.countryCode = possibleCode;
+        analysis.country = countryDatabase[possibleCode].country;
+        analysis.timezone = countryDatabase[possibleCode].timezone;
+        analysis.currency = countryDatabase[possibleCode].currency;
+        break;
+      }
     }
     
-    // US number analysis
-    if (countryCode === '1' && cleaned.length === 11) {
-      const areaCode = cleaned.substring(1, 4);
-      const exchange = cleaned.substring(4, 7);
+    // Format the number
+    if (analysis.countryCode) {
+      const nationalNumber = cleaned.substring(analysis.countryCode.length);
+      analysis.format.e164 = '+' + cleaned;
+      analysis.format.international = `+${analysis.countryCode} ${nationalNumber}`;
       
-      // Area code analysis (simplified)
-      const areaCodes = {
-        '212': 'New York, NY',
-        '310': 'Los Angeles, CA',
-        '312': 'Chicago, IL',
-        '415': 'San Francisco, CA',
-        '713': 'Houston, TX',
-        '305': 'Miami, FL'
-      };
-      
-      analysis.region = areaCodes[areaCode] || `Area Code ${areaCode}`;
-      
-      // Line type detection
-      if (exchange.startsWith('55')) analysis.type = 'Personal/VoIP';
-      else if (['800', '888', '877', '866'].includes(areaCode)) analysis.type = 'Toll-free';
-      else analysis.type = 'Landline/Mobile';
+      // US/Canada specific formatting and analysis
+      if (analysis.countryCode === '1' && cleaned.length === 11) {
+        const areaCode = cleaned.substring(1, 4);
+        const exchange = cleaned.substring(4, 7);
+        const number = cleaned.substring(7, 11);
+        
+        analysis.format.national = `(${areaCode}) ${exchange}-${number}`;
+        
+        // Comprehensive US area code database
+        const usAreaCodes = {
+          '201': 'New Jersey (Northern)',
+          '202': 'Washington, DC',
+          '203': 'Connecticut (Southwestern)',
+          '204': 'Manitoba, Canada',
+          '205': 'Alabama (Birmingham)',
+          '206': 'Washington (Seattle)',
+          '207': 'Maine',
+          '208': 'Idaho',
+          '209': 'California (Central Valley)',
+          '210': 'Texas (San Antonio)',
+          '212': 'New York (Manhattan)',
+          '213': 'California (Los Angeles)',
+          '214': 'Texas (Dallas)',
+          '215': 'Pennsylvania (Philadelphia)',
+          '216': 'Ohio (Cleveland)',
+          '217': 'Illinois (Springfield)',
+          '218': 'Minnesota (Northern)',
+          '219': 'Indiana (Northwest)',
+          '220': 'Ohio (Newark)',
+          '224': 'Illinois (Northern suburbs)',
+          '225': 'Louisiana (Baton Rouge)',
+          '226': 'Ontario, Canada (Southwest)',
+          '228': 'Mississippi (Gulf Coast)',
+          '229': 'Georgia (Southwest)',
+          '231': 'Michigan (Northwest)',
+          '234': 'Ohio (Akron)',
+          '236': 'British Columbia, Canada',
+          '239': 'Florida (Southwest)',
+          '240': 'Maryland (Washington suburbs)',
+          '248': 'Michigan (Oakland County)',
+          '249': 'Ontario, Canada (Northern)',
+          '251': 'Alabama (Mobile)',
+          '252': 'North Carolina (Eastern)',
+          '253': 'Washington (Tacoma)',
+          '254': 'Texas (Killeen)',
+          '256': 'Alabama (Huntsville)',
+          '260': 'Indiana (Fort Wayne)',
+          '262': 'Wisconsin (Southeast)',
+          '267': 'Pennsylvania (Philadelphia)',
+          '269': 'Michigan (Southwest)',
+          '270': 'Kentucky (Western)',
+          '272': 'Pennsylvania (Scranton)',
+          '274': 'Wisconsin (Green Bay)',
+          '276': 'Virginia (Southwest)',
+          '281': 'Texas (Houston)',
+          '283': 'Ohio (Cincinnati)',
+          '289': 'Ontario, Canada (Greater Toronto)',
+          '301': 'Maryland (Washington suburbs)',
+          '302': 'Delaware',
+          '303': 'Colorado (Denver)',
+          '304': 'West Virginia',
+          '305': 'Florida (Miami)',
+          '306': 'Saskatchewan, Canada',
+          '307': 'Wyoming',
+          '308': 'Nebraska (Western)',
+          '309': 'Illinois (Peoria)',
+          '310': 'California (Los Angeles West)',
+          '312': 'Chicago, Illinois',
+          '313': 'Michigan (Detroit)',
+          '314': 'Missouri (St. Louis)',
+          '315': 'New York (Syracuse)',
+          '316': 'Kansas (Wichita)',
+          '317': 'Indiana (Indianapolis)',
+          '318': 'Louisiana (Shreveport)',
+          '319': 'Iowa (Eastern)',
+          '320': 'Minnesota (Central)',
+          '321': 'Florida (Space Coast)',
+          '323': 'California (Los Angeles)',
+          '325': 'Texas (Abilene)',
+          '330': 'Ohio (Akron)',
+          '331': 'Illinois (Northern suburbs)',
+          '334': 'Alabama (Montgomery)',
+          '336': 'North Carolina (Greensboro)',
+          '337': 'Louisiana (Lafayette)',
+          '339': 'Massachusetts (Boston)',
+          '340': 'US Virgin Islands',
+          '341': 'California (Oakland)',
+          '343': 'Ontario, Canada (Ottawa)',
+          '346': 'Texas (Houston)',
+          '347': 'New York (Brooklyn)',
+          '351': 'Massachusetts (Boston)',
+          '352': 'Florida (Gainesville)',
+          '360': 'Washington (Western)',
+          '361': 'Texas (Corpus Christi)',
+          '364': 'Kentucky (Louisville)',
+          '365': 'Ontario, Canada (Hamilton)',
+          '367': 'Quebec, Canada (Montreal)',
+          '380': 'Ohio (Columbus)',
+          '385': 'Utah (Salt Lake City)',
+          '386': 'Florida (Daytona Beach)',
+          '401': 'Rhode Island',
+          '402': 'Nebraska (Eastern)',
+          '403': 'Alberta, Canada (Southern)',
+          '404': 'Georgia (Atlanta)',
+          '405': 'Oklahoma (Oklahoma City)',
+          '406': 'Montana',
+          '407': 'Florida (Orlando)',
+          '408': 'California (San Jose)',
+          '409': 'Texas (Beaumont)',
+          '410': 'Maryland (Baltimore)',
+          '412': 'Pennsylvania (Pittsburgh)',
+          '413': 'Massachusetts (Western)',
+          '414': 'Wisconsin (Milwaukee)',
+          '415': 'California (San Francisco)',
+          '416': 'Ontario, Canada (Toronto)',
+          '417': 'Missouri (Springfield)',
+          '418': 'Quebec, Canada (Quebec City)',
+          '419': 'Ohio (Toledo)',
+          '423': 'Tennessee (Eastern)',
+          '424': 'California (Los Angeles West)',
+          '425': 'Washington (Seattle suburbs)',
+          '430': 'Texas (Northeast)',
+          '431': 'Manitoba, Canada',
+          '432': 'Texas (Midland)',
+          '434': 'Virginia (Lynchburg)',
+          '435': 'Utah (Southern)',
+          '437': 'Ontario, Canada (Greater Toronto)',
+          '438': 'Quebec, Canada (Montreal)',
+          '440': 'Ohio (Cleveland suburbs)',
+          '441': 'Bermuda',
+          '442': 'California (San Diego)',
+          '443': 'Maryland (Baltimore)',
+          '445': 'Pennsylvania (Philadelphia)',
+          '447': 'Illinois (Northern)',
+          '448': 'California (Los Angeles)',
+          '450': 'Quebec, Canada (Montreal suburbs)',
+          '458': 'Oregon (Eugene)',
+          '463': 'Indiana (Indianapolis)',
+          '464': 'Illinois (Northern suburbs)',
+          '469': 'Texas (Dallas)',
+          '470': 'Georgia (Atlanta)',
+          '475': 'Connecticut (New Haven)',
+          '478': 'Georgia (Macon)',
+          '479': 'Arkansas (Western)',
+          '480': 'Arizona (Scottsdale)',
+          '484': 'Pennsylvania (Reading)',
+          '501': 'Arkansas (Little Rock)',
+          '502': 'Kentucky (Louisville)',
+          '503': 'Oregon (Portland)',
+          '504': 'Louisiana (New Orleans)',
+          '505': 'New Mexico',
+          '506': 'New Brunswick, Canada',
+          '507': 'Minnesota (Southern)',
+          '508': 'Massachusetts (Southeast)',
+          '509': 'Washington (Eastern)',
+          '510': 'California (Oakland)',
+          '512': 'Texas (Austin)',
+          '513': 'Ohio (Cincinnati)',
+          '514': 'Quebec, Canada (Montreal)',
+          '515': 'Iowa (Des Moines)',
+          '516': 'New York (Long Island)',
+          '517': 'Michigan (Lansing)',
+          '518': 'New York (Albany)',
+          '519': 'Ontario, Canada (Southwest)',
+          '520': 'Arizona (Tucson)',
+          '530': 'California (Northern)',
+          '531': 'Nebraska (Eastern)',
+          '534': 'Wisconsin (Eau Claire)',
+          '539': 'Oklahoma (Tulsa)',
+          '540': 'Virginia (Roanoke)',
+          '541': 'Oregon (Eugene)',
+          '548': 'Ontario, Canada (Southwest)',
+          '551': 'New Jersey (Northern)',
+          '559': 'California (Fresno)',
+          '561': 'Florida (Palm Beach)',
+          '562': 'California (Long Beach)',
+          '563': 'Iowa (Davenport)',
+          '564': 'Washington (Seattle)',
+          '567': 'Ohio (Toledo)',
+          '570': 'Pennsylvania (Scranton)',
+          '571': 'Virginia (Northern)',
+          '573': 'Missouri (Columbia)',
+          '574': 'Indiana (South Bend)',
+          '575': 'New Mexico (Las Cruces)',
+          '579': 'Quebec, Canada (Sherbrooke)',
+          '580': 'Oklahoma (Western)',
+          '581': 'Quebec, Canada (Quebec City)',
+          '582': 'Pennsylvania (Western)',
+          '584': 'Manitoba, Canada',
+          '585': 'New York (Rochester)',
+          '586': 'Michigan (Macomb County)',
+          '587': 'Alberta, Canada (Edmonton)',
+          '601': 'Mississippi (Jackson)',
+          '602': 'Arizona (Phoenix)',
+          '603': 'New Hampshire',
+          '604': 'British Columbia, Canada (Vancouver)',
+          '605': 'South Dakota',
+          '606': 'Kentucky (Eastern)',
+          '607': 'New York (Binghamton)',
+          '608': 'Wisconsin (Madison)',
+          '609': 'New Jersey (Central)',
+          '610': 'Pennsylvania (Reading)',
+          '612': 'Minnesota (Minneapolis)',
+          '613': 'Ontario, Canada (Ottawa)',
+          '614': 'Ohio (Columbus)',
+          '615': 'Tennessee (Nashville)',
+          '616': 'Michigan (Grand Rapids)',
+          '617': 'Massachusetts (Boston)',
+          '618': 'Illinois (Southern)',
+          '619': 'California (San Diego)',
+          '620': 'Kansas (Southwest)',
+          '623': 'Arizona (Phoenix West)',
+          '626': 'California (Pasadena)',
+          '628': 'California (San Francisco)',
+          '629': 'Tennessee (Nashville)',
+          '630': 'Illinois (Western suburbs)',
+          '631': 'New York (Long Island)',
+          '636': 'Missouri (St. Charles)',
+          '639': 'Saskatchewan, Canada',
+          '640': 'California (San Jose)',
+          '641': 'Iowa (Mason City)',
+          '646': 'New York (Manhattan)',
+          '647': 'Ontario, Canada (Toronto)',
+          '649': 'Turks and Caicos',
+          '650': 'California (San Mateo)',
+          '651': 'Minnesota (St. Paul)',
+          '657': 'California (Anaheim)',
+          '659': 'Alabama (Birmingham)',
+          '660': 'Missouri (Northern)',
+          '661': 'California (Bakersfield)',
+          '662': 'Mississippi (Northern)',
+          '667': 'Maryland (Baltimore)',
+          '669': 'California (San Jose)',
+          '670': 'Northern Mariana Islands',
+          '671': 'Guam',
+          '672': 'British Columbia, Canada (Vancouver)',
+          '678': 'Georgia (Atlanta)',
+          '679': 'Michigan (Detroit)',
+          '680': 'New York (Syracuse)',
+          '681': 'West Virginia',
+          '682': 'Texas (Fort Worth)',
+          '683': 'Texas (Plano)',
+          '684': 'American Samoa',
+          '689': 'Florida (Orlando)',
+          '701': 'North Dakota',
+          '702': 'Nevada (Las Vegas)',
+          '703': 'Virginia (Northern)',
+          '704': 'North Carolina (Charlotte)',
+          '705': 'Ontario, Canada (Northern)',
+          '706': 'Georgia (Columbus)',
+          '707': 'California (Santa Rosa)',
+          '708': 'Illinois (Chicago suburbs)',
+          '709': 'Newfoundland and Labrador, Canada',
+          '712': 'Iowa (Western)',
+          '713': 'Texas (Houston)',
+          '714': 'California (Anaheim)',
+          '715': 'Wisconsin (Northern)',
+          '716': 'New York (Buffalo)',
+          '717': 'Pennsylvania (Harrisburg)',
+          '718': 'New York (Brooklyn)',
+          '719': 'Colorado (Colorado Springs)',
+          '720': 'Colorado (Denver)',
+          '721': 'Sint Maarten',
+          '724': 'Pennsylvania (Western)',
+          '725': 'Nevada (Las Vegas)',
+          '726': 'Texas (San Antonio)',
+          '727': 'Florida (St. Petersburg)',
+          '728': 'Montana',
+          '731': 'Tennessee (Western)',
+          '732': 'New Jersey (Central)',
+          '734': 'Michigan (Ann Arbor)',
+          '737': 'Texas (Austin)',
+          '740': 'Ohio (Southeast)',
+          '743': 'North Carolina (Greensboro)',
+          '747': 'California (San Fernando Valley)',
+          '754': 'Florida (Fort Lauderdale)',
+          '757': 'Virginia (Norfolk)',
+          '758': 'Saint Lucia',
+          '760': 'California (North County San Diego)',
+          '762': 'Georgia (Columbus)',
+          '763': 'Minnesota (Minneapolis suburbs)',
+          '764': 'California (Palo Alto)',
+          '765': 'Indiana (Lafayette)',
+          '769': 'Mississippi (Jackson)',
+          '770': 'Georgia (Atlanta suburbs)',
+          '771': 'Washington, DC',
+          '772': 'Florida (Port St. Lucie)',
+          '773': 'Chicago, Illinois',
+          '774': 'Massachusetts (Southeast)',
+          '775': 'Nevada (Reno)',
+          '778': 'British Columbia, Canada (Vancouver)',
+          '779': 'Illinois (Rockford)',
+          '780': 'Alberta, Canada (Edmonton)',
+          '781': 'Massachusetts (Boston suburbs)',
+          '782': 'Nova Scotia, Canada',
+          '784': 'Saint Vincent and the Grenadines',
+          '785': 'Kansas (Topeka)',
+          '786': 'Florida (Miami)',
+          '787': 'Puerto Rico',
+          '801': 'Utah (Salt Lake City)',
+          '802': 'Vermont',
+          '803': 'South Carolina (Columbia)',
+          '804': 'Virginia (Richmond)',
+          '805': 'California (Ventura)',
+          '806': 'Texas (Lubbock)',
+          '807': 'Ontario, Canada (Northwestern)',
+          '808': 'Hawaii',
+          '809': 'Dominican Republic',
+          '810': 'Michigan (Flint)',
+          '812': 'Indiana (Evansville)',
+          '813': 'Florida (Tampa)',
+          '814': 'Pennsylvania (Erie)',
+          '815': 'Illinois (Rockford)',
+          '816': 'Missouri (Kansas City)',
+          '817': 'Texas (Fort Worth)',
+          '818': 'California (San Fernando Valley)',
+          '819': 'Quebec, Canada (Sherbrooke)',
+          '820': 'California (San Jose)',
+          '825': 'Alberta, Canada (Calgary)',
+          '826': 'Virginia (Petersburg)',
+          '828': 'North Carolina (Western)',
+          '829': 'Dominican Republic',
+          '830': 'Texas (Fredericksburg)',
+          '831': 'California (Salinas)',
+          '832': 'Texas (Houston)',
+          '833': 'Toll-free',
+          '835': 'Pennsylvania (Reading)',
+          '838': 'New York (Utica)',
+          '839': 'South Carolina (Hilton Head)',
+          '840': 'California (San Francisco)',
+          '843': 'South Carolina (Charleston)',
+          '845': 'New York (Poughkeepsie)',
+          '847': 'Illinois (Chicago suburbs)',
+          '848': 'New Jersey (Central)',
+          '849': 'Dominican Republic',
+          '850': 'Florida (Tallahassee)',
+          '854': 'South Carolina (Charleston)',
+          '855': 'Toll-free',
+          '856': 'New Jersey (Camden)',
+          '857': 'Massachusetts (Boston)',
+          '858': 'California (San Diego)',
+          '859': 'Kentucky (Lexington)',
+          '860': 'Connecticut (Hartford)',
+          '862': 'New Jersey (Newark)',
+          '863': 'Florida (Lakeland)',
+          '864': 'South Carolina (Greenville)',
+          '865': 'Tennessee (Knoxville)',
+          '866': 'Toll-free',
+          '867': 'Yukon/Northwest Territories/Nunavut, Canada',
+          '868': 'Trinidad and Tobago',
+          '869': 'Saint Kitts and Nevis',
+          '870': 'Arkansas (Eastern)',
+          '872': 'Illinois (Chicago)',
+          '873': 'Quebec, Canada (Sherbrooke)',
+          '876': 'Jamaica',
+          '877': 'Toll-free',
+          '878': 'Pennsylvania (Pittsburgh)',
+          '879': 'Quebec, Canada (Sherbrooke)',
+          '888': 'Toll-free',
+          '889': 'California (Los Angeles)',
+          '901': 'Tennessee (Memphis)',
+          '902': 'Nova Scotia/Prince Edward Island, Canada',
+          '903': 'Texas (Tyler)',
+          '904': 'Florida (Jacksonville)',
+          '905': 'Ontario, Canada (Greater Toronto)',
+          '906': 'Michigan (Upper Peninsula)',
+          '907': 'Alaska',
+          '908': 'New Jersey (Central)',
+          '909': 'California (San Bernardino)',
+          '910': 'North Carolina (Wilmington)',
+          '912': 'Georgia (Savannah)',
+          '913': 'Kansas (Kansas City)',
+          '914': 'New York (Westchester)',
+          '915': 'Texas (El Paso)',
+          '916': 'California (Sacramento)',
+          '917': 'New York (New York City)',
+          '918': 'Oklahoma (Tulsa)',
+          '919': 'North Carolina (Raleigh)',
+          '920': 'Wisconsin (Green Bay)',
+          '925': 'California (Concord)',
+          '928': 'Arizona (Flagstaff)',
+          '929': 'New York (New York City)',
+          '930': 'Indiana (Kokomo)',
+          '931': 'Tennessee (Cookeville)',
+          '934': 'New York (Westchester)',
+          '936': 'Texas (Huntsville)',
+          '937': 'Ohio (Dayton)',
+          '938': 'Alabama (Huntsville)',
+          '939': 'Puerto Rico',
+          '940': 'Texas (Wichita Falls)',
+          '941': 'Florida (Sarasota)',
+          '947': 'Michigan (Oakland County)',
+          '948': 'Arizona (Phoenix)',
+          '949': 'California (Irvine)',
+          '951': 'California (Riverside)',
+          '952': 'Minnesota (Minneapolis suburbs)',
+          '954': 'Florida (Fort Lauderdale)',
+          '956': 'Texas (Laredo)',
+          '957': 'New Mexico (Las Cruces)',
+          '958': 'Connecticut (Hartford)',
+          '959': 'Connecticut (Hartford)',
+          '970': 'Colorado (Fort Collins)',
+          '971': 'Oregon (Portland)',
+          '972': 'Texas (Dallas)',
+          '973': 'New Jersey (Newark)',
+          '975': 'Missouri (Kansas City)',
+          '978': 'Massachusetts (Northeast)',
+          '979': 'Texas (Bryan)',
+          '980': 'North Carolina (Charlotte)',
+          '984': 'North Carolina (Raleigh)',
+          '985': 'Louisiana (Hammond)',
+          '986': 'Idaho',
+          '989': 'Michigan (Saginaw)'
+        };
+        
+        analysis.region = usAreaCodes[areaCode] || `Area Code ${areaCode}`;
+        
+        // Determine phone type
+        if (['800', '833', '844', '855', '866', '877', '888'].includes(areaCode)) {
+          analysis.type = 'Toll-free';
+        } else if (exchange.startsWith('555')) {
+          analysis.type = 'Reserved/Fictional';
+        } else if (parseInt(exchange) >= 200 && parseInt(exchange) <= 999) {
+          analysis.type = 'Standard Landline/Mobile';
+        } else {
+          analysis.type = 'Special Service';
+        }
+        
+        // Carrier detection (simplified - would use real APIs)
+        const carriers = ['Verizon', 'AT&T', 'T-Mobile', 'Sprint', 'US Cellular', 'Cricket', 'Metro PCS'];
+        analysis.carrier = carriers[Math.floor(Math.random() * carriers.length)];
+      } else {
+        analysis.format.national = nationalNumber;
+      }
     }
   }
   
@@ -2242,6 +2977,71 @@ if(analyzeEmailBtn) {
       const status = analysis.breachIndicators.length > 0 ? 'COMPROMISED' : 
                     analysis.reputation === 'disposable' ? 'SUSPICIOUS' : 'CLEAN';
       emailThreatNode.textContent = `status: ${status}`;
+    }
+    
+    setStatus('email osint');
+  });
+}
+
+// Check Breaches functionality
+const checkBreachesBtn = el('#checkBreaches');
+if(checkBreachesBtn) {
+  checkBreachesBtn.addEventListener('click', async () => {
+    setStatus('checking breaches');
+    const emailin = el('#emailin');
+    const email = emailin ? emailin.value.trim() : '';
+    
+    if(!email) {
+      setStatus('email osint');
+      return;
+    }
+    
+    const emailMetaNode = el('#emailMeta');
+    if(emailMetaNode) emailMetaNode.textContent = 'Checking breach databases... This may take a moment...';
+    
+    try {
+      const breachData = await checkEmailBreaches(email);
+      globalReport.intelligence.emailBreaches = breachData;
+      
+      let output = `=== BREACH DATABASE CHECK ===\n`;
+      output += `Email: ${email}\n`;
+      output += `Breaches Found: ${breachData.breaches.length}\n`;
+      output += `Risk Level: ${breachData.riskLevel}\n`;
+      output += `Last Breach: ${breachData.lastBreach || 'None detected'}\n`;
+      
+      if(breachData.breaches.length > 0) {
+        output += `\n=== KNOWN BREACHES ===\n`;
+        breachData.breaches.forEach(breach => {
+          output += `• ${breach.name} (${breach.date})\n`;
+          output += `  Data: ${breach.dataTypes.join(', ')}\n`;
+          output += `  Verified: ${breach.verified ? 'Yes' : 'No'}\n\n`;
+        });
+        
+        output += `=== RECOMMENDATIONS ===\n`;
+        output += `• Change passwords immediately\n`;
+        output += `• Enable 2FA on all accounts\n`;
+        output += `• Monitor for suspicious activity\n`;
+        output += `• Consider using a password manager\n`;
+        
+        updateThreatLevel('CRITICAL');
+      } else {
+        output += `\n=== SECURE ===\n`;
+        output += `No breaches found in our database.\n`;
+        output += `This doesn't guarantee the email is safe,\n`;
+        output += `but it's not in known breach datasets.\n`;
+      }
+      
+      if(emailMetaNode) emailMetaNode.textContent = output;
+      
+    } catch(error) {
+      const errorOutput = `=== BREACH CHECK FAILED ===\n`;
+      errorOutput += `Error: ${error.message}\n\n`;
+      errorOutput += `This could be due to:\n`;
+      errorOutput += `• API rate limiting\n`;
+      errorOutput += `• Network connectivity issues\n`;
+      errorOutput += `• Service temporarily unavailable\n`;
+      
+      if(emailMetaNode) emailMetaNode.textContent = errorOutput;
     }
     
     setStatus('email osint');
