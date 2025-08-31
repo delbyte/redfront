@@ -35,6 +35,141 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
 @media(max-width:880px){.layout{grid-template-columns:1fr;}}
 /* subtle gritty overlay */
 .grit{position:absolute;inset:0;pointer-events:none;opacity:.06;mix-blend-mode:overlay}
+
+/* Page System */
+.page{min-height:calc(100vh - 100px)}
+
+/* Landing Page Styles */
+.command-grid{display:grid;grid-template-rows:auto 1fr;gap:20px;max-width:1200px;margin:0 auto}
+.mission-brief{max-width:600px}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+
+.module-btn{
+  background:linear-gradient(135deg,#0d0d0d,#050505);
+  border:1px solid rgba(194,26,26,.15);
+  padding:20px;
+  border-radius:12px;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.3s ease;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  position:relative;
+  overflow:hidden;
+}
+
+.module-btn:hover{
+  border-color:rgba(194,26,26,.4);
+  background:linear-gradient(135deg,#111,#080808);
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(194,26,26,.15);
+}
+
+.module-btn:active{
+  transform:translateY(0);
+}
+
+.module-btn::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(194,26,26,.1),transparent);
+  transition:left 0.5s;
+}
+
+.module-btn:hover::before{
+  left:100%;
+}
+
+.module-icon{
+  font-size:32px;
+  margin-bottom:4px;
+  filter:grayscale(1);
+  transition:filter 0.3s ease;
+}
+
+.module-btn:hover .module-icon{
+  filter:grayscale(0);
+}
+
+.module-title{
+  font-size:16px;
+  font-weight:700;
+  color:var(--red);
+  letter-spacing:0.05em;
+}
+
+.module-desc{
+  font-size:13px;
+  color:#999;
+  line-height:1.4;
+}
+
+/* Module Header */
+.module-header{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.nav-btn{
+  background:rgba(194,26,26,.1);
+  border:1px solid rgba(194,26,26,.3);
+  padding:8px 12px;
+  border-radius:6px;
+  color:var(--red);
+  cursor:pointer;
+  font-weight:600;
+  transition:all 0.2s ease;
+  font-size:13px;
+}
+
+.nav-btn:hover{
+  background:rgba(194,26,26,.2);
+  border-color:rgba(194,26,26,.5);
+}
+
+.module-title-header{
+  font-size:18px;
+  font-weight:800;
+  color:var(--red);
+  letter-spacing:0.1em;
+}
+
+/* Enhanced console for better readability */
+.console{
+  font-family:ui-monospace, 'SF Mono', Consolas, monospace;
+  font-size:12px;
+  line-height:1.5;
+  color:#e9e9e9;
+  background:linear-gradient(180deg,#050505,#0a0a0a);
+  padding:12px;
+  border-radius:6px;
+  border:1px solid rgba(255,255,255,.03);
+  max-height:400px;
+  overflow:auto;
+  white-space:pre-wrap;
+}
+
+/* Responsive adjustments */
+@media(max-width:1024px){
+  .modules-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+}
+
+@media(max-width:768px){
+  .command-grid{gap:16px}
+  .modules-grid{grid-template-columns:1fr;gap:12px}
+  .module-btn{padding:16px}
+  .module-header{flex-direction:column;align-items:flex-start;gap:8px}
+}
 </style>
 </head>
 <body>
@@ -57,80 +192,289 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
     </div>
   </div>
 
-  <div class="layout">
-    <div class="panel">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-        <div style="flex:1">
-          <div class="small">Input (files, URLs, or text)</div>
-          <div id="filedrop" class="filedrop" tabindex="0">Drag & drop files, or click to select. Supports images, documents, archives, executables.</div>
+  <!-- Landing Page -->
+  <div id="landingPage" class="page">
+    <div class="command-grid">
+      <div class="mission-brief panel">
+        <div class="small">MISSION BRIEFING</div>
+        <div style="margin-top:12px;line-height:1.6;color:#ddd">
+          <div style="font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px">REDFRONT OSINT WORKBENCH</div>
+          <div>Multi-domain intelligence analysis platform for tactical operations. Select your analysis module to begin intelligence gathering and threat assessment.</div>
+          <div style="margin-top:12px;padding:8px;background:rgba(194,26,26,.08);border-radius:6px;border-left:3px solid var(--red)">
+            <div style="font-size:12px;font-weight:700;color:var(--red)">CLASSIFIED</div>
+            <div style="font-size:12px;margin-top:4px">All operations conducted locally. Zero network exposure.</div>
+          </div>
         </div>
-        <div style="width:120px">
-          <div class="small">File Hash</div>
+      </div>
+
+      <div class="modules-grid">
+        <button class="module-btn" data-module="file">
+          <div class="module-icon">📁</div>
+          <div class="module-title">FILE ANALYSIS</div>
+          <div class="module-desc">Binary analysis, hash extraction, threat assessment</div>
+        </button>
+
+        <button class="module-btn" data-module="url">
+          <div class="module-icon">🌐</div>
+          <div class="module-title">URL INTELLIGENCE</div>
+          <div class="module-desc">Domain analysis, subdomain enumeration, IOC extraction</div>
+        </button>
+
+        <button class="module-btn" data-module="text">
+          <div class="module-icon">📄</div>
+          <div class="module-title">TEXT ANALYSIS</div>
+          <div class="module-desc">Intelligence extraction from documents and logs</div>
+        </button>
+
+        <button class="module-btn" data-module="social">
+          <div class="module-icon">📱</div>
+          <div class="module-title">SOCIAL INTEL</div>
+          <div class="module-desc">Social media analysis and sentiment assessment</div>
+        </button>
+
+        <button class="module-btn" data-module="network">
+          <div class="module-icon">🔗</div>
+          <div class="module-title">NETWORK MAPPING</div>
+          <div class="module-desc">Entity relationship visualization and graph analysis</div>
+        </button>
+
+        <button class="module-btn" data-module="reports">
+          <div class="module-icon">📊</div>
+          <div class="module-title">INTEL REPORTS</div>
+          <div class="module-desc">Export findings and generate intelligence summaries</div>
+        </button>
+
+        <button class="module-btn" data-module="email">
+          <div class="module-icon">📧</div>
+          <div class="module-title">EMAIL OSINT</div>
+          <div class="module-desc">Email validation, breach checks, domain analysis</div>
+        </button>
+
+        <button class="module-btn" data-module="phone">
+          <div class="module-icon">📞</div>
+          <div class="module-title">PHONE INTEL</div>
+          <div class="module-desc">Number validation, carrier lookup, location data</div>
+        </button>
+
+        <button class="module-btn" data-module="crypto">
+          <div class="module-icon">₿</div>
+          <div class="module-title">CRYPTO TRACKER</div>
+          <div class="module-desc">Blockchain analysis, wallet tracking, transaction intel</div>
+        </button>
+
+        <button class="module-btn" data-module="ip">
+          <div class="module-icon">🌍</div>
+          <div class="module-title">IP GEOLOCATION</div>
+          <div class="module-desc">IP analysis, geolocation, ISP detection, threat intel</div>
+        </button>
+
+        <button class="module-btn" data-module="username">
+          <div class="module-icon">👤</div>
+          <div class="module-title">USERNAME HUNTER</div>
+          <div class="module-desc">Cross-platform username enumeration and analysis</div>
+        </button>
+
+        <button class="module-btn" data-module="metadata">
+          <div class="module-icon">🔍</div>
+          <div class="module-title">METADATA EXTRACTOR</div>
+          <div class="module-desc">EXIF data, document properties, hidden information</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Analysis Module -->
+  <div id="fileModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">FILE ANALYSIS MODULE</div>
+        <div class="small">Binary analysis, malware detection, hash extraction</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">FILE INPUT</div>
+        <div id="filedrop" class="filedrop" tabindex="0">
+          Drag & drop files or click to select<br>
+          <span style="font-size:11px;color:#888">Supports: executables, documents, images, archives</span>
+        </div>
+        <div style="margin-top:12px">
+          <div class="small">FILE HASH</div>
           <div class="kv">
             <div style="color:#aaa;font-size:13px">SHA-256</div>
             <div id="hash" class="smallmuted">—</div>
           </div>
           <div style="height:8px"></div>
-          <button id="copyHash" class="copy" title="Copy hash">Copy</button>
+          <button id="copyHash" class="copy" title="Copy hash">COPY HASH</button>
         </div>
       </div>
-
-      <div style="margin-top:10px">
-        <div class="small">URL / Domain Analysis</div>
-        <input id="urlin" placeholder="https://example.com or paste URLs here..." style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-          <button id="analyzeUrl" class="button">ANALYZE URL</button>
-          <div class="hint">Extracts domains, subdomains, parameters, potential IOCs</div>
-        </div>
-      </div>
-
-      <div style="margin-top:10px">
-        <div class="small">Text / Social Media Intelligence</div>
-        <textarea id="textin" placeholder="Paste tweets, posts, messages, source code, logs, or any text content..." style="width:100%;height:120px;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
-          <button id="analyzeText" class="button">EXTRACT INTEL</button>
-          <button id="analyzeSocial" class="button">SOCIAL ANALYSIS</button>
-          <div class="hint">Extracts emails, domains, IPs, phone numbers, handles, crypto addresses, timestamps</div>
+      <div class="panel">
+        <div class="small">ANALYSIS RESULTS</div>
+        <div id="meta" class="console" aria-live="polite">No file selected. Upload a file to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="threatLevel">threat: —</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="panel">
-      <div style="display:flex;gap:8px;align-items:start;justify-content:space-between">
-        <div style="flex:1">
-          <div class="small">Analysis Results</div>
-          <div id="meta" class="console" aria-live="polite">No input yet. Drop files, paste URLs, or analyze text to begin.</div>
-        </div>
-        <div style="width:320px">
-          <div class="small">Network Graph / Visualization</div>
-          <div class="mapwrap" id="mapwrap">
-            <svg id="map" class="map" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <filter id="n">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" stitchTiles="stitch"/>
-                  <feColorMatrix type="saturate" values="0"/>
-                  <feComponentTransfer><feFuncA type="table" tableValues="0 0.6"/></feComponentTransfer>
-                </filter>
-              </defs>
-              <rect width="360" height="180" fill="#0b0b0b"/>
-              <g id="networkLayer"></g>
-              <text x="50%" y="50%" fill="#6b6b6b" font-size="12" text-anchor="middle" dy=".35em">Entity relationships will appear here</text>
-            </svg>
-            <svg class="grit" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg"><rect width="360" height="180" filter="url(#n)" fill="#000"/></svg>
-          </div>
-
-          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-            <button id="copyIntel" class="copy" title="Copy intelligence report">COPY INTEL</button>
-            <button id="copyIOCs" class="copy" title="Copy IOCs for SIEM">COPY IOCS</button>
-            <div style="flex:1"></div>
-            <div class="smallmuted" id="threatLevel">threat: — </div>
-          </div>
+  <!-- URL Analysis Module -->
+  <div id="urlModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">URL INTELLIGENCE MODULE</div>
+        <div class="small">Domain analysis, subdomain enumeration, IOC detection</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">URL INPUT</div>
+        <input id="urlin" placeholder="https://example.com or paste URLs here..." style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
+        <button id="analyzeUrl" class="button" style="margin-top:8px;width:100%">ANALYZE URL</button>
+        <div class="hint" style="margin-top:8px">Extracts domains, subdomains, parameters, potential IOCs</div>
+      </div>
+      <div class="panel">
+        <div class="small">ANALYSIS RESULTS</div>
+        <div id="urlMeta" class="console" aria-live="polite">Enter a URL to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyUrlIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="urlThreatLevel">threat: —</div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div style="margin-top:10px" class="footer">
-        <div class="smallmuted">Everything processed locally. No network calls. Privacy-focused OSINT.</div>
-        <div class="smallmuted">Tip: export intelligence reports in multiple formats for your investigation.</div>
+  <!-- Text Analysis Module -->
+  <div id="textModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">TEXT ANALYSIS MODULE</div>
+        <div class="small">Intelligence extraction from documents and logs</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">TEXT INPUT</div>
+        <textarea id="textin" placeholder="Paste tweets, posts, messages, source code, logs, or any text content..." style="width:100%;height:200px;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeText" class="button">EXTRACT INTEL</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Extracts emails, domains, IPs, phone numbers, handles, crypto addresses</div>
+      </div>
+      <div class="panel">
+        <div class="small">ANALYSIS RESULTS</div>
+        <div id="textMeta" class="console" aria-live="polite">Enter text to begin intelligence extraction.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyTextIntel" class="copy">COPY REPORT</button>
+          <button id="copyIOCs" class="copy">COPY IOCS</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="textThreatLevel">threat: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Media Module -->
+  <div id="socialModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">SOCIAL INTELLIGENCE MODULE</div>
+        <div class="small">Social media analysis and sentiment assessment</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">SOCIAL MEDIA INPUT</div>
+        <textarea id="socialTextin" placeholder="Paste social media posts, profiles, conversations..." style="width:100%;height:200px;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="analyzeSocial" class="button">ANALYZE SOCIAL</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Sentiment analysis, platform detection, handle extraction</div>
+      </div>
+      <div class="panel">
+        <div class="small">ANALYSIS RESULTS</div>
+        <div id="socialMeta" class="console" aria-live="polite">Enter social media content to begin analysis.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copySocialIntel" class="copy">COPY REPORT</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="socialThreatLevel">sentiment: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Network Mapping Module -->
+  <div id="networkModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">NETWORK MAPPING MODULE</div>
+        <div class="small">Entity relationship visualization and graph analysis</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel" style="grid-column:1/-1">
+        <div class="small">NETWORK VISUALIZATION</div>
+        <div class="mapwrap" id="mapwrap" style="height:400px">
+          <svg id="map" class="map" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="n">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" stitchTiles="stitch"/>
+                <feColorMatrix type="saturate" values="0"/>
+                <feComponentTransfer><feFuncA type="table" tableValues="0 0.6"/></feComponentTransfer>
+              </filter>
+            </defs>
+            <rect width="360" height="180" fill="#0b0b0b"/>
+            <g id="networkLayer"></g>
+            <text x="50%" y="50%" fill="#6b6b6b" font-size="12" text-anchor="middle" dy=".35em">Run analysis in other modules to populate network graph</text>
+          </svg>
+          <svg class="grit" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg"><rect width="360" height="180" filter="url(#n)" fill="#000"/></svg>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button id="copyNetworkData" class="copy">EXPORT GRAPH DATA</button>
+          <div style="flex:1"></div>
+          <div class="smallmuted" id="networkStats">entities: 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Module -->
+  <div id="reportsModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">INTELLIGENCE REPORTS MODULE</div>
+        <div class="small">Export findings and generate intelligence summaries</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">REPORT GENERATION</div>
+        <div id="reportSummary" class="console" style="height:300px">No analysis data available. Run analysis in other modules to generate reports.</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="exportBtn" class="button">EXPORT JSON</button>
+          <button id="exportCSV" class="copy">EXPORT CSV</button>
+          <button id="exportTXT" class="copy">EXPORT TXT</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="small">OPERATION SUMMARY</div>
+        <div id="operationStats" class="console">
+          <div class="kv"><span>Files Analyzed</span><span id="statsFiles">0</span></div>
+          <div class="kv"><span>URLs Processed</span><span id="statsUrls">0</span></div>
+          <div class="kv"><span>Text Samples</span><span id="statsText">0</span></div>
+          <div class="kv"><span>Social Posts</span><span id="statsSocial">0</span></div>
+          <div class="kv"><span>Total IOCs</span><span id="statsIOCs">0</span></div>
+          <div class="kv"><span>Threat Level</span><span id="statsThreats">LOW</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -143,6 +487,98 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
 const el = sel => document.querySelector(sel);
 const status = el('#status');
 function setStatus(s){ status.textContent = s; }
+
+// Page Navigation System
+let currentPage = 'landing';
+let globalReport = {
+  timestamp: Date.now(),
+  sources: [],
+  intelligence: {},
+  threats: {},
+  queries: [],
+  files: {},
+  stats: {
+    filesAnalyzed: 0,
+    urlsProcessed: 0,
+    textSamples: 0,
+    socialPosts: 0,
+    totalIOCs: 0,
+    maxThreatLevel: 'LOW'
+  }
+};
+
+function showPage(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(page => {
+    page.style.display = 'none';
+  });
+  
+  // Show target page
+  const targetPage = el(`#${pageId}Page`) || el(`#${pageId}Module`);
+  if(targetPage) {
+    targetPage.style.display = 'block';
+    currentPage = pageId;
+    
+    // Update status
+    const pageNames = {
+      'landing': 'command center',
+      'file': 'file analysis',
+      'url': 'url intelligence', 
+      'text': 'text analysis',
+      'social': 'social intel',
+      'network': 'network mapping',
+      'reports': 'intel reports'
+    };
+    setStatus(pageNames[pageId] || pageId);
+    
+    // Update reports page if navigating there
+    if(pageId === 'reports') {
+      updateReportsPage();
+    }
+  }
+}
+
+// Initialize page system
+document.addEventListener('DOMContentLoaded', () => {
+  // Add click handlers for module buttons
+  document.querySelectorAll('.module-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const module = btn.dataset.module;
+      showPage(module);
+    });
+  });
+  
+  // Show landing page initially
+  showPage('landing');
+});
+
+function updateGlobalStats() {
+  const stats = globalReport.stats;
+  const intel = globalReport.intelligence;
+  
+  // Count total IOCs
+  let totalIOCs = 0;
+  Object.values(intel).forEach(data => {
+    if(data.ips) totalIOCs += data.ips.length;
+    if(data.domains) totalIOCs += data.domains.length;
+    if(data.emails) totalIOCs += data.emails.length;
+    if(data.hashes) totalIOCs += data.hashes.length;
+    if(data.urls) totalIOCs += data.urls.length;
+    if(data.cryptoAddresses) totalIOCs += data.cryptoAddresses.length;
+  });
+  
+  stats.totalIOCs = totalIOCs;
+  
+  // Update stats in reports page
+  if(el('#statsFiles')) {
+    el('#statsFiles').textContent = stats.filesAnalyzed;
+    el('#statsUrls').textContent = stats.urlsProcessed;
+    el('#statsText').textContent = stats.textSamples;
+    el('#statsSocial').textContent = stats.socialPosts;
+    el('#statsIOCs').textContent = stats.totalIOCs;
+    el('#statsThreats').textContent = stats.maxThreatLevel;
+  }
+}
 
 function ab2hex(buf){
   const a = [...new Uint8Array(buf)];
@@ -596,45 +1032,34 @@ function updateNetworkGraph(intel){
 
 /* ========= UI Event Handlers ========= */
 const filedrop = el('#filedrop');
-const textin = el('#textin');
-const urlin = el('#urlin');
-const metaNode = el('#meta');
 const hashNode = el('#hash');
-const threatLevelNode = el('#threatLevel');
-let currentReport = {
-  timestamp: Date.now(),
-  sources: [],
-  intelligence: {},
-  threats: {},
-  queries: [],
-  files: {}
-};
 
-// File handling
-filedrop.addEventListener('click', () => {
-  const inp = document.createElement('input');
-  inp.type = 'file';
-  inp.multiple = true;
-  // Accept all file types for comprehensive analysis
-  inp.onchange = () => Array.from(inp.files).forEach(handleFile);
-  inp.click();
-});
+// File Analysis Module
+if(filedrop) {
+  filedrop.addEventListener('click', () => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.multiple = true;
+    inp.onchange = () => Array.from(inp.files).forEach(handleFile);
+    inp.click();
+  });
 
-filedrop.addEventListener('dragover', e => {
-  e.preventDefault();
-  filedrop.style.background = 'rgba(255,0,0,.03)';
-});
+  filedrop.addEventListener('dragover', e => {
+    e.preventDefault();
+    filedrop.style.background = 'rgba(255,0,0,.03)';
+  });
 
-filedrop.addEventListener('dragleave', e => {
-  filedrop.style.background = '';
-});
+  filedrop.addEventListener('dragleave', e => {
+    filedrop.style.background = '';
+  });
 
-filedrop.addEventListener('drop', e => {
-  e.preventDefault();
-  filedrop.style.background = '';
-  const files = Array.from(e.dataTransfer.files);
-  files.forEach(handleFile);
-});
+  filedrop.addEventListener('drop', e => {
+    e.preventDefault();
+    filedrop.style.background = '';
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(handleFile);
+  });
+}
 
 async function handleFile(file){
   setStatus('analyzing file');
@@ -645,8 +1070,9 @@ async function handleFile(file){
       analyzeFileHeader(file)
     ]);
     
-    hashNode.textContent = hash;
-    currentReport.files[file.name] = {
+    if(hashNode) hashNode.textContent = hash;
+    
+    globalReport.files[file.name] = {
       hash,
       size: file.size,
       type: file.type,
@@ -655,14 +1081,17 @@ async function handleFile(file){
       timestamp: Date.now()
     };
     
-    currentReport.sources.push({
+    globalReport.sources.push({
       type: 'file',
       name: file.name,
       timestamp: Date.now()
     });
     
+    globalReport.stats.filesAnalyzed++;
+    
     const threat = assessThreat({}, fileInfo);
-    updateThreatDisplay(threat);
+    updateThreatLevel(threat.level);
+    updateThreatDisplay(threat, 'threatLevel');
     
     let output = `=== FILE ANALYSIS ===\n`;
     output += `Name: ${file.name}\n`;
@@ -676,204 +1105,425 @@ async function handleFile(file){
       threat.indicators.forEach(ind => output += `• ${ind}\n`);
     }
     
-    metaNode.textContent = output;
+    const metaNode = el('#meta');
+    if(metaNode) metaNode.textContent = output;
+    
+    updateGlobalStats();
     
   } catch(e) {
-    hashNode.textContent = 'error';
-    metaNode.textContent = `Error analyzing file: ${e.message}`;
+    if(hashNode) hashNode.textContent = 'error';
+    const metaNode = el('#meta');
+    if(metaNode) metaNode.textContent = `Error analyzing file: ${e.message}`;
   }
   
-  setStatus('idle');
+  setStatus('file analysis');
 }
 
-// URL Analysis
-el('#analyzeUrl').addEventListener('click', () => {
-  setStatus('analyzing URL');
-  const url = urlin.value.trim();
-  
-  if(!url){
-    setStatus('idle');
-    return;
-  }
-  
-  const analysis = analyzeURL(url);
-  currentReport.sources.push({
-    type: 'url',
-    value: url,
-    timestamp: Date.now()
-  });
-  
-  let output = `=== URL ANALYSIS ===\n`;
-  if(analysis.error){
-    output += `Error: ${analysis.error}\n`;
-  } else {
-    output += `Protocol: ${analysis.protocol}\n`;
-    output += `Host: ${analysis.hostname}\n`;
-    output += `Port: ${analysis.port}\n`;
-    output += `Path: ${analysis.path}\n`;
+// URL Analysis Module
+const analyzeUrlBtn = el('#analyzeUrl');
+if(analyzeUrlBtn) {
+  analyzeUrlBtn.addEventListener('click', () => {
+    setStatus('analyzing URL');
+    const urlin = el('#urlin');
+    const url = urlin ? urlin.value.trim() : '';
     
-    if(analysis.subdomains.length > 0){
-      output += `Subdomains: ${analysis.subdomains.join(', ')}\n`;
+    if(!url){
+      setStatus('url intelligence');
+      return;
     }
     
-    if(Object.keys(analysis.parameters).length > 0){
-      output += `\nParameters:\n`;
-      Object.entries(analysis.parameters).forEach(([key, val]) => {
-        output += `• ${key}: ${val}\n`;
+    const analysis = analyzeURL(url);
+    globalReport.sources.push({
+      type: 'url',
+      value: url,
+      timestamp: Date.now()
+    });
+    globalReport.stats.urlsProcessed++;
+    
+    let output = `=== URL ANALYSIS ===\n`;
+    if(analysis.error){
+      output += `Error: ${analysis.error}\n`;
+    } else {
+      output += `Protocol: ${analysis.protocol}\n`;
+      output += `Host: ${analysis.hostname}\n`;
+      output += `Port: ${analysis.port}\n`;
+      output += `Path: ${analysis.path}\n`;
+      
+      if(analysis.subdomains.length > 0){
+        output += `Subdomains: ${analysis.subdomains.join(', ')}\n`;
+      }
+      
+      if(Object.keys(analysis.parameters).length > 0){
+        output += `\nParameters:\n`;
+        Object.entries(analysis.parameters).forEach(([key, val]) => {
+          output += `• ${key}: ${val}\n`;
+        });
+      }
+      
+      if(analysis.suspiciousIndicators.length > 0){
+        output += `\nSuspicious Indicators:\n`;
+        analysis.suspiciousIndicators.forEach(ind => output += `• ${ind}\n`);
+        updateThreatLevel('MEDIUM');
+      }
+      
+      globalReport.intelligence.url = analysis;
+      updateNetworkGraph({ domains: [analysis.hostname] });
+    }
+    
+    const urlMetaNode = el('#urlMeta');
+    if(urlMetaNode) urlMetaNode.textContent = output;
+    
+    updateGlobalStats();
+    setStatus('url intelligence');
+  });
+}
+
+// Text Analysis Module
+const analyzeTextBtn = el('#analyzeText');
+if(analyzeTextBtn) {
+  analyzeTextBtn.addEventListener('click', () => {
+    setStatus('extracting intelligence');
+    const textin = el('#textin');
+    const text = textin ? textin.value : '';
+    const intel = extractIntelligence(text);
+    
+    globalReport.intelligence.extracted = intel;
+    globalReport.sources.push({
+      type: 'text',
+      length: text.length,
+      timestamp: Date.now()
+    });
+    globalReport.stats.textSamples++;
+    
+    const threat = assessThreat(intel);
+    updateThreatLevel(threat.level);
+    updateThreatDisplay(threat, 'textThreatLevel');
+    globalReport.threats = threat;
+    
+    const queries = buildIntelQueries(intel);
+    globalReport.queries = queries;
+    
+    let output = `=== INTELLIGENCE EXTRACTION ===\n`;
+    output += `Emails: ${intel.emails.length ? intel.emails.slice(0,5).join(', ') + (intel.emails.length > 5 ? '...' : '') : '—'}\n`;
+    output += `Domains: ${intel.domains.length ? intel.domains.slice(0,5).join(', ') + (intel.domains.length > 5 ? '...' : '') : '—'}\n`;
+    output += `IPs: ${intel.ips.length ? intel.ips.slice(0,5).join(', ') + (intel.ips.length > 5 ? '...' : '') : '—'}\n`;
+    output += `URLs: ${intel.urls.length ? intel.urls.length + ' found' : '—'}\n`;
+    output += `Crypto Addresses: ${intel.cryptoAddresses.length ? intel.cryptoAddresses.join(', ') : '—'}\n`;
+    output += `Hashes: ${intel.hashes.length ? intel.hashes.length + ' found' : '—'}\n`;
+    output += `CVEs: ${intel.cves.length ? intel.cves.join(', ') : '—'}\n`;
+    output += `Phone Numbers: ${intel.phones.length ? intel.phones.slice(0,3).join(', ') : '—'}\n`;
+    output += `Handles: ${intel.handles.length ? intel.handles.slice(0,5).join(', ') : '—'}\n`;
+    
+    if(intel.suspiciousStrings.length > 0){
+      output += `\nSuspicious Commands:\n`;
+      intel.suspiciousStrings.forEach(str => output += `• ${str}\n`);
+    }
+    
+    output += `\n=== THREAT ASSESSMENT ===\n`;
+    output += `Level: ${threat.level} (Score: ${threat.score})\n`;
+    if(threat.indicators.length > 0){
+      output += `Indicators:\n`;
+      threat.indicators.forEach(ind => output += `• ${ind}\n`);
+    }
+    
+    output += `\n=== INTELLIGENCE QUERIES ===\n`;
+    queries.slice(0,6).forEach(q => output += `• ${q}\n`);
+    
+    updateNetworkGraph(intel);
+    const textMetaNode = el('#textMeta');
+    if(textMetaNode) textMetaNode.textContent = output;
+    
+    updateGlobalStats();
+    setStatus('text analysis');
+  });
+}
+
+// Social Media Analysis Module
+const analyzeSocialBtn = el('#analyzeSocial');
+if(analyzeSocialBtn) {
+  analyzeSocialBtn.addEventListener('click', () => {
+    setStatus('analyzing social media');
+    const socialTextin = el('#socialTextin');
+    const text = socialTextin ? socialTextin.value : '';
+    const social = analyzeSocialMedia(text);
+    
+    globalReport.intelligence.social = social;
+    globalReport.stats.socialPosts++;
+    
+    let output = `=== SOCIAL MEDIA INTELLIGENCE ===\n`;
+    output += `Platforms: ${social.platforms.length ? social.platforms.join(', ') : '—'}\n`;
+    output += `Hashtags: ${social.hashtags.length ? social.hashtags.slice(0,8).join(', ') : '—'}\n`;
+    output += `Sentiment: ${social.sentiment}\n`;
+    
+    if(social.platforms.length > 0){
+      output += `\nPlatform-Specific Queries:\n`;
+      social.platforms.forEach(platform => {
+        output += `• site:${platform}.com "${text.substring(0,30)}..."\n`;
       });
     }
     
-    if(analysis.suspiciousIndicators.length > 0){
-      output += `\nSuspicious Indicators:\n`;
-      analysis.suspiciousIndicators.forEach(ind => output += `• ${ind}\n`);
-    }
+    const socialMetaNode = el('#socialMeta');
+    if(socialMetaNode) socialMetaNode.textContent = output;
     
-    currentReport.intelligence.url = analysis;
-    updateNetworkGraph({ domains: [analysis.hostname] });
-  }
-  
-  metaNode.textContent = output;
-  setStatus('idle');
-});
-
-// Text Intelligence Extraction
-el('#analyzeText').addEventListener('click', () => {
-  setStatus('extracting intelligence');
-  const text = textin.value || '';
-  const intel = extractIntelligence(text);
-  
-  currentReport.intelligence.extracted = intel;
-  currentReport.sources.push({
-    type: 'text',
-    length: text.length,
-    timestamp: Date.now()
+    const socialThreatNode = el('#socialThreatLevel');
+    if(socialThreatNode) socialThreatNode.textContent = `sentiment: ${social.sentiment}`;
+    
+    updateGlobalStats();
+    setStatus('social intel');
   });
-  
-  const threat = assessThreat(intel);
-  updateThreatDisplay(threat);
-  currentReport.threats = threat;
-  
-  const queries = buildIntelQueries(intel);
-  currentReport.queries = queries;
-  
-  let output = `=== INTELLIGENCE EXTRACTION ===\n`;
-  output += `Emails: ${intel.emails.length ? intel.emails.slice(0,5).join(', ') + (intel.emails.length > 5 ? '...' : '') : '—'}\n`;
-  output += `Domains: ${intel.domains.length ? intel.domains.slice(0,5).join(', ') + (intel.domains.length > 5 ? '...' : '') : '—'}\n`;
-  output += `IPs: ${intel.ips.length ? intel.ips.slice(0,5).join(', ') + (intel.ips.length > 5 ? '...' : '') : '—'}\n`;
-  output += `URLs: ${intel.urls.length ? intel.urls.length + ' found' : '—'}\n`;
-  output += `Crypto Addresses: ${intel.cryptoAddresses.length ? intel.cryptoAddresses.join(', ') : '—'}\n`;
-  output += `Hashes: ${intel.hashes.length ? intel.hashes.length + ' found' : '—'}\n`;
-  output += `CVEs: ${intel.cves.length ? intel.cves.join(', ') : '—'}\n`;
-  output += `Phone Numbers: ${intel.phones.length ? intel.phones.slice(0,3).join(', ') : '—'}\n`;
-  output += `Handles: ${intel.handles.length ? intel.handles.slice(0,5).join(', ') : '—'}\n`;
-  
-  if(intel.suspiciousStrings.length > 0){
-    output += `\nSuspicious Commands:\n`;
-    intel.suspiciousStrings.forEach(str => output += `• ${str}\n`);
-  }
-  
-  output += `\n=== THREAT ASSESSMENT ===\n`;
-  output += `Level: ${threat.level} (Score: ${threat.score})\n`;
-  if(threat.indicators.length > 0){
-    output += `Indicators:\n`;
-    threat.indicators.forEach(ind => output += `• ${ind}\n`);
-  }
-  
-  output += `\n=== INTELLIGENCE QUERIES ===\n`;
-  queries.slice(0,6).forEach(q => output += `• ${q}\n`);
-  
-  updateNetworkGraph(intel);
-  metaNode.textContent = output;
-  setStatus('idle');
-});
+}
 
-// Social Media Analysis
-el('#analyzeSocial').addEventListener('click', () => {
-  setStatus('analyzing social media');
-  const text = textin.value || '';
-  const social = analyzeSocialMedia(text);
+function updateThreatLevel(level) {
+  const levels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+  const currentIndex = levels.indexOf(globalReport.stats.maxThreatLevel);
+  const newIndex = levels.indexOf(level);
   
-  currentReport.intelligence.social = social;
-  
-  let output = `=== SOCIAL MEDIA INTELLIGENCE ===\n`;
-  output += `Platforms: ${social.platforms.length ? social.platforms.join(', ') : '—'}\n`;
-  output += `Hashtags: ${social.hashtags.length ? social.hashtags.slice(0,8).join(', ') : '—'}\n`;
-  output += `Sentiment: ${social.sentiment}\n`;
-  
-  if(social.platforms.length > 0){
-    output += `\nPlatform-Specific Queries:\n`;
-    social.platforms.forEach(platform => {
-      output += `• site:${platform}.com "${text.substring(0,30)}..."\n`;
-    });
+  if(newIndex > currentIndex) {
+    globalReport.stats.maxThreatLevel = level;
   }
-  
-  metaNode.textContent = output;
-  setStatus('idle');
-});
+}
 
-function updateThreatDisplay(threat){
-  threatLevelNode.textContent = `threat: ${threat.level}`;
-  threatLevelNode.style.color = {
-    'LOW': '#4ade80',
-    'MEDIUM': '#fbbf24', 
-    'HIGH': '#f97316',
-    'CRITICAL': '#ef4444'
-  }[threat.level] || '#9ca3af';
+function updateThreatDisplay(threat, elementId){
+  const threatNode = el(`#${elementId}`);
+  if(threatNode) {
+    threatNode.textContent = `threat: ${threat.level}`;
+    threatNode.style.color = {
+      'LOW': '#4ade80',
+      'MEDIUM': '#fbbf24', 
+      'HIGH': '#f97316',
+      'CRITICAL': '#ef4444'
+    }[threat.level] || '#9ca3af';
+  }
 }
 
 // Copy functions
-el('#copyIntel').addEventListener('click', () => {
-  const report = JSON.stringify(currentReport, null, 2);
-  navigator.clipboard.writeText(report).then(
-    () => setStatus('copied report'),
-    () => setStatus('copy failed')
-  );
-});
+const copyIntelBtn = el('#copyIntel');
+if(copyIntelBtn) {
+  copyIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied report'),
+      () => setStatus('copy failed')
+    );
+  });
+}
 
-el('#copyIOCs').addEventListener('click', () => {
-  const intel = currentReport.intelligence.extracted || {};
-  const iocs = [
-    ...(intel.ips || []),
-    ...(intel.domains || []), 
-    ...(intel.hashes || []),
-    ...(intel.urls || [])
-  ];
+const copyTextIntelBtn = el('#copyTextIntel');
+if(copyTextIntelBtn) {
+  copyTextIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied report'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyUrlIntelBtn = el('#copyUrlIntel');
+if(copyUrlIntelBtn) {
+  copyUrlIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied report'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copySocialIntelBtn = el('#copySocialIntel');
+if(copySocialIntelBtn) {
+  copySocialIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied report'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyIOCsBtn = el('#copyIOCs');
+if(copyIOCsBtn) {
+  copyIOCsBtn.addEventListener('click', () => {
+    const intel = globalReport.intelligence.extracted || {};
+    const iocs = [
+      ...(intel.ips || []),
+      ...(intel.domains || []), 
+      ...(intel.hashes || []),
+      ...(intel.urls || [])
+    ];
+    
+    const iocText = iocs.join('\n');
+    navigator.clipboard.writeText(iocText).then(
+      () => setStatus('copied IOCs'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyHashBtn = el('#copyHash');
+if(copyHashBtn) {
+  copyHashBtn.addEventListener('click', () => {
+    const hash = hashNode ? hashNode.textContent : '';
+    if(!hash || hash === '—') return alert('No hash to copy');
+    navigator.clipboard.writeText(hash).then(
+      () => setStatus('copied hash'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyNetworkDataBtn = el('#copyNetworkData');
+if(copyNetworkDataBtn) {
+  copyNetworkDataBtn.addEventListener('click', () => {
+    const networkData = {
+      entities: globalReport.intelligence,
+      relationships: 'Generated from analysis data',
+      timestamp: Date.now()
+    };
+    const networkJson = JSON.stringify(networkData, null, 2);
+    navigator.clipboard.writeText(networkJson).then(
+      () => setStatus('copied network data'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+// Reports Module Functions
+function updateReportsPage() {
+  const reportSummary = el('#reportSummary');
+  if(!reportSummary) return;
   
-  const iocText = iocs.join('\n');
-  navigator.clipboard.writeText(iocText).then(
-    () => setStatus('copied IOCs'),
-    () => setStatus('copy failed')
-  );
-});
-
-el('#copyHash').addEventListener('click', () => {
-  const hash = hashNode.textContent || '';
-  if(!hash || hash === '—') return alert('No hash to copy');
-  navigator.clipboard.writeText(hash).then(
-    () => setStatus('copied hash'),
-    () => setStatus('copy failed')
-  );
-});
+  let summary = `=== OPERATION INTELLIGENCE SUMMARY ===\n`;
+  summary += `Timestamp: ${new Date(globalReport.timestamp).toISOString()}\n`;
+  summary += `Duration: ${Math.round((Date.now() - globalReport.timestamp) / 1000)}s\n\n`;
+  
+  if(globalReport.sources.length === 0) {
+    summary += `No analysis data available.\nRun analysis in other modules to generate reports.`;
+  } else {
+    summary += `=== SOURCES ANALYZED ===\n`;
+    globalReport.sources.forEach((source, i) => {
+      summary += `${i+1}. ${source.type.toUpperCase()}: `;
+      if(source.name) summary += source.name;
+      else if(source.value) summary += source.value.substring(0, 50) + '...';
+      else if(source.length) summary += `${source.length} characters`;
+      summary += `\n`;
+    });
+    
+    summary += `\n=== INTELLIGENCE SUMMARY ===\n`;
+    Object.entries(globalReport.intelligence).forEach(([key, data]) => {
+      summary += `${key.toUpperCase()}:\n`;
+      if(data.ips) summary += `  IPs: ${data.ips.length}\n`;
+      if(data.domains) summary += `  Domains: ${data.domains.length}\n`;
+      if(data.emails) summary += `  Emails: ${data.emails.length}\n`;
+      if(data.hashes) summary += `  Hashes: ${data.hashes.length}\n`;
+      if(data.cryptoAddresses) summary += `  Crypto: ${data.cryptoAddresses.length}\n`;
+      if(data.platforms) summary += `  Platforms: ${data.platforms.join(', ')}\n`;
+      if(data.sentiment) summary += `  Sentiment: ${data.sentiment}\n`;
+    });
+    
+    if(globalReport.threats.indicators) {
+      summary += `\n=== THREAT INDICATORS ===\n`;
+      globalReport.threats.indicators.forEach(indicator => {
+        summary += `• ${indicator}\n`;
+      });
+    }
+  }
+  
+  reportSummary.textContent = summary;
+}
 
 // Export functionality
-el('#exportBtn').addEventListener('click', () => {
-  const timestamp = new Date().toISOString().slice(0,19).replace(/[:.]/g, '-');
-  const filename = `redfront-intel-${timestamp}.json`;
-  
-  const blob = new Blob([JSON.stringify(currentReport, null, 2)], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-});
+const exportBtn = el('#exportBtn');
+if(exportBtn) {
+  exportBtn.addEventListener('click', () => {
+    const timestamp = new Date().toISOString().slice(0,19).replace(/[:.]/g, '-');
+    const filename = `redfront-intel-${timestamp}.json`;
+    
+    const blob = new Blob([JSON.stringify(globalReport, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    setStatus('exported JSON');
+  });
+}
+
+const exportCSVBtn = el('#exportCSV');
+if(exportCSVBtn) {
+  exportCSVBtn.addEventListener('click', () => {
+    let csv = 'Type,Value,Source,Timestamp\n';
+    
+    Object.entries(globalReport.intelligence).forEach(([source, data]) => {
+      if(data.ips) data.ips.forEach(ip => csv += `IP,${ip},${source},${Date.now()}\n`);
+      if(data.domains) data.domains.forEach(domain => csv += `Domain,${domain},${source},${Date.now()}\n`);
+      if(data.emails) data.emails.forEach(email => csv += `Email,${email},${source},${Date.now()}\n`);
+      if(data.hashes) data.hashes.forEach(hash => csv += `Hash,${hash},${source},${Date.now()}\n`);
+    });
+    
+    const timestamp = new Date().toISOString().slice(0,19).replace(/[:.]/g, '-');
+    const filename = `redfront-iocs-${timestamp}.csv`;
+    
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    setStatus('exported CSV');
+  });
+}
+
+const exportTXTBtn = el('#exportTXT');
+if(exportTXTBtn) {
+  exportTXTBtn.addEventListener('click', () => {
+    let txt = 'REDFRONT OSINT WORKBENCH - INTELLIGENCE REPORT\n';
+    txt += '=' .repeat(50) + '\n\n';
+    txt += `Generated: ${new Date().toISOString()}\n\n`;
+    
+    const intel = globalReport.intelligence.extracted || {};
+    txt += 'INDICATORS OF COMPROMISE (IOCs):\n';
+    txt += '-'.repeat(30) + '\n';
+    
+    if(intel.ips?.length) {
+      txt += `\nIP Addresses (${intel.ips.length}):\n`;
+      intel.ips.forEach(ip => txt += `${ip}\n`);
+    }
+    
+    if(intel.domains?.length) {
+      txt += `\nDomains (${intel.domains.length}):\n`;
+      intel.domains.forEach(domain => txt += `${domain}\n`);
+    }
+    
+    if(intel.hashes?.length) {
+      txt += `\nFile Hashes (${intel.hashes.length}):\n`;
+      intel.hashes.forEach(hash => txt += `${hash}\n`);
+    }
+    
+    const timestamp = new Date().toISOString().slice(0,19).replace(/[:.]/g, '-');
+    const filename = `redfront-report-${timestamp}.txt`;
+    
+    const blob = new Blob([txt], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    setStatus('exported TXT');
+  });
+}
 
 // Initialize
-setStatus('idle');
-metaNode.textContent = 'No input yet. Drop files, paste URLs, or analyze text to begin.';
+setStatus('command center');
 </script>
 </body>
 </html>
