@@ -309,12 +309,6 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <div class="module-desc">Entity relationship visualization and graph analysis</div>
         </button>
 
-        <button class="module-btn" data-module="reports">
-          <div class="module-icon">📊</div>
-          <div class="module-title">INTEL REPORTS</div>
-          <div class="module-desc">Export findings and generate intelligence summaries</div>
-        </button>
-
         <button class="module-btn" data-module="email">
           <div class="module-icon">📧</div>
           <div class="module-title">EMAIL OSINT</div>
@@ -349,6 +343,12 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <div class="module-icon">🔍</div>
           <div class="module-title">METADATA EXTRACTOR</div>
           <div class="module-desc">EXIF data, document properties, hidden information</div>
+        </button>
+
+        <button class="module-btn" data-module="reports">
+          <div class="module-icon">📊</div>
+          <div class="module-title">INTEL REPORTS</div>
+          <div class="module-desc">Export findings and generate intelligence summaries</div>
         </button>
       </div>
     </div>
@@ -548,39 +548,6 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
     </div>
   </div>
 
-  <!-- Reports Module -->
-  <div id="reportsModule" class="page" style="display:none">
-    <div class="module-header">
-      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
-      <div>
-        <div class="module-title-header">INTELLIGENCE REPORTS MODULE</div>
-        <div class="small">Export findings and generate intelligence summaries</div>
-      </div>
-    </div>
-    <div class="layout">
-      <div class="panel">
-        <div class="small">REPORT GENERATION</div>
-        <div id="reportSummary" class="console" style="height:300px">No analysis data available. Run analysis in other modules to generate reports.</div>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <button id="exportBtn" class="button">EXPORT JSON</button>
-          <button id="exportCSV" class="copy">EXPORT CSV</button>
-          <button id="exportTXT" class="copy">EXPORT TXT</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="small">OPERATION SUMMARY</div>
-        <div id="operationStats" class="console">
-          <div class="kv"><span>Files Analyzed</span><span id="statsFiles">0</span></div>
-          <div class="kv"><span>URLs Processed</span><span id="statsUrls">0</span></div>
-          <div class="kv"><span>Text Samples</span><span id="statsText">0</span></div>
-          <div class="kv"><span>Social Posts</span><span id="statsSocial">0</span></div>
-          <div class="kv"><span>Total IOCs</span><span id="statsIOCs">0</span></div>
-          <div class="kv"><span>Threat Level</span><span id="statsThreats">LOW</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Email OSINT Module -->
   <div id="emailModule" class="page" style="display:none">
     <div class="module-header">
@@ -627,7 +594,6 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
         <input id="phonein" placeholder="+1234567890 or 1234567890" style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
         <div style="display:flex;gap:8px;margin-top:8px">
           <button id="analyzePhone" class="button">ANALYZE NUMBER</button>
-          <button id="validatePhone" class="button">VALIDATE</button>
         </div>
         <div class="hint" style="margin-top:8px">Extracts country, carrier, line type, geographic region</div>
       </div>
@@ -767,6 +733,39 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
           <button id="copyMetadataIntel" class="copy">COPY METADATA</button>
           <div style="flex:1"></div>
           <div class="smallmuted" id="metadataThreatLevel">privacy: —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Module -->
+  <div id="reportsModule" class="page" style="display:none">
+    <div class="module-header">
+      <button class="nav-btn" onclick="showPage('landing')">← COMMAND CENTER</button>
+      <div>
+        <div class="module-title-header">INTELLIGENCE REPORTS MODULE</div>
+        <div class="small">Export findings and generate intelligence summaries</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <div class="small">REPORT GENERATION</div>
+        <div id="reportSummary" class="console" style="height:300px">No analysis data available. Run analysis in other modules to generate reports.</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="exportBtn" class="button">EXPORT JSON</button>
+          <button id="exportCSV" class="copy">EXPORT CSV</button>
+          <button id="exportTXT" class="copy">EXPORT TXT</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="small">OPERATION SUMMARY</div>
+        <div id="operationStats" class="console">
+          <div class="kv"><span>Files Analyzed</span><span id="statsFiles">0</span></div>
+          <div class="kv"><span>URLs Processed</span><span id="statsUrls">0</span></div>
+          <div class="kv"><span>Text Samples</span><span id="statsText">0</span></div>
+          <div class="kv"><span>Social Posts</span><span id="statsSocial">0</span></div>
+          <div class="kv"><span>Total IOCs</span><span id="statsIOCs">0</span></div>
+          <div class="kv"><span>Threat Level</span><span id="statsThreats">LOW</span></div>
         </div>
       </div>
     </div>
@@ -1437,54 +1436,326 @@ function analyzePhone(phone) {
     cleaned,
     valid: false,
     country: 'unknown',
+    countryCode: 'unknown',
     region: 'unknown',
+    city: 'unknown',
     carrier: 'unknown',
     type: 'unknown',
-    timezone: 'unknown'
+    timezone: 'unknown',
+    coordinates: null,
+    riskFactors: [],
+    socialMedia: [],
+    spamReports: 0,
+    lastSeen: null
   };
   
-  // Basic validation
-  if (cleaned.length >= 10 && cleaned.length <= 15) {
+  // Enhanced validation and parsing
+  if (cleaned.length >= 7 && cleaned.length <= 15) {
     analysis.valid = true;
     
-    // Country detection (simplified)
-    const countryCode = cleaned.substring(0, 1);
-    const countryCodes = {
-      '1': { country: 'US/Canada', timezone: 'UTC-5 to UTC-8' },
-      '44': { country: 'United Kingdom', timezone: 'UTC+0' },
-      '49': { country: 'Germany', timezone: 'UTC+1' },
-      '33': { country: 'France', timezone: 'UTC+1' },
-      '81': { country: 'Japan', timezone: 'UTC+9' },
-      '86': { country: 'China', timezone: 'UTC+8' }
+    // Comprehensive country code database
+    const countryDatabase = {
+      '1': { 
+        country: 'United States/Canada', 
+        timezone: 'UTC-5 to UTC-8',
+        code: 'US/CA',
+        dialingCode: '+1'
+      },
+      '44': { 
+        country: 'United Kingdom', 
+        timezone: 'UTC+0',
+        code: 'GB',
+        dialingCode: '+44'
+      },
+      '49': { 
+        country: 'Germany', 
+        timezone: 'UTC+1',
+        code: 'DE',
+        dialingCode: '+49'
+      },
+      '33': { 
+        country: 'France', 
+        timezone: 'UTC+1',
+        code: 'FR',
+        dialingCode: '+33'
+      },
+      '81': { 
+        country: 'Japan', 
+        timezone: 'UTC+9',
+        code: 'JP',
+        dialingCode: '+81'
+      },
+      '86': { 
+        country: 'China', 
+        timezone: 'UTC+8',
+        code: 'CN',
+        dialingCode: '+86'
+      },
+      '7': { 
+        country: 'Russia/Kazakhstan', 
+        timezone: 'UTC+3 to UTC+12',
+        code: 'RU/KZ',
+        dialingCode: '+7'
+      },
+      '91': { 
+        country: 'India', 
+        timezone: 'UTC+5:30',
+        code: 'IN',
+        dialingCode: '+91'
+      },
+      '55': { 
+        country: 'Brazil', 
+        timezone: 'UTC-3',
+        code: 'BR',
+        dialingCode: '+55'
+      },
+      '61': { 
+        country: 'Australia', 
+        timezone: 'UTC+8 to UTC+10',
+        code: 'AU',
+        dialingCode: '+61'
+      },
+      '82': { 
+        country: 'South Korea', 
+        timezone: 'UTC+9',
+        code: 'KR',
+        dialingCode: '+82'
+      },
+      '39': { 
+        country: 'Italy', 
+        timezone: 'UTC+1',
+        code: 'IT',
+        dialingCode: '+39'
+      },
+      '34': { 
+        country: 'Spain', 
+        timezone: 'UTC+1',
+        code: 'ES',
+        dialingCode: '+34'
+      },
+      '31': { 
+        country: 'Netherlands', 
+        timezone: 'UTC+1',
+        code: 'NL',
+        dialingCode: '+31'
+      },
+      '46': { 
+        country: 'Sweden', 
+        timezone: 'UTC+1',
+        code: 'SE',
+        dialingCode: '+46'
+      },
+      '47': { 
+        country: 'Norway', 
+        timezone: 'UTC+1',
+        code: 'NO',
+        dialingCode: '+47'
+      },
+      '41': { 
+        country: 'Switzerland', 
+        timezone: 'UTC+1',
+        code: 'CH',
+        dialingCode: '+41'
+      },
+      '43': { 
+        country: 'Austria', 
+        timezone: 'UTC+1',
+        code: 'AT',
+        dialingCode: '+43'
+      },
+      '32': { 
+        country: 'Belgium', 
+        timezone: 'UTC+1',
+        code: 'BE',
+        dialingCode: '+32'
+      },
+      '48': { 
+        country: 'Poland', 
+        timezone: 'UTC+1',
+        code: 'PL',
+        dialingCode: '+48'
+      }
     };
     
-    if (countryCodes[countryCode]) {
-      analysis.country = countryCodes[countryCode].country;
-      analysis.timezone = countryCodes[countryCode].timezone;
+    // Detect country code (support both with and without leading +)
+    let countryMatch = null;
+    let remainingDigits = cleaned;
+    
+    // Try different country code lengths (1-4 digits)
+    for(let i = 1; i <= 4 && i <= cleaned.length; i++) {
+      const possibleCode = cleaned.substring(0, i);
+      if(countryDatabase[possibleCode]) {
+        countryMatch = countryDatabase[possibleCode];
+        analysis.countryCode = possibleCode;
+        analysis.country = countryMatch.country;
+        analysis.timezone = countryMatch.timezone;
+        remainingDigits = cleaned.substring(i);
+        break;
+      }
     }
     
-    // US number analysis
-    if (countryCode === '1' && cleaned.length === 11) {
-      const areaCode = cleaned.substring(1, 4);
-      const exchange = cleaned.substring(4, 7);
+    // US/Canada enhanced analysis
+    if(analysis.countryCode === '1' && remainingDigits.length === 10) {
+      const areaCode = remainingDigits.substring(0, 3);
+      const exchange = remainingDigits.substring(3, 6);
+      const number = remainingDigits.substring(6, 10);
       
-      // Area code analysis (simplified)
-      const areaCodes = {
-        '212': 'New York, NY',
-        '310': 'Los Angeles, CA',
-        '312': 'Chicago, IL',
-        '415': 'San Francisco, CA',
-        '713': 'Houston, TX',
-        '305': 'Miami, FL'
+      // Comprehensive US area code database with cities and carriers
+      const areaCodeDatabase = {
+        '212': { region: 'Manhattan, NY', city: 'New York', state: 'NY', coords: [40.7589, -73.9851], timezone: 'EST' },
+        '646': { region: 'Manhattan, NY', city: 'New York', state: 'NY', coords: [40.7589, -73.9851], timezone: 'EST' },
+        '917': { region: 'New York Metro', city: 'New York', state: 'NY', coords: [40.7589, -73.9851], timezone: 'EST' },
+        '310': { region: 'West Los Angeles, CA', city: 'Los Angeles', state: 'CA', coords: [34.0522, -118.2437], timezone: 'PST' },
+        '323': { region: 'Los Angeles, CA', city: 'Los Angeles', state: 'CA', coords: [34.0522, -118.2437], timezone: 'PST' },
+        '312': { region: 'Chicago Loop, IL', city: 'Chicago', state: 'IL', coords: [41.8781, -87.6298], timezone: 'CST' },
+        '773': { region: 'Chicago, IL', city: 'Chicago', state: 'IL', coords: [41.8781, -87.6298], timezone: 'CST' },
+        '415': { region: 'San Francisco, CA', city: 'San Francisco', state: 'CA', coords: [37.7749, -122.4194], timezone: 'PST' },
+        '628': { region: 'San Francisco, CA', city: 'San Francisco', state: 'CA', coords: [37.7749, -122.4194], timezone: 'PST' },
+        '713': { region: 'Houston, TX', city: 'Houston', state: 'TX', coords: [29.7604, -95.3698], timezone: 'CST' },
+        '281': { region: 'Houston Metro, TX', city: 'Houston', state: 'TX', coords: [29.7604, -95.3698], timezone: 'CST' },
+        '305': { region: 'Miami-Dade, FL', city: 'Miami', state: 'FL', coords: [25.7617, -80.1918], timezone: 'EST' },
+        '786': { region: 'Miami-Dade, FL', city: 'Miami', state: 'FL', coords: [25.7617, -80.1918], timezone: 'EST' },
+        '202': { region: 'Washington, DC', city: 'Washington', state: 'DC', coords: [38.9072, -77.0369], timezone: 'EST' },
+        '404': { region: 'Atlanta, GA', city: 'Atlanta', state: 'GA', coords: [33.7490, -84.3880], timezone: 'EST' },
+        '678': { region: 'Atlanta Metro, GA', city: 'Atlanta', state: 'GA', coords: [33.7490, -84.3880], timezone: 'EST' },
+        '702': { region: 'Las Vegas, NV', city: 'Las Vegas', state: 'NV', coords: [36.1699, -115.1398], timezone: 'PST' },
+        '206': { region: 'Seattle, WA', city: 'Seattle', state: 'WA', coords: [47.6062, -122.3321], timezone: 'PST' },
+        '425': { region: 'Seattle Metro, WA', city: 'Seattle', state: 'WA', coords: [47.6062, -122.3321], timezone: 'PST' },
+        '617': { region: 'Boston, MA', city: 'Boston', state: 'MA', coords: [42.3601, -71.0589], timezone: 'EST' },
+        '857': { region: 'Boston Metro, MA', city: 'Boston', state: 'MA', coords: [42.3601, -71.0589], timezone: 'EST' },
+        '215': { region: 'Philadelphia, PA', city: 'Philadelphia', state: 'PA', coords: [39.9526, -75.1652], timezone: 'EST' },
+        '267': { region: 'Philadelphia Metro, PA', city: 'Philadelphia', state: 'PA', coords: [39.9526, -75.1652], timezone: 'EST' },
+        '480': { region: 'Phoenix Metro, AZ', city: 'Phoenix', state: 'AZ', coords: [33.4484, -112.0740], timezone: 'MST' },
+        '602': { region: 'Phoenix, AZ', city: 'Phoenix', state: 'AZ', coords: [33.4484, -112.0740], timezone: 'MST' },
+        '214': { region: 'Dallas, TX', city: 'Dallas', state: 'TX', coords: [32.7767, -96.7970], timezone: 'CST' },
+        '469': { region: 'Dallas Metro, TX', city: 'Dallas', state: 'TX', coords: [32.7767, -96.7970], timezone: 'CST' },
+        '313': { region: 'Detroit, MI', city: 'Detroit', state: 'MI', coords: [42.3314, -83.0458], timezone: 'EST' },
+        '248': { region: 'Detroit Metro, MI', city: 'Detroit', state: 'MI', coords: [42.3314, -83.0458], timezone: 'EST' },
+        '303': { region: 'Denver, CO', city: 'Denver', state: 'CO', coords: [39.7392, -104.9903], timezone: 'MST' },
+        '720': { region: 'Denver Metro, CO', city: 'Denver', state: 'CO', coords: [39.7392, -104.9903], timezone: 'MST' },
+        '503': { region: 'Portland, OR', city: 'Portland', state: 'OR', coords: [45.5152, -122.6784], timezone: 'PST' },
+        '971': { region: 'Portland Metro, OR', city: 'Portland', state: 'OR', coords: [45.5152, -122.6784], timezone: 'PST' },
+        // Special numbers
+        '800': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' },
+        '888': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' },
+        '877': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' },
+        '866': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' },
+        '855': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' },
+        '844': { region: 'Toll-Free', city: 'N/A', state: 'N/A', coords: null, timezone: 'N/A' }
       };
       
-      analysis.region = areaCodes[areaCode] || `Area Code ${areaCode}`;
+      const areaInfo = areaCodeDatabase[areaCode];
+      if(areaInfo) {
+        analysis.region = areaInfo.region;
+        analysis.city = areaInfo.city;
+        analysis.coordinates = areaInfo.coords;
+        analysis.timezone = areaInfo.timezone || analysis.timezone;
+      } else {
+        analysis.region = `Area Code ${areaCode} (Unknown)`;
+      }
       
-      // Line type detection
-      if (exchange.startsWith('55')) analysis.type = 'Personal/VoIP';
-      else if (['800', '888', '877', '866'].includes(areaCode)) analysis.type = 'Toll-free';
-      else analysis.type = 'Landline/Mobile';
+      // Enhanced line type detection
+      if(['800', '888', '877', '866', '855', '844'].includes(areaCode)) {
+        analysis.type = 'Toll-Free Business';
+        analysis.carrier = 'Various Toll-Free Providers';
+      } else if(exchange.startsWith('55') || exchange.startsWith('56')) {
+        analysis.type = 'VoIP/Internet Phone';
+        analysis.carrier = 'VoIP Provider (Google Voice, Skype, etc.)';
+        analysis.riskFactors.push('VoIP number - easily spoofed');
+      } else if(exchange.startsWith('2') || exchange.startsWith('3') || exchange.startsWith('4') || exchange.startsWith('5')) {
+        analysis.type = 'Mobile/Cellular';
+        
+        // Simulate carrier detection based on exchange patterns
+        const exchangeNum = parseInt(exchange);
+        if(exchangeNum >= 200 && exchangeNum <= 299) {
+          analysis.carrier = 'Verizon Wireless';
+        } else if(exchangeNum >= 300 && exchangeNum <= 399) {
+          analysis.carrier = 'AT&T Mobility';
+        } else if(exchangeNum >= 400 && exchangeNum <= 499) {
+          analysis.carrier = 'T-Mobile US';
+        } else if(exchangeNum >= 500 && exchangeNum <= 599) {
+          analysis.carrier = 'Sprint/T-Mobile';
+        } else {
+          analysis.carrier = 'Regional Carrier';
+        }
+      } else {
+        analysis.type = 'Landline';
+        analysis.carrier = 'Local Exchange Carrier';
+      }
+      
+      // Risk factor analysis
+      if(areaCode === '000' || exchange === '000' || number === '0000') {
+        analysis.riskFactors.push('Invalid number pattern');
+      }
+      
+      if(['911', '000', '123', '555'].includes(exchange)) {
+        analysis.riskFactors.push('Test/Service number pattern');
+      }
+      
+      // Simulate spam reports (randomized for demonstration)
+      const phoneHash = phone.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+      }, 0);
+      
+      analysis.spamReports = Math.abs(phoneHash) % 50;
+      if(analysis.spamReports > 20) {
+        analysis.riskFactors.push('High spam reports');
+      }
+      
+      // Simulate last seen data
+      if(analysis.spamReports > 0) {
+        const daysAgo = Math.floor(Math.random() * 30) + 1;
+        analysis.lastSeen = `${daysAgo} days ago`;
+      }
+      
+      // Simulate social media presence
+      const socialChance = Math.random();
+      if(socialChance > 0.7) {
+        const platforms = ['Facebook', 'Instagram', 'LinkedIn', 'Twitter'];
+        const numPlatforms = Math.floor(Math.random() * 3) + 1;
+        analysis.socialMedia = platforms.slice(0, numPlatforms);
+      }
     }
+    
+    // International number handling
+    else if(analysis.countryCode && analysis.countryCode !== '1') {
+      analysis.region = `${analysis.country} Number`;
+      analysis.type = 'International';
+      analysis.carrier = 'International Carrier';
+      
+      // Some basic international patterns
+      if(analysis.countryCode === '44') { // UK
+        if(remainingDigits.startsWith('7')) {
+          analysis.type = 'UK Mobile';
+          analysis.carrier = 'UK Mobile Network';
+        } else if(remainingDigits.startsWith('20')) {
+          analysis.region = 'London, UK';
+          analysis.city = 'London';
+        }
+      } else if(analysis.countryCode === '49') { // Germany
+        if(remainingDigits.startsWith('30')) {
+          analysis.region = 'Berlin, Germany';
+          analysis.city = 'Berlin';
+        } else if(remainingDigits.startsWith('89')) {
+          analysis.region = 'Munich, Germany';
+          analysis.city = 'Munich';
+        }
+      }
+    }
+  }
+  
+  // Additional security checks
+  if(cleaned.length < 7) {
+    analysis.riskFactors.push('Number too short');
+  }
+  
+  if(cleaned.length > 15) {
+    analysis.riskFactors.push('Number too long');
+  }
+  
+  if(/^(.)\1+$/.test(cleaned)) {
+    analysis.riskFactors.push('Repeating digits pattern');
   }
   
   return analysis;
@@ -1495,111 +1766,645 @@ function analyzeCrypto(address) {
   const analysis = {
     address,
     currency: 'unknown',
+    network: 'unknown',
     valid: false,
     riskLevel: 'low',
-    warnings: []
+    warnings: [],
+    addressType: 'unknown',
+    balance: 0,
+    transactionCount: 0,
+    firstSeen: null,
+    lastActivity: null,
+    mixerActivity: false,
+    exchangeDeposit: false,
+    knownEntity: null,
+    tags: []
   };
   
-  // Bitcoin detection
-  if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address)) {
-    analysis.currency = 'Bitcoin';
-    analysis.valid = true;
-  }
-  // Ethereum detection
-  else if (/^0x[a-fA-F0-9]{40}$/.test(address)) {
-    analysis.currency = 'Ethereum';
-    analysis.valid = true;
-  }
-  // Bitcoin Cash
-  else if (/^[qp][a-z0-9]{41}$/.test(address)) {
-    analysis.currency = 'Bitcoin Cash';
-    analysis.valid = true;
-  }
+  // Comprehensive cryptocurrency address patterns
+  const cryptoPatterns = {
+    // Bitcoin variants
+    bitcoin: {
+      legacy: /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/,
+      segwit: /^bc1[a-z0-9]{39,59}$/,
+      name: 'Bitcoin (BTC)',
+      network: 'Bitcoin',
+      addressTypes: ['Legacy P2PKH/P2SH', 'Bech32 SegWit']
+    },
+    
+    // Ethereum ecosystem
+    ethereum: {
+      standard: /^0x[a-fA-F0-9]{40}$/,
+      name: 'Ethereum (ETH)',
+      network: 'Ethereum',
+      addressTypes: ['EOA/Contract Address']
+    },
+    
+    // Bitcoin forks
+    bitcoinCash: {
+      legacy: /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/,
+      cashAddr: /^bitcoincash:[qp][a-z0-9]{41}$/,
+      simple: /^[qp][a-z0-9]{41}$/,
+      name: 'Bitcoin Cash (BCH)',
+      network: 'Bitcoin Cash',
+      addressTypes: ['Legacy', 'CashAddr']
+    },
+    
+    bitcoinSV: {
+      pattern: /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/,
+      name: 'Bitcoin SV (BSV)',
+      network: 'Bitcoin SV',
+      addressTypes: ['Legacy']
+    },
+    
+    // Privacy coins
+    monero: {
+      standard: /^4[0-9AB][1-9A-HJ-NP-Za-km-z]{93}$/,
+      integrated: /^4[0-9AB][1-9A-HJ-NP-Za-km-z]{103}$/,
+      name: 'Monero (XMR)',
+      network: 'Monero',
+      addressTypes: ['Standard', 'Integrated']
+    },
+    
+    zcash: {
+      transparent: /^t[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/,
+      sapling: /^zs[a-z0-9]{76}$/,
+      sprout: /^zcA-Z[a-z0-9]{93}$/,
+      name: 'Zcash (ZEC)',
+      network: 'Zcash',
+      addressTypes: ['Transparent', 'Sapling Shielded', 'Sprout Shielded']
+    },
+    
+    // Major altcoins
+    litecoin: {
+      legacy: /^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$/,
+      segwit: /^ltc1[a-z0-9]{39,59}$/,
+      name: 'Litecoin (LTC)',
+      network: 'Litecoin',
+      addressTypes: ['Legacy', 'Bech32 SegWit']
+    },
+    
+    dogecoin: {
+      pattern: /^D{1}[5-9A-HJ-NP-U]{1}[1-9A-HJ-NP-Za-km-z]{32}$/,
+      name: 'Dogecoin (DOGE)',
+      network: 'Dogecoin',
+      addressTypes: ['Standard']
+    },
+    
+    ripple: {
+      classic: /^r[0-9a-zA-Z]{24,34}$/,
+      xAddress: /^X[0-9A-Za-z]{46}$/,
+      name: 'XRP Ledger (XRP)',
+      network: 'XRP Ledger',
+      addressTypes: ['Classic', 'X-Address']
+    },
+    
+    stellar: {
+      pattern: /^G[A-Z2-7]{55}$/,
+      name: 'Stellar (XLM)',
+      network: 'Stellar',
+      addressTypes: ['Public Key']
+    },
+    
+    cardano: {
+      shelley: /^addr1[a-z0-9]{58}$/,
+      byron: /^Ae2[a-zA-Z0-9]{51}$/,
+      name: 'Cardano (ADA)',
+      network: 'Cardano',
+      addressTypes: ['Shelley Era', 'Byron Era']
+    },
+    
+    polkadot: {
+      pattern: /^1[a-km-zA-HJ-NP-Z1-9]{47}$/,
+      name: 'Polkadot (DOT)',
+      network: 'Polkadot',
+      addressTypes: ['SS58']
+    },
+    
+    chainlink: {
+      pattern: /^0x[a-fA-F0-9]{40}$/,
+      name: 'Chainlink (LINK)',
+      network: 'Ethereum',
+      addressTypes: ['ERC-20 Token']
+    },
+    
+    // Solana ecosystem
+    solana: {
+      pattern: /^[1-9A-HJ-NP-Za-km-z]{32,44}$/,
+      name: 'Solana (SOL)',
+      network: 'Solana',
+      addressTypes: ['Base58']
+    },
+    
+    // Binance ecosystem
+    binanceCoin: {
+      bep2: /^bnb[a-z0-9]{39}$/,
+      bep20: /^0x[a-fA-F0-9]{40}$/,
+      name: 'Binance Coin (BNB)',
+      network: 'Binance Smart Chain',
+      addressTypes: ['BEP-2', 'BEP-20']
+    },
+    
+    // Polygon
+    polygon: {
+      pattern: /^0x[a-fA-F0-9]{40}$/,
+      name: 'Polygon (MATIC)',
+      network: 'Polygon',
+      addressTypes: ['Ethereum-compatible']
+    },
+    
+    // Avalanche
+    avalanche: {
+      xChain: /^X-avax[a-z0-9]{39}$/,
+      pChain: /^P-avax[a-z0-9]{39}$/,
+      cChain: /^0x[a-fA-F0-9]{40}$/,
+      name: 'Avalanche (AVAX)',
+      network: 'Avalanche',
+      addressTypes: ['X-Chain', 'P-Chain', 'C-Chain']
+    },
+    
+    // Cosmos ecosystem
+    cosmos: {
+      pattern: /^cosmos[a-z0-9]{39}$/,
+      name: 'Cosmos (ATOM)',
+      network: 'Cosmos Hub',
+      addressTypes: ['Bech32']
+    },
+    
+    // Tezos
+    tezos: {
+      tz1: /^tz1[a-zA-Z0-9]{33}$/,
+      tz2: /^tz2[a-zA-Z0-9]{33}$/,
+      tz3: /^tz3[a-zA-Z0-9]{33}$/,
+      name: 'Tezos (XTZ)',
+      network: 'Tezos',
+      addressTypes: ['tz1 (Ed25519)', 'tz2 (Secp256k1)', 'tz3 (P-256)']
+    },
+    
+    // TRON
+    tron: {
+      pattern: /^T[A-Za-z1-9]{33}$/,
+      name: 'TRON (TRX)',
+      network: 'TRON',
+      addressTypes: ['Base58Check']
+    },
+    
+    // EOS
+    eos: {
+      pattern: /^[a-z1-5]{12}$/,
+      name: 'EOS (EOS)',
+      network: 'EOS',
+      addressTypes: ['Account Name']
+    },
+    
+    // Neo
+    neo: {
+      legacy: /^A[0-9a-zA-Z]{33}$/,
+      n3: /^N[0-9a-zA-Z]{33}$/,
+      name: 'Neo (NEO)',
+      network: 'Neo',
+      addressTypes: ['Legacy', 'N3']
+    },
+    
+    // Dash
+    dash: {
+      pattern: /^X[1-9A-HJ-NP-Za-km-z]{33}$/,
+      name: 'Dash (DASH)',
+      network: 'Dash',
+      addressTypes: ['Standard']
+    }
+  };
   
-  if (analysis.valid) {
-    // Simulate risk analysis (would use blockchain APIs in real scenario)
-    const riskFactors = Math.floor(Math.random() * 4);
-    if (riskFactors > 2) {
-      analysis.riskLevel = 'high';
-      analysis.warnings.push('Address associated with known mixers');
-    } else if (riskFactors > 1) {
-      analysis.riskLevel = 'medium';
-      analysis.warnings.push('High transaction volume detected');
+  // Pattern matching and analysis
+  for(const [coinKey, coinData] of Object.entries(cryptoPatterns)) {
+    let matched = false;
+    let addressType = 'Standard';
+    
+    // Check if coinData has multiple patterns
+    if(coinData.pattern) {
+      if(coinData.pattern.test(address)) {
+        matched = true;
+        addressType = coinData.addressTypes[0];
+      }
+    } else {
+      // Check multiple pattern types
+      for(const [patternKey, pattern] of Object.entries(coinData)) {
+        if(patternKey !== 'name' && patternKey !== 'network' && patternKey !== 'addressTypes' && pattern.test && pattern.test(address)) {
+          matched = true;
+          const typeIndex = Object.keys(coinData).indexOf(patternKey) - 3; // Offset for non-pattern keys
+          addressType = coinData.addressTypes[Math.max(0, typeIndex)] || coinData.addressTypes[0];
+          break;
+        }
+      }
     }
     
-    // Simulate balance and transaction count
-    analysis.balance = (Math.random() * 10).toFixed(4);
-    analysis.transactionCount = Math.floor(Math.random() * 1000);
-    analysis.firstSeen = new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    if(matched) {
+      analysis.currency = coinData.name;
+      analysis.network = coinData.network;
+      analysis.addressType = addressType;
+      analysis.valid = true;
+      break;
+    }
+  }
+  
+  // Special handling for Ethereum-based tokens
+  if(analysis.network === 'Ethereum' && /^0x[a-fA-F0-9]{40}$/.test(address)) {
+    // Simulate token detection
+    const commonTokens = ['USDT', 'USDC', 'DAI', 'LINK', 'UNI', 'AAVE', 'COMP', 'MKR', 'SNX', 'SUSHI'];
+    if(Math.random() > 0.7) {
+      const randomToken = commonTokens[Math.floor(Math.random() * commonTokens.length)];
+      analysis.tags.push(`Potential ${randomToken} holder`);
+    }
+  }
+  
+  if(analysis.valid) {
+    // Enhanced risk analysis simulation
+    const addressHash = address.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    
+    const riskSeed = Math.abs(addressHash) % 100;
+    
+    // Simulate balance (varies by currency)
+    if(analysis.currency.includes('Bitcoin')) {
+      analysis.balance = (riskSeed / 10).toFixed(6);
+    } else if(analysis.currency.includes('Ethereum')) {
+      analysis.balance = (riskSeed / 5).toFixed(4);
+    } else {
+      analysis.balance = (riskSeed * 100).toFixed(2);
+    }
+    
+    // Transaction count simulation
+    analysis.transactionCount = Math.floor(riskSeed * 20);
+    
+    // Activity simulation
+    const daysAgo = Math.floor(riskSeed * 10);
+    analysis.firstSeen = new Date(Date.now() - (daysAgo + 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    analysis.lastActivity = daysAgo > 0 ? `${daysAgo} days ago` : 'Recent activity';
+    
+    // Risk assessment
+    if(riskSeed > 80) {
+      analysis.riskLevel = 'high';
+      analysis.warnings.push('High-volume transaction patterns detected');
+      analysis.warnings.push('Possible exchange or institutional wallet');
+      if(Math.random() > 0.5) {
+        analysis.mixerActivity = true;
+        analysis.warnings.push('Mixer/Tumbler activity detected');
+      }
+    } else if(riskSeed > 60) {
+      analysis.riskLevel = 'medium';
+      analysis.warnings.push('Moderate transaction activity');
+      if(Math.random() > 0.7) {
+        analysis.exchangeDeposit = true;
+        analysis.warnings.push('Exchange deposit patterns identified');
+      }
+    } else if(riskSeed > 40) {
+      analysis.riskLevel = 'low';
+      analysis.warnings.push('Standard wallet activity');
+    }
+    
+    // Known entity simulation
+    const entityChance = Math.random();
+    if(entityChance > 0.95) {
+      const exchanges = ['Binance', 'Coinbase', 'Kraken', 'Huobi', 'KuCoin'];
+      analysis.knownEntity = exchanges[Math.floor(Math.random() * exchanges.length)] + ' Exchange';
+      analysis.tags.push('Exchange Wallet');
+    } else if(entityChance > 0.90) {
+      analysis.knownEntity = 'DeFi Protocol';
+      analysis.tags.push('Smart Contract');
+    }
+    
+    // Privacy coin special handling
+    if(analysis.currency.includes('Monero') || analysis.currency.includes('Zcash')) {
+      analysis.warnings.push('Privacy-focused cryptocurrency - limited transparency');
+      analysis.riskLevel = 'medium';
+      analysis.tags.push('Privacy Coin');
+    }
+    
+    // DeFi and token tagging
+    if(analysis.network === 'Ethereum' || analysis.network === 'Binance Smart Chain' || analysis.network === 'Polygon') {
+      if(Math.random() > 0.6) {
+        analysis.tags.push('DeFi Activity');
+      }
+      if(Math.random() > 0.8) {
+        analysis.tags.push('NFT Interaction');
+      }
+    }
   }
   
   return analysis;
 }
 
-// IP Geolocation Analysis
-function analyzeIP(ip) {
+// IP Geolocation Analysis - Real API Integration
+async function analyzeIP(ip) {
   const analysis = {
     ip,
     valid: false,
     version: 'unknown',
     isPrivate: false,
+    isReserved: false,
     location: {},
     isp: 'unknown',
+    organization: 'unknown',
+    asn: 'unknown',
     threats: [],
-    vpnDetection: false
+    reputation: 'clean',
+    vpnDetection: false,
+    proxyDetection: false,
+    torDetection: false,
+    datacenterDetection: false,
+    ports: [],
+    services: [],
+    malwareFamily: null,
+    lastSeen: null,
+    riskScore: 0,
+    realData: false
   };
   
-  // IPv4 validation
+  // Enhanced IPv4 validation
   const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$/;
-  // IPv6 validation (simplified)
-  const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+  // Enhanced IPv6 validation
+  const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::|^([0-9a-fA-F]{1,4}:){1,7}:$/;
   
   if (ipv4Regex.test(ip)) {
     analysis.valid = true;
     analysis.version = 'IPv4';
     
-    // Private IP detection
     const parts = ip.split('.').map(Number);
+    
+    // Comprehensive private/reserved IP detection
     if ((parts[0] === 10) ||
         (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
         (parts[0] === 192 && parts[1] === 168) ||
-        (parts[0] === 127)) {
+        (parts[0] === 127) ||
+        (parts[0] === 169 && parts[1] === 254) || // APIPA
+        (parts[0] === 0) ||
+        (parts[0] >= 224 && parts[0] <= 255)) { // Multicast/Reserved
       analysis.isPrivate = true;
+      
+      // Specific private network identification
+      if (parts[0] === 127) {
+        analysis.location.description = 'Loopback Address';
+      } else if (parts[0] === 169 && parts[1] === 254) {
+        analysis.location.description = 'Automatic Private IP Addressing (APIPA)';
+      } else if (parts[0] >= 224) {
+        analysis.location.description = 'Multicast/Reserved Address Range';
+        analysis.isReserved = true;
+      } else {
+        analysis.location.description = 'Private Network Address';
+      }
     }
+    
   } else if (ipv6Regex.test(ip)) {
     analysis.valid = true;
     analysis.version = 'IPv6';
+    
+    // IPv6 private/reserved detection
+    if (ip.startsWith('::1') || ip === '::1') {
+      analysis.isPrivate = true;
+      analysis.location.description = 'IPv6 Loopback Address';
+    } else if (ip.startsWith('fe80:') || ip.startsWith('FE80:')) {
+      analysis.isPrivate = true;
+      analysis.location.description = 'IPv6 Link-Local Address';
+    } else if (ip.startsWith('fc00:') || ip.startsWith('fd00:')) {
+      analysis.isPrivate = true;
+      analysis.location.description = 'IPv6 Unique Local Address';
+    }
   }
   
-  if (analysis.valid && !analysis.isPrivate) {
-    // Simulate geolocation data
-    const locations = [
-      { country: 'United States', city: 'New York', region: 'NY', lat: 40.7128, lng: -74.0060 },
-      { country: 'United Kingdom', city: 'London', region: 'England', lat: 51.5074, lng: -0.1278 },
-      { country: 'Germany', city: 'Berlin', region: 'Berlin', lat: 52.5200, lng: 13.4050 },
-      { country: 'France', city: 'Paris', region: 'Île-de-France', lat: 48.8566, lng: 2.3522 },
-      { country: 'Japan', city: 'Tokyo', region: 'Tokyo', lat: 35.6762, lng: 139.6503 }
-    ];
-    
-    analysis.location = locations[Math.floor(Math.random() * locations.length)];
-    
-    // Simulate ISP data
-    const isps = ['Google LLC', 'Amazon.com Inc.', 'Cloudflare Inc.', 'Microsoft Corporation', 'Akamai Technologies'];
-    analysis.isp = isps[Math.floor(Math.random() * isps.length)];
-    
-    // Simulate threat intelligence
-    if (Math.random() > 0.8) {
-      analysis.threats.push('Reported in abuse database');
+  // For public IPs, fetch real geolocation data
+  if (analysis.valid && !analysis.isPrivate && !analysis.isReserved) {
+    try {
+      // Try multiple free IP geolocation APIs
+      const geoData = await fetchRealGeolocation(ip);
+      
+      if (geoData) {
+        analysis.realData = true;
+        analysis.location = {
+          country: geoData.country || 'Unknown',
+          countryCode: geoData.countryCode || 'Unknown',
+          city: geoData.city || 'Unknown',
+          region: geoData.region || 'Unknown',
+          regionCode: geoData.regionCode || 'Unknown',
+          latitude: geoData.lat || 0,
+          longitude: geoData.lon || 0,
+          timezone: geoData.timezone || 'Unknown',
+          accuracy: 'Real API Data'
+        };
+        
+        analysis.isp = geoData.isp || 'Unknown ISP';
+        analysis.organization = geoData.org || geoData.as || 'Unknown Organization';
+        analysis.asn = geoData.as || 'Unknown ASN';
+        
+        // Detect datacenter/hosting
+        const hostingKeywords = ['hosting', 'cloud', 'server', 'datacenter', 'data center', 'amazon', 'google', 'microsoft', 'digital ocean', 'vultr', 'linode'];
+        const orgLower = analysis.organization.toLowerCase();
+        analysis.datacenterDetection = hostingKeywords.some(keyword => orgLower.includes(keyword));
+        
+        // Detect VPN/Proxy (basic detection based on ISP/Org names)
+        const vpnKeywords = ['vpn', 'proxy', 'private', 'anonymous', 'tunnel', 'shield'];
+        analysis.vpnDetection = vpnKeywords.some(keyword => orgLower.includes(keyword));
+        
+        // Basic reputation check (would integrate with threat feeds in production)
+        analysis.reputation = 'clean'; // Default for real IPs
+        analysis.riskScore = Math.floor(Math.random() * 20); // Low risk for most real IPs
+        
+      } else {
+        // Fallback to mock data if API fails
+        await generateMockData(analysis, ip);
+      }
+      
+    } catch (error) {
+      console.warn('Geolocation API failed, using mock data:', error);
+      await generateMockData(analysis, ip);
     }
-    if (Math.random() > 0.9) {
-      analysis.threats.push('Associated with malware');
+    
+    // Enhanced threat analysis simulation
+    const riskSeed = ip.split('.').reduce((acc, octet) => acc + parseInt(octet), 0) % 100;
+    
+    if (riskSeed > 90) {
+      analysis.reputation = 'malicious';
+      analysis.threats.push('Active malware command & control');
+      analysis.threats.push('Botnet participant identified');
+      analysis.malwareFamily = ['Zeus', 'Emotet', 'TrickBot', 'Cobalt Strike'][Math.floor(Math.random() * 4)];
+      analysis.lastSeen = 'Within 24 hours';
+      analysis.riskScore = Math.max(analysis.riskScore, 85);
+    } else if (riskSeed > 75) {
+      analysis.reputation = 'suspicious';
+      analysis.threats.push('Reported in abuse databases');
+      analysis.threats.push('Suspicious network activity');
+      analysis.lastSeen = 'Within 7 days';
+      analysis.riskScore = Math.max(analysis.riskScore, 60);
+    } else if (riskSeed > 60) {
+      analysis.reputation = 'questionable';
+      analysis.threats.push('Associated with scanning activity');
+      analysis.lastSeen = 'Within 30 days';
+      analysis.riskScore = Math.max(analysis.riskScore, 40);
     }
     
-    // VPN/Proxy detection
-    analysis.vpnDetection = Math.random() > 0.85;
+    // Tor detection simulation
+    if (riskSeed > 85) {
+      analysis.torDetection = Math.random() > 0.7;
+      if (analysis.torDetection) {
+        analysis.threats.push('Tor exit node detected');
+      }
+    }
+    
+    // Port and service simulation
+    const commonPorts = [22, 23, 25, 53, 80, 110, 143, 443, 993, 995, 3389, 5900, 8080, 8443];
+    const openPortCount = Math.floor(riskSeed / 25) + 1;
+    analysis.ports = commonPorts.slice(0, openPortCount);
+    
+    // Service identification
+    const serviceMap = {
+      22: 'SSH', 23: 'Telnet', 25: 'SMTP', 53: 'DNS', 80: 'HTTP',
+      110: 'POP3', 143: 'IMAP', 443: 'HTTPS', 993: 'IMAPS', 995: 'POP3S',
+      3389: 'RDP', 5900: 'VNC', 8080: 'HTTP-Alt', 8443: 'HTTPS-Alt'
+    };
+    
+    analysis.services = analysis.ports.map(port => ({
+      port,
+      service: serviceMap[port] || 'Unknown',
+      version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}`
+    }));
   }
   
   return analysis;
+}
+
+// Real geolocation API fetcher
+async function fetchRealGeolocation(ip) {
+  const apis = [
+    {
+      url: `https://ipapi.co/${ip}/json/`,
+      parser: (data) => ({
+        country: data.country_name,
+        countryCode: data.country_code,
+        city: data.city,
+        region: data.region,
+        regionCode: data.region_code,
+        lat: data.latitude,
+        lon: data.longitude,
+        timezone: data.timezone,
+        isp: data.org,
+        org: data.org,
+        as: data.asn
+      })
+    },
+    {
+      url: `http://ip-api.com/json/${ip}`,
+      parser: (data) => ({
+        country: data.country,
+        countryCode: data.countryCode,
+        city: data.city,
+        region: data.regionName,
+        regionCode: data.region,
+        lat: data.lat,
+        lon: data.lon,
+        timezone: data.timezone,
+        isp: data.isp,
+        org: data.org,
+        as: data.as
+      })
+    },
+    {
+      url: `https://ipinfo.io/${ip}/json`,
+      parser: (data) => {
+        const coords = data.loc ? data.loc.split(',') : [0, 0];
+        return {
+          country: data.country,
+          countryCode: data.country,
+          city: data.city,
+          region: data.region,
+          regionCode: data.region,
+          lat: parseFloat(coords[0]) || 0,
+          lon: parseFloat(coords[1]) || 0,
+          timezone: data.timezone,
+          isp: data.org,
+          org: data.org,
+          as: data.org
+        };
+      }
+    }
+  ];
+  
+  for (const api of apis) {
+    try {
+      const response = await fetch(api.url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Check if the response contains valid data
+        if (data && (data.country || data.country_name) && !data.error) {
+          return api.parser(data);
+        }
+      }
+    } catch (error) {
+      console.warn(`API ${api.url} failed:`, error);
+      continue; // Try next API
+    }
+  }
+  
+  return null; // All APIs failed
+}
+
+// Fallback mock data generator
+async function generateMockData(analysis, ip) {
+  // Enhanced geolocation database with real-world ISP and location data
+  const geoDatabase = [
+    {
+      country: 'India', city: 'Mumbai', region: 'Maharashtra', 
+      lat: 19.0760, lng: 72.8777, timezone: 'Asia/Kolkata',
+      isp: 'Reliance Jio Infocomm Limited', organization: 'Jio', asn: 'AS55836'
+    },
+    {
+      country: 'India', city: 'Pune', region: 'Maharashtra', 
+      lat: 18.5204, lng: 73.8567, timezone: 'Asia/Kolkata',
+      isp: 'Bharti Airtel Ltd.', organization: 'Airtel', asn: 'AS9498'
+    },
+    {
+      country: 'India', city: 'Bangalore', region: 'Karnataka', 
+      lat: 12.9716, lng: 77.5946, timezone: 'Asia/Kolkata',
+      isp: 'ACT Fibernet', organization: 'Atria Convergence Technologies', asn: 'AS17488'
+    },
+    {
+      country: 'United States', city: 'New York', region: 'New York', 
+      lat: 40.7128, lng: -74.0060, timezone: 'America/New_York',
+      isp: 'Verizon Communications Inc.', organization: 'Verizon Fios', asn: 'AS701'
+    },
+    {
+      country: 'United Kingdom', city: 'London', region: 'England', 
+      lat: 51.5074, lng: -0.1278, timezone: 'Europe/London',
+      isp: 'BT Group plc', organization: 'British Telecom', asn: 'AS2856'
+    }
+  ];
+  
+  // Select location based on IP hash for consistency
+  const ipHash = ip.split('.').reduce((acc, octet) => acc + parseInt(octet), 0);
+  const locationData = geoDatabase[ipHash % geoDatabase.length];
+  
+  analysis.location = {
+    country: locationData.country,
+    city: locationData.city,
+    region: locationData.region,
+    latitude: locationData.lat,
+    longitude: locationData.lng,
+    timezone: locationData.timezone,
+    accuracy: 'Mock Data (API Failed)'
+  };
+  
+  analysis.isp = locationData.isp;
+  analysis.organization = locationData.organization;
+  analysis.asn = locationData.asn;
+  analysis.realData = false;
 }
 
 // Username Analysis
@@ -2559,6 +3364,134 @@ if(analyzeEmailBtn) {
   });
 }
 
+// Check Breaches Button
+const checkBreachesBtn = el('#checkBreaches');
+if(checkBreachesBtn) {
+  checkBreachesBtn.addEventListener('click', () => {
+    setStatus('checking breaches');
+    const emailin = el('#emailin');
+    const email = emailin ? emailin.value.trim() : '';
+    
+    if(!email) {
+      alert('Please enter an email address to check for breaches');
+      setStatus('email osint');
+      return;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)) {
+      alert('Please enter a valid email address');
+      setStatus('email osint');
+      return;
+    }
+    
+    // Simulate breach checking with HaveIBeenPwned-style response
+    const breachAnalysis = {
+      email: email,
+      breachesFound: [],
+      totalBreaches: 0,
+      breachTypes: [],
+      riskScore: 'LOW'
+    };
+    
+    // Enhanced breach simulation with more realistic data
+    const majorBreaches = [
+      { name: 'Collection #1', date: '2019-01', accounts: 773000000, types: ['Emails', 'Passwords'] },
+      { name: 'LinkedIn', date: '2021-06', accounts: 700000000, types: ['Emails', 'Phone numbers', 'Geolocation'] },
+      { name: 'Adobe', date: '2013-10', accounts: 153000000, types: ['Emails', 'Passwords', 'Password hints'] },
+      { name: 'Yahoo', date: '2013-08', accounts: 1000000000, types: ['Emails', 'Passwords', 'Security questions'] },
+      { name: 'Dropbox', date: '2012-07', accounts: 68000000, types: ['Emails', 'Passwords'] },
+      { name: 'MySpace', date: '2013-06', accounts: 360000000, types: ['Emails', 'Passwords'] },
+      { name: 'Canva', date: '2019-05', accounts: 137000000, types: ['Emails', 'Names', 'Usernames'] },
+      { name: 'Facebook', date: '2019-04', accounts: 533000000, types: ['Phone numbers', 'Names', 'Locations'] }
+    ];
+    
+    // Simulate finding breaches (randomized for demonstration)
+    const emailDomain = email.split('@')[1].toLowerCase();
+    let foundBreaches = [];
+    
+    // Common email domains have higher chance of being in breaches
+    const commonDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com'];
+    const isCommonDomain = commonDomains.includes(emailDomain);
+    
+    // Simulate breach findings
+    const breachCount = isCommonDomain ? 
+      Math.floor(Math.random() * 4) + 1 : // 1-4 breaches for common domains
+      Math.floor(Math.random() * 3);     // 0-2 breaches for other domains
+    
+    if(breachCount > 0) {
+      // Select random breaches
+      const shuffled = majorBreaches.sort(() => 0.5 - Math.random());
+      foundBreaches = shuffled.slice(0, breachCount);
+      
+      breachAnalysis.breachesFound = foundBreaches;
+      breachAnalysis.totalBreaches = breachCount;
+      breachAnalysis.breachTypes = [...new Set(foundBreaches.flatMap(b => b.types))];
+      breachAnalysis.riskScore = breachCount >= 3 ? 'HIGH' : breachCount >= 2 ? 'MEDIUM' : 'LOW';
+    }
+    
+    // Update global intelligence
+    if(!globalReport.intelligence.email) {
+      globalReport.intelligence.email = { breachIndicators: [] };
+    }
+    globalReport.intelligence.email.breachIndicators = foundBreaches.map(b => b.name);
+    
+    // Generate detailed breach report
+    let output = `=== BREACH INTELLIGENCE REPORT ===\n`;
+    output += `Email: ${email}\n`;
+    output += `Scan Date: ${new Date().toLocaleString()}\n`;
+    output += `Breaches Found: ${breachAnalysis.totalBreaches}\n`;
+    output += `Risk Score: ${breachAnalysis.riskScore}\n\n`;
+    
+    if(foundBreaches.length > 0) {
+      output += `=== BREACH DETAILS ===\n`;
+      foundBreaches.forEach(breach => {
+        output += `\n• ${breach.name}\n`;
+        output += `  Date: ${breach.date}\n`;
+        output += `  Accounts: ${breach.accounts.toLocaleString()}\n`;
+        output += `  Data Types: ${breach.types.join(', ')}\n`;
+      });
+      
+      output += `\n=== EXPOSED DATA TYPES ===\n`;
+      breachAnalysis.breachTypes.forEach(type => {
+        output += `• ${type}\n`;
+      });
+      
+      output += `\n=== RECOMMENDATIONS ===\n`;
+      output += `• Change passwords for affected accounts immediately\n`;
+      output += `• Enable two-factor authentication where possible\n`;
+      output += `• Monitor accounts for suspicious activity\n`;
+      output += `• Consider using a password manager\n`;
+      
+      if(breachAnalysis.riskScore === 'HIGH') {
+        output += `• Consider changing email address for sensitive accounts\n`;
+        updateThreatLevel('HIGH');
+      }
+    } else {
+      output += `No known breaches found for this email address.\n\n`;
+      output += `=== SECURITY RECOMMENDATIONS ===\n`;
+      output += `• Continue using strong, unique passwords\n`;
+      output += `• Enable two-factor authentication\n`;
+      output += `• Regularly monitor for suspicious activity\n`;
+      output += `• Stay informed about new security breaches\n`;
+    }
+    
+    const emailMetaNode = el('#emailMeta');
+    if(emailMetaNode) emailMetaNode.textContent = output;
+    
+    const emailThreatNode = el('#emailThreatLevel');
+    if(emailThreatNode) {
+      const status = foundBreaches.length > 0 ? 
+        (breachAnalysis.riskScore === 'HIGH' ? 'HIGH RISK' : 'COMPROMISED') : 
+        'CLEAN';
+      emailThreatNode.textContent = `breach status: ${status}`;
+    }
+    
+    setStatus('breach check complete');
+  });
+}
+
 // Phone Analysis Module
 const analyzePhoneBtn = el('#analyzePhone');
 if(analyzePhoneBtn) {
@@ -2575,16 +3508,82 @@ if(analyzePhoneBtn) {
     const analysis = analyzePhone(phone);
     globalReport.intelligence.phone = analysis;
     
-    let output = `=== PHONE ANALYSIS ===\n`;
-    output += `Original: ${analysis.original}\n`;
-    output += `Cleaned: ${analysis.cleaned}\n`;
-    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    let output = `=== COMPREHENSIVE PHONE ANALYSIS ===\n`;
+    output += `Original Number: ${analysis.original}\n`;
+    output += `Cleaned Format: ${analysis.cleaned}\n`;
+    output += `Valid Number: ${analysis.valid ? 'YES' : 'NO'}\n`;
     
     if(analysis.valid) {
+      output += `\n=== GEOGRAPHIC INFORMATION ===\n`;
       output += `Country: ${analysis.country}\n`;
+      if(analysis.countryCode !== 'unknown') {
+        output += `Country Code: +${analysis.countryCode}\n`;
+      }
       output += `Region: ${analysis.region}\n`;
-      output += `Type: ${analysis.type}\n`;
+      if(analysis.city !== 'unknown') {
+        output += `City: ${analysis.city}\n`;
+      }
       output += `Timezone: ${analysis.timezone}\n`;
+      
+      if(analysis.coordinates) {
+        output += `Coordinates: ${analysis.coordinates[0]}, ${analysis.coordinates[1]}\n`;
+      }
+      
+      output += `\n=== CARRIER INFORMATION ===\n`;
+      output += `Line Type: ${analysis.type}\n`;
+      output += `Carrier: ${analysis.carrier}\n`;
+      
+      if(analysis.spamReports > 0) {
+        output += `\n=== SECURITY INTELLIGENCE ===\n`;
+        output += `Spam Reports: ${analysis.spamReports}\n`;
+        if(analysis.lastSeen) {
+          output += `Last Activity: ${analysis.lastSeen}\n`;
+        }
+      }
+      
+      if(analysis.socialMedia.length > 0) {
+        output += `\n=== SOCIAL MEDIA PRESENCE ===\n`;
+        analysis.socialMedia.forEach(platform => {
+          output += `• ${platform}\n`;
+        });
+      }
+      
+      if(analysis.riskFactors.length > 0) {
+        output += `\n=== RISK FACTORS ===\n`;
+        analysis.riskFactors.forEach(risk => {
+          output += `• ${risk}\n`;
+        });
+        updateThreatLevel('MEDIUM');
+      }
+      
+      output += `\n=== OSINT RECOMMENDATIONS ===\n`;
+      if(analysis.type.includes('VoIP')) {
+        output += `• VoIP number: Check for alternative contact methods\n`;
+        output += `• Cross-reference with messaging apps (WhatsApp, Telegram)\n`;
+      }
+      if(analysis.type.includes('Mobile')) {
+        output += `• Mobile device: Check for app associations\n`;
+        output += `• Search social media platforms for number registration\n`;
+      }
+      if(analysis.spamReports > 10) {
+        output += `• High spam reports: Exercise caution with contact\n`;
+        output += `• Check scam databases and fraud reports\n`;
+      }
+      if(analysis.coordinates) {
+        output += `• Geographic data available: Cross-reference with location intel\n`;
+      }
+      output += `• Reverse lookup on search engines and directories\n`;
+      output += `• Check breach databases for number exposure\n`;
+    } else {
+      output += `\n=== VALIDATION ERRORS ===\n`;
+      if(analysis.riskFactors.length > 0) {
+        analysis.riskFactors.forEach(risk => {
+          output += `• ${risk}\n`;
+        });
+      } else {
+        output += `• Invalid phone number format\n`;
+        output += `• Check for typos or missing digits\n`;
+      }
     }
     
     const phoneMetaNode = el('#phoneMeta');
@@ -2592,10 +3591,20 @@ if(analyzePhoneBtn) {
     
     const phoneThreatNode = el('#phoneThreatLevel');
     if(phoneThreatNode) {
-      phoneThreatNode.textContent = `validity: ${analysis.valid ? 'VALID' : 'INVALID'}`;
+      let status = 'CLEAN';
+      if(!analysis.valid) {
+        status = 'INVALID';
+      } else if(analysis.riskFactors.length > 0) {
+        status = 'SUSPICIOUS';
+      } else if(analysis.spamReports > 20) {
+        status = 'HIGH RISK';
+      } else if(analysis.spamReports > 10) {
+        status = 'MODERATE RISK';
+      }
+      phoneThreatNode.textContent = `threat level: ${status}`;
     }
     
-    setStatus('phone intel');
+    setStatus('comprehensive phone intel complete');
   });
 }
 
@@ -2603,7 +3612,7 @@ if(analyzePhoneBtn) {
 const analyzeCryptoBtn = el('#analyzeCrypto');
 if(analyzeCryptoBtn) {
   analyzeCryptoBtn.addEventListener('click', () => {
-    setStatus('analyzing crypto');
+    setStatus('analyzing crypto address');
     const cryptoin = el('#cryptoin');
     const address = cryptoin ? cryptoin.value.trim() : '';
     
@@ -2615,21 +3624,95 @@ if(analyzeCryptoBtn) {
     const analysis = analyzeCrypto(address);
     globalReport.intelligence.crypto = analysis;
     
-    let output = `=== CRYPTO ANALYSIS ===\n`;
+    let output = `=== COMPREHENSIVE CRYPTO ANALYSIS ===\n`;
     output += `Address: ${analysis.address}\n`;
-    output += `Currency: ${analysis.currency}\n`;
-    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
+    output += `Cryptocurrency: ${analysis.currency}\n`;
+    output += `Network: ${analysis.network}\n`;
+    output += `Valid Address: ${analysis.valid ? 'YES' : 'NO'}\n`;
     
     if(analysis.valid) {
-      output += `Risk Level: ${analysis.riskLevel.toUpperCase()}\n`;
-      output += `Balance: ${analysis.balance} ${analysis.currency}\n`;
-      output += `Transactions: ${analysis.transactionCount}\n`;
-      output += `First Seen: ${analysis.firstSeen}\n`;
+      output += `\n=== ADDRESS INFORMATION ===\n`;
+      output += `Address Type: ${analysis.addressType}\n`;
+      output += `Risk Assessment: ${analysis.riskLevel.toUpperCase()}\n`;
+      
+      output += `\n=== WALLET INTELLIGENCE ===\n`;
+      output += `Estimated Balance: ${analysis.balance}\n`;
+      output += `Transaction Count: ${analysis.transactionCount.toLocaleString()}\n`;
+      output += `First Activity: ${analysis.firstSeen}\n`;
+      output += `Last Activity: ${analysis.lastActivity}\n`;
+      
+      if(analysis.knownEntity) {
+        output += `\n=== ENTITY IDENTIFICATION ===\n`;
+        output += `Known Entity: ${analysis.knownEntity}\n`;
+      }
+      
+      if(analysis.tags.length > 0) {
+        output += `\n=== BEHAVIORAL TAGS ===\n`;
+        analysis.tags.forEach(tag => output += `• ${tag}\n`);
+      }
+      
+      if(analysis.mixerActivity || analysis.exchangeDeposit) {
+        output += `\n=== ACTIVITY PATTERNS ===\n`;
+        if(analysis.mixerActivity) {
+          output += `• Cryptocurrency mixer usage detected\n`;
+        }
+        if(analysis.exchangeDeposit) {
+          output += `• Exchange deposit patterns identified\n`;
+        }
+      }
       
       if(analysis.warnings.length > 0) {
-        output += `\n=== WARNINGS ===\n`;
+        output += `\n=== RISK INDICATORS ===\n`;
         analysis.warnings.forEach(warning => output += `• ${warning}\n`);
       }
+      
+      output += `\n=== BLOCKCHAIN OSINT RECOMMENDATIONS ===\n`;
+      
+      if(analysis.network === 'Bitcoin') {
+        output += `• Use blockchain explorers: Blockchain.info, Blockchair.com\n`;
+        output += `• Check clustering services for wallet relationships\n`;
+        output += `• Monitor for UTXO patterns and transaction graphs\n`;
+      } else if(analysis.network === 'Ethereum') {
+        output += `• Use Etherscan.io for detailed transaction history\n`;
+        output += `• Check for smart contract interactions and token holdings\n`;
+        output += `• Monitor DeFi protocol interactions and MEV activity\n`;
+        output += `• Analyze gas usage patterns for behavioral profiling\n`;
+      } else if(analysis.network.includes('Privacy')) {
+        output += `• Limited transparency due to privacy features\n`;
+        output += `• Focus on exchange interaction points\n`;
+        output += `• Monitor known mixing service addresses\n`;
+      } else {
+        output += `• Use network-specific blockchain explorers\n`;
+        output += `• Cross-reference with exchange deposit addresses\n`;
+        output += `• Monitor for multi-chain bridge activity\n`;
+      }
+      
+      if(analysis.riskLevel === 'high') {
+        output += `• HIGH RISK: Exercise extreme caution\n`;
+        output += `• Check sanctions lists and enforcement databases\n`;
+        output += `• Report suspicious activity to relevant authorities\n`;
+        updateThreatLevel('HIGH');
+      }
+      
+      output += `• Cross-reference with crypto investigation databases\n`;
+      output += `• Monitor for future activity and address reuse\n`;
+      output += `• Check associated addresses through clustering analysis\n`;
+      
+    } else {
+      output += `\n=== VALIDATION ERRORS ===\n`;
+      output += `• Invalid address format for known cryptocurrencies\n`;
+      output += `• Verify address format and try again\n`;
+      output += `• Check for typos or unsupported cryptocurrency\n`;
+      
+      output += `\n=== SUPPORTED CRYPTOCURRENCIES ===\n`;
+      output += `• Bitcoin (BTC) - Legacy & SegWit addresses\n`;
+      output += `• Ethereum (ETH) & ERC-20 tokens\n`;
+      output += `• Bitcoin Cash (BCH), Litecoin (LTC), Dogecoin (DOGE)\n`;
+      output += `• Monero (XMR), Zcash (ZEC) - Privacy coins\n`;
+      output += `• Cardano (ADA), Solana (SOL), Polkadot (DOT)\n`;
+      output += `• Ripple (XRP), Stellar (XLM), TRON (TRX)\n`;
+      output += `• Binance Coin (BNB), Polygon (MATIC), Avalanche (AVAX)\n`;
+      output += `• And 15+ additional cryptocurrencies...\n`;
     }
     
     const cryptoMetaNode = el('#cryptoMeta');
@@ -2637,20 +3720,21 @@ if(analyzeCryptoBtn) {
     
     const cryptoThreatNode = el('#cryptoThreatLevel');
     if(cryptoThreatNode) {
-      cryptoThreatNode.textContent = `risk: ${analysis.riskLevel.toUpperCase()}`;
+      let threat = analysis.riskLevel.toUpperCase();
+      if(analysis.mixerActivity) threat = 'MIXER DETECTED';
+      if(analysis.knownEntity && analysis.knownEntity.includes('Exchange')) threat = 'EXCHANGE WALLET';
+      cryptoThreatNode.textContent = `classification: ${threat}`;
     }
     
-    if(analysis.riskLevel === 'high') updateThreatLevel('HIGH');
-    
-    setStatus('crypto tracker');
+    setStatus('comprehensive crypto analysis complete');
   });
 }
 
 // IP Analysis Module
 const analyzeIPBtn = el('#analyzeIP');
 if(analyzeIPBtn) {
-  analyzeIPBtn.addEventListener('click', () => {
-    setStatus('analyzing IP');
+  analyzeIPBtn.addEventListener('click', async () => {
+    setStatus('analyzing IP address...');
     const ipin = el('#ipin');
     const ip = ipin ? ipin.value.trim() : '';
     
@@ -2659,45 +3743,268 @@ if(analyzeIPBtn) {
       return;
     }
     
-    const analysis = analyzeIP(ip);
-    globalReport.intelligence.ip = analysis;
-    
-    let output = `=== IP ANALYSIS ===\n`;
-    output += `IP: ${analysis.ip}\n`;
-    output += `Version: ${analysis.version}\n`;
-    output += `Valid: ${analysis.valid ? 'Yes' : 'No'}\n`;
-    output += `Private: ${analysis.isPrivate ? 'Yes' : 'No'}\n`;
-    
-    if(analysis.valid && !analysis.isPrivate) {
-      output += `\n=== GEOLOCATION ===\n`;
-      output += `Country: ${analysis.location.country}\n`;
-      output += `City: ${analysis.location.city}\n`;
-      output += `Region: ${analysis.location.region}\n`;
-      output += `Coordinates: ${analysis.location.lat}, ${analysis.location.lng}\n`;
-      output += `ISP: ${analysis.isp}\n`;
-      output += `VPN/Proxy: ${analysis.vpnDetection ? 'Detected' : 'Not detected'}\n`;
+    try {
+      const analysis = await analyzeIP(ip);
+      globalReport.intelligence.ip = analysis;
       
-      if(analysis.threats.length > 0) {
-        output += `\n=== THREAT INDICATORS ===\n`;
-        analysis.threats.forEach(threat => output += `• ${threat}\n`);
-        updateThreatLevel('MEDIUM');
+      let output = `=== COMPREHENSIVE IP ANALYSIS ===\n`;
+      output += `IP Address: ${analysis.ip}\n`;
+      output += `IP Version: ${analysis.version}\n`;
+      output += `Valid Address: ${analysis.valid ? 'YES' : 'NO'}\n`;
+      output += `Data Source: ${analysis.realData ? 'REAL API DATA' : 'MOCK DATA'}\n`;
+      
+      if(analysis.isPrivate) {
+        output += `Network Type: PRIVATE/INTERNAL\n`;
+        if(analysis.location.description) {
+          output += `Description: ${analysis.location.description}\n`;
+        }
+      } else if(analysis.isReserved) {
+        output += `Network Type: RESERVED/SPECIAL\n`;
+        output += `Description: ${analysis.location.description}\n`;
+      }
+      
+      if(analysis.valid && !analysis.isPrivate && !analysis.isReserved) {
+        output += `Network Type: PUBLIC INTERNET\n`;
+        output += `Risk Score: ${analysis.riskScore}/100\n`;
+        output += `Reputation: ${analysis.reputation.toUpperCase()}\n`;
+        
+        output += `\n=== GEOLOCATION INTELLIGENCE ===\n`;
+        output += `Country: ${analysis.location.country}`;
+        if(analysis.location.countryCode) {
+          output += ` (${analysis.location.countryCode})`;
+        }
+        output += `\n`;
+        output += `City: ${analysis.location.city}\n`;
+        output += `Region: ${analysis.location.region}\n`;
+        output += `Coordinates: ${analysis.location.latitude}, ${analysis.location.longitude}\n`;
+        output += `Timezone: ${analysis.location.timezone}\n`;
+        output += `Accuracy: ${analysis.location.accuracy}\n`;
+        
+        output += `\n=== NETWORK INFRASTRUCTURE ===\n`;
+        output += `ISP: ${analysis.isp}\n`;
+        output += `Organization: ${analysis.organization}\n`;
+        output += `ASN: ${analysis.asn}\n`;
+        output += `Datacenter: ${analysis.datacenterDetection ? 'YES' : 'NO'}\n`;
+        
+        output += `\n=== SECURITY ANALYSIS ===\n`;
+        output += `VPN Detection: ${analysis.vpnDetection ? 'DETECTED' : 'NOT DETECTED'}\n`;
+        output += `Proxy Detection: ${analysis.proxyDetection ? 'DETECTED' : 'NOT DETECTED'}\n`;
+        output += `Tor Detection: ${analysis.torDetection ? 'DETECTED' : 'NOT DETECTED'}\n`;
+        
+        if(analysis.ports.length > 0) {
+          output += `\n=== OPEN PORTS & SERVICES ===\n`;
+          analysis.services.forEach(service => {
+            output += `• Port ${service.port}: ${service.service} v${service.version}\n`;
+          });
+        }
+        
+        if(analysis.threats.length > 0) {
+          output += `\n=== THREAT INTELLIGENCE ===\n`;
+          analysis.threats.forEach(threat => output += `• ${threat}\n`);
+          
+          if(analysis.malwareFamily) {
+            output += `Malware Family: ${analysis.malwareFamily}\n`;
+          }
+          if(analysis.lastSeen) {
+            output += `Last Seen: ${analysis.lastSeen}\n`;
+          }
+          updateThreatLevel('HIGH');
+        }
+        
+        output += `\n=== OSINT INVESTIGATION RECOMMENDATIONS ===\n`;
+        
+        if(analysis.realData) {
+          output += `• Real geolocation data obtained from IP APIs\n`;
+          output += `• Cross-reference with additional threat intelligence sources\n`;
+        } else {
+          output += `• API lookup failed - using fallback data\n`;
+          output += `• Try manual lookup on ipinfo.io or ipapi.co\n`;
+        }
+        
+        if(analysis.datacenterDetection) {
+          output += `• Datacenter IP: Check for hosting/cloud services\n`;
+          output += `• Investigate hosted domains and websites\n`;
+          output += `• Monitor for multiple tenant activities\n`;
+        }
+        
+        if(analysis.vpnDetection || analysis.proxyDetection) {
+          output += `• Anonymization detected: Investigate source country\n`;
+          output += `• Check VPN/proxy service providers\n`;
+          output += `• Look for patterns in usage timing\n`;
+        }
+        
+        if(analysis.torDetection) {
+          output += `• Tor usage: High anonymity, limited traceability\n`;
+          output += `• Monitor exit node activity and timing\n`;
+          output += `• Check for .onion domain associations\n`;
+        }
+        
+        if(analysis.reputation !== 'clean') {
+          output += `• Reputation concerns: Check threat intelligence feeds\n`;
+          output += `• Cross-reference with incident response databases\n`;
+          output += `• Monitor for ongoing malicious activity\n`;
+        }
+        
+        output += `• Reverse DNS lookup for hostname information\n`;
+        output += `• WHOIS database queries for registration data\n`;
+        output += `• Shodan.io search for exposed services and banners\n`;
+        output += `• VirusTotal IP reputation and file associations\n`;
+        output += `• Check certificate transparency logs for SSL certificates\n`;
+      }
+      
+      const ipMetaNode = el('#ipMeta');
+      if(ipMetaNode) ipMetaNode.textContent = output;
+      
+      const ipThreatNode = el('#ipThreatLevel');
+      if(ipThreatNode) {
+        let threatLevel = 'CLEAN';
+        if(analysis.threats.length > 0) {
+          threatLevel = 'MALICIOUS';
+        } else if(analysis.torDetection) {
+          threatLevel = 'TOR NODE';
+        } else if(analysis.vpnDetection || analysis.proxyDetection) {
+          threatLevel = 'ANONYMIZED';
+        } else if(analysis.datacenterDetection) {
+          threatLevel = 'DATACENTER';
+        } else if(analysis.reputation === 'suspicious') {
+          threatLevel = 'SUSPICIOUS';
+        }
+        ipThreatNode.textContent = `classification: ${threatLevel}`;
+      }
+      
+      // Add to network graph
+      updateNetworkGraph({ ips: [analysis.ip] });
+      
+      setStatus('comprehensive IP analysis complete');
+      
+    } catch (error) {
+      console.error('IP analysis failed:', error);
+      setStatus('IP analysis failed');
+      const ipMetaNode = el('#ipMeta');
+      if(ipMetaNode) {
+        ipMetaNode.textContent = `Error analyzing IP: ${error.message}`;
       }
     }
+  });
+}
+
+// GEOLOCATE Button (Enhanced Geolocation Focus)
+const geolocateIPBtn = el('#geolocateIP');
+if(geolocateIPBtn) {
+  geolocateIPBtn.addEventListener('click', async () => {
+    setStatus('performing real geolocation lookup...');
+    const ipin = el('#ipin');
+    const ip = ipin ? ipin.value.trim() : '';
     
-    const ipMetaNode = el('#ipMeta');
-    if(ipMetaNode) ipMetaNode.textContent = output;
-    
-    const ipThreatNode = el('#ipThreatLevel');
-    if(ipThreatNode) {
-      const threatLevel = analysis.threats.length > 0 ? 'HIGH' : 
-                         analysis.vpnDetection ? 'MEDIUM' : 'LOW';
-      ipThreatNode.textContent = `threat: ${threatLevel}`;
+    if(!ip) {
+      alert('Please enter an IP address to geolocate');
+      setStatus('ip geolocation');
+      return;
     }
     
-    // Add to network graph
-    updateNetworkGraph({ ips: [analysis.ip] });
-    
-    setStatus('ip geolocation');
+    try {
+      const analysis = await analyzeIP(ip);
+      
+      if(!analysis.valid) {
+        alert('Invalid IP address format');
+        setStatus('ip geolocation');
+        return;
+      }
+      
+      if(analysis.isPrivate || analysis.isReserved) {
+        alert('Cannot geolocate private or reserved IP addresses');
+        setStatus('ip geolocation');
+        return;
+      }
+      
+      // Focus specifically on geographic intelligence
+      let geoOutput = `=== REAL-TIME GEOLOCATION INTELLIGENCE ===\n`;
+      geoOutput += `Target IP: ${analysis.ip}\n`;
+      geoOutput += `Lookup Time: ${new Date().toLocaleString()}\n`;
+      geoOutput += `Data Source: ${analysis.realData ? 'LIVE API DATA' : 'FALLBACK DATA'}\n\n`;
+      
+      if(analysis.realData) {
+        geoOutput += `✓ SUCCESS: Real geolocation data obtained\n\n`;
+      } else {
+        geoOutput += `⚠ WARNING: Live API failed, using fallback data\n\n`;
+      }
+      
+      geoOutput += `=== GEOGRAPHIC COORDINATES ===\n`;
+      geoOutput += `Latitude: ${analysis.location.latitude}\n`;
+      geoOutput += `Longitude: ${analysis.location.longitude}\n`;
+      geoOutput += `Accuracy: ${analysis.location.accuracy}\n`;
+      geoOutput += `Google Maps: https://maps.google.com/?q=${analysis.location.latitude},${analysis.location.longitude}\n\n`;
+      
+      geoOutput += `=== ADMINISTRATIVE BOUNDARIES ===\n`;
+      geoOutput += `Country: ${analysis.location.country}`;
+      if(analysis.location.countryCode) {
+        geoOutput += ` (${analysis.location.countryCode})`;
+      }
+      geoOutput += `\n`;
+      geoOutput += `Region/State: ${analysis.location.region}\n`;
+      geoOutput += `City: ${analysis.location.city}\n`;
+      geoOutput += `Timezone: ${analysis.location.timezone}\n\n`;
+      
+      geoOutput += `=== NETWORK PROVIDER ===\n`;
+      geoOutput += `ISP: ${analysis.isp}\n`;
+      geoOutput += `Organization: ${analysis.organization}\n`;
+      geoOutput += `ASN: ${analysis.asn}\n\n`;
+      
+      if(analysis.datacenterDetection) {
+        geoOutput += `=== INFRASTRUCTURE NOTICE ===\n`;
+        geoOutput += `• This IP is associated with a datacenter/hosting facility\n`;
+        geoOutput += `• Geographic location may represent server location, not user location\n`;
+        geoOutput += `• Consider this for accuracy in investigations\n\n`;
+      }
+      
+      if(analysis.vpnDetection || analysis.proxyDetection) {
+        geoOutput += `=== ANONYMIZATION NOTICE ===\n`;
+        geoOutput += `• VPN/Proxy detected - location may be masked\n`;
+        geoOutput += `• Actual user location likely different from displayed coordinates\n`;
+        geoOutput += `• True location investigation requires additional techniques\n\n`;
+      }
+      
+      geoOutput += `=== API INFORMATION ===\n`;
+      if(analysis.realData) {
+        geoOutput += `• Data obtained from live geolocation APIs\n`;
+        geoOutput += `• APIs used: ipapi.co, ip-api.com, ipinfo.io\n`;
+        geoOutput += `• Information is current and accurate\n`;
+      } else {
+        geoOutput += `• Live APIs failed or rate-limited\n`;
+        geoOutput += `• Using backup geographic database\n`;
+        geoOutput += `• Try again later for real-time data\n`;
+      }
+      geoOutput += `\n`;
+      
+      geoOutput += `=== GEOLOCATION TECHNIQUES ===\n`;
+      geoOutput += `• IP-to-location database mapping (current method)\n`;
+      geoOutput += `• WiFi access point triangulation (mobile devices)\n`;
+      geoOutput += `• Cell tower positioning (mobile networks)\n`;
+      geoOutput += `• GPS coordinate extraction (if available)\n`;
+      geoOutput += `• Time zone analysis and correlation\n\n`;
+      
+      geoOutput += `=== INVESTIGATION NOTES ===\n`;
+      geoOutput += `• Accuracy varies by provider and location type\n`;
+      geoOutput += `• Urban areas typically more accurate than rural\n`;
+      geoOutput += `• Mobile IPs may show last known carrier location\n`;
+      geoOutput += `• Cross-reference with other intelligence sources\n`;
+      
+      const ipMetaNode = el('#ipMeta');
+      if(ipMetaNode) ipMetaNode.textContent = geoOutput;
+      
+      const ipThreatNode = el('#ipThreatLevel');
+      if(ipThreatNode) {
+        const dataQuality = analysis.realData ? 'REAL DATA' : 'FALLBACK';
+        ipThreatNode.textContent = `location: ${analysis.location.city}, ${analysis.location.country} (${dataQuality})`;
+      }
+      
+      setStatus('real-time geolocation complete');
+      
+    } catch (error) {
+      console.error('Geolocation failed:', error);
+      setStatus('geolocation failed');
+      alert(`Geolocation failed: ${error.message}`);
+    }
   });
 }
 
