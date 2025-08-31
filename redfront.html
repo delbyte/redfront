@@ -40,9 +40,9 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
 .page{min-height:calc(100vh - 100px)}
 
 /* Landing Page Styles */
-.command-grid{display:grid;grid-template-rows:auto 1fr;gap:20px;max-width:1200px;margin:0 auto}
-.mission-brief{max-width:600px}
-.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.command-grid{display:grid;grid-template-rows:auto 1fr;gap:20px;max-width:1400px;margin:0 auto}
+.mission-brief{max-width:700px}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
 
 .module-btn{
   background:linear-gradient(135deg,#0d0d0d,#050505);
@@ -2458,7 +2458,88 @@ if(copyHashBtn) {
   });
 }
 
-const copyNetworkDataBtn = el('#copyNetworkData');
+const copyUrlsBtn = el('#copyUrls');
+if(copyUrlsBtn) {
+  copyUrlsBtn.addEventListener('click', () => {
+    const scrapeData = globalReport.intelligence.scrape;
+    if(!scrapeData) return;
+    
+    const urls = scrapeData.links.map(link => link.url).join('\n');
+    navigator.clipboard.writeText(urls).then(
+      () => setStatus('copied URLs'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyEmailIntelBtn = el('#copyEmailIntel');
+if(copyEmailIntelBtn) {
+  copyEmailIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport.intelligence.email, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied email intel'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyPhoneIntelBtn = el('#copyPhoneIntel');
+if(copyPhoneIntelBtn) {
+  copyPhoneIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport.intelligence.phone, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied phone intel'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyCryptoIntelBtn = el('#copyCryptoIntel');
+if(copyCryptoIntelBtn) {
+  copyCryptoIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport.intelligence.crypto, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied crypto intel'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyIPIntelBtn = el('#copyIPIntel');
+if(copyIPIntelBtn) {
+  copyIPIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport.intelligence.ip, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied IP intel'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyUsernameIntelBtn = el('#copyUsernameIntel');
+if(copyUsernameIntelBtn) {
+  copyUsernameIntelBtn.addEventListener('click', () => {
+    const analysis = globalReport.intelligence.username;
+    if(!analysis) return;
+    
+    const report = `Username: ${analysis.username}\nPlatforms Found: ${analysis.totalFound}\n\nPlatforms:\n${analysis.platforms.map(p => `${p.name}: ${p.url}`).join('\n')}`;
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied username intel'),
+      () => setStatus('copy failed')
+    );
+  });
+}
+
+const copyMetadataIntelBtn = el('#copyMetadataIntel');
+if(copyMetadataIntelBtn) {
+  copyMetadataIntelBtn.addEventListener('click', () => {
+    const report = JSON.stringify(globalReport.intelligence.metadata, null, 2);
+    navigator.clipboard.writeText(report).then(
+      () => setStatus('copied metadata'),
+      () => setStatus('copy failed')
+    );
+  });
+}
 if(copyNetworkDataBtn) {
   copyNetworkDataBtn.addEventListener('click', () => {
     const networkData = {
