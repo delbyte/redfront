@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Redfront OSINT Brief — Single File</title>
+<title>Redfront OSINT Workbench — All-in-One Intelligence Analysis</title>
 <style>
 :root{
   --bg:#080808; --panel:#0f0f0f; --muted:#bfbfbf; --red:#c21a1a; --accent:#bf7b2d;
@@ -48,8 +48,8 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
       </g>
     </svg>
     <div>
-      <div class="h1">Redfront OSINT Brief</div>
-      <div class="small">Single-file tactical OSINT — client-side metadata & indicators</div>
+      <div class="h1">Redfront OSINT Workbench</div>
+      <div class="small">All-in-one tactical OSINT — multi-format analysis & intelligence extraction</div>
     </div>
     <div class="top-controls">
       <div class="badge smallmuted" id="status">idle</div>
@@ -61,11 +61,11 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
     <div class="panel">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
         <div style="flex:1">
-          <div class="small">Input (image or text)</div>
-          <div id="filedrop" class="filedrop" tabindex="0">Drag & drop JPG, or click to select. Or paste text into the box below.</div>
+          <div class="small">Input (files, URLs, or text)</div>
+          <div id="filedrop" class="filedrop" tabindex="0">Drag & drop files, or click to select. Supports images, documents, archives, executables.</div>
         </div>
         <div style="width:120px">
-          <div class="small">Hash</div>
+          <div class="small">File Hash</div>
           <div class="kv">
             <div style="color:#aaa;font-size:13px">SHA-256</div>
             <div id="hash" class="smallmuted">—</div>
@@ -76,11 +76,21 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
       </div>
 
       <div style="margin-top:10px">
-        <div class="small">Paste text / notes</div>
-        <textarea id="textin" placeholder="Paste a tweet, HTML snippet, or notes here..." style="width:100%;height:120px;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"></textarea>
+        <div class="small">URL / Domain Analysis</div>
+        <input id="urlin" placeholder="https://example.com or paste URLs here..." style="width:100%;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"/>
         <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-          <button id="analyzeText" class="button">ANALYZE TEXT</button>
-          <div class="hint">Extracts emails, domains, IPs, phone numbers, handles</div>
+          <button id="analyzeUrl" class="button">ANALYZE URL</button>
+          <div class="hint">Extracts domains, subdomains, parameters, potential IOCs</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="small">Text / Social Media Intelligence</div>
+        <textarea id="textin" placeholder="Paste tweets, posts, messages, source code, logs, or any text content..." style="width:100%;height:120px;margin-top:6px;padding:8px;border-radius:6px;background:#0b0b0b;border:1px solid rgba(255,255,255,.04);color:#eee"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+          <button id="analyzeText" class="button">EXTRACT INTEL</button>
+          <button id="analyzeSocial" class="button">SOCIAL ANALYSIS</button>
+          <div class="hint">Extracts emails, domains, IPs, phone numbers, handles, crypto addresses, timestamps</div>
         </div>
       </div>
     </div>
@@ -88,13 +98,12 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
     <div class="panel">
       <div style="display:flex;gap:8px;align-items:start;justify-content:space-between">
         <div style="flex:1">
-          <div class="small">Parsed metadata</div>
-          <div id="meta" class="console" aria-live="polite">No input yet.</div>
+          <div class="small">Analysis Results</div>
+          <div id="meta" class="console" aria-live="polite">No input yet. Drop files, paste URLs, or analyze text to begin.</div>
         </div>
         <div style="width:320px">
-          <div class="small">Map / preview</div>
+          <div class="small">Network Graph / Visualization</div>
           <div class="mapwrap" id="mapwrap">
-            <!-- simple equirect map -->
             <svg id="map" class="map" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <filter id="n">
@@ -104,31 +113,33 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
                 </filter>
               </defs>
               <rect width="360" height="180" fill="#0b0b0b"/>
-              <g id="markerLayer"></g>
-              <text x="50%" y="50%" fill="#6b6b6b" font-size="12" text-anchor="middle" dy=".35em">No geotagged image</text>
+              <g id="networkLayer"></g>
+              <text x="50%" y="50%" fill="#6b6b6b" font-size="12" text-anchor="middle" dy=".35em">Entity relationships will appear here</text>
             </svg>
             <svg class="grit" viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg"><rect width="360" height="180" filter="url(#n)" fill="#000"/></svg>
           </div>
 
           <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-            <button id="copySearch" class="copy" title="Copy search queries">COPY SEARCH</button>
-            <button id="downloadBtn" class="copy" title="Download artifact">DOWNLOAD FILE</button>
+            <button id="copyIntel" class="copy" title="Copy intelligence report">COPY INTEL</button>
+            <button id="copyIOCs" class="copy" title="Copy IOCs for SIEM">COPY IOCS</button>
             <div style="flex:1"></div>
-            <div class="smallmuted" id="coords">lat: — lon: —</div>
+            <div class="smallmuted" id="threatLevel">threat: — </div>
           </div>
         </div>
       </div>
 
       <div style="margin-top:10px" class="footer">
-        <div class="smallmuted">Everything processed locally. No network calls.</div>
-        <div class="smallmuted">Tip: export the JSON report and stash it in your case folder.</div>
+        <div class="smallmuted">Everything processed locally. No network calls. Privacy-focused OSINT.</div>
+        <div class="smallmuted">Tip: export intelligence reports in multiple formats for your investigation.</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ========= Utilities ========= */
+/* ========= REDFRONT OSINT WORKBENCH ========= */
+/* Advanced client-side intelligence analysis toolkit */
+
 const el = sel => document.querySelector(sel);
 const status = el('#status');
 function setStatus(s){ status.textContent = s; }
@@ -138,405 +149,731 @@ function ab2hex(buf){
   return a.map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-/* ========= SHA-256 (file fingerprint) ========= */
+/* ========= File Analysis & Hashing ========= */
 async function hashFile(blob){
   const buf = await blob.arrayBuffer();
   const h = await crypto.subtle.digest('SHA-256', buf);
   return ab2hex(h);
 }
 
-/* ========= EXIF parser (minimal: scans APP1 for "Exif" and reads TIFF tags) ========= */
-/* Reads JPEG APP1 Exif payload and returns selected tags incl GPS IFD */
-function parseEXIFFromJPEG(buffer){
-  const dv = new DataView(buffer);
-  let offset = 2; // skip SOI
-  const len = dv.byteLength;
-  while(offset < len){
-    // basic bounds checks before reads
-    if(offset + 4 > len) break;
-    if(dv.getUint8(offset) !== 0xFF) break;
-    const marker = dv.getUint8(offset+1);
-    const size = dv.getUint16(offset+2);
-    if(marker === 0xE1){ // APP1
-      // check for "Exif\0\0"
-      const start = offset + 4;
-      // ensure there's room for the Exif header + TIFF header
-      if(start + 6 <= len && getString(buffer, start, 4) === 'Exif'){
-        const tiffOffset = start + 6; // TIFF header (relative inside this buffer)
-        // pass an ArrayBuffer that starts at the TIFF header
-        return readTIFF(buffer.slice(tiffOffset));
-      }
-    }
-    offset += 2 + size;
-  }
-  return null;
-}
-
-function getString(buf, start, len){
-  return String.fromCharCode(...new Uint8Array(buf.slice(start, start+len)));
-}
-
-function readTIFF(buf){
-  const dv = new DataView(buf);
-  // minimal check: need at least 8 bytes for header + first IFD offset
-  if(dv.byteLength < 8) return null;
-  const little = dv.getUint16(0, false) === 0x4949; // II
-  const endian = little;
-  const getUint16 = (off)=>dv.getUint16(off, endian);
-  const getUint32 = (off)=>dv.getUint32(off, endian);
-  const getInt32 = (off)=>dv.getInt32(off, endian);
-
-  const firstIfdOffset = getUint32(4);
-  const tags = {};
-  function readIFD(ifdOffset){
-    // bounds: ensure we can read the entry count
-    if(ifdOffset + 2 > dv.byteLength) return 0;
-    const n = getUint16(ifdOffset);
-    const base = ifdOffset + 2;
-    for(let i=0;i<n;i++){
-      const o = base + i*12;
-      // ensure the full 12-byte directory entry fits
-      if(o + 12 > dv.byteLength) break;
-      const tag = getUint16(o);
-      const type = getUint16(o+2);
-      const count = getUint32(o+4);
-      const valueOffset = getUint32(o+8);
-      const val = readTagValue(type, count, valueOffset, o);
-      tags[tag] = val;
-    }
-    const nextPtrOff = base + n*12;
-    if(nextPtrOff + 4 > dv.byteLength) return 0;
-    const next = getUint32(nextPtrOff);
-    return next;
-  }
-  function readTagValue(type,count,vo){
-    // types size map
-    const typeSize = {1:1,2:1,3:2,4:4,5:8};
-    const entryInline = (count * (typeSize[type]||1)) <= 4;
-    // if value is stored inline in the directory entry, it's at offset (entryOffset + 8)
-    // note: we receive the entryOffset as a 4th arg when called from readIFD
-    const entryOffset = arguments[3] || 0;
-
-    if(type === 2){ // ASCII
-      if(entryInline){
-        const off = entryOffset + 8;
-        if(off + count > dv.byteLength) return null;
-        return getString(buf, off, count-1);
-      } else {
-        if(vo + count > dv.byteLength) return null;
-        return getString(buf, vo, count-1);
-      }
-    }
-    if(type === 3){ // SHORT
-      if(count === 1){
-        if(entryInline){
-          const off = entryOffset + 8;
-          if(off + 2 > dv.byteLength) return null;
-          return dv.getUint16(off, endian);
-        } else {
-          if(vo + 2 > dv.byteLength) return null;
-          return dv.getUint16(vo, endian);
-        }
-      }
-      // multiple shorts -> read from offset
-      if(!entryInline){
-        if(vo + count*2 > dv.byteLength) return null;
-        const out = [];
-        for(let i=0;i<count;i++) out.push(dv.getUint16(vo + i*2, endian));
-        return out;
-      }
-    }
-    if(type === 4){ // LONG
-      if(count === 1){
-        if(entryInline){
-          const off = entryOffset + 8;
-          if(off + 4 > dv.byteLength) return null;
-          return dv.getUint32(off, endian);
-        } else {
-          if(vo + 4 > dv.byteLength) return null;
-          return dv.getUint32(vo, endian);
-        }
-      }
-      // multiple longs
-      if(!entryInline){
-        if(vo + count*4 > dv.byteLength) return null;
-        const out = [];
-        for(let i=0;i<count;i++) out.push(dv.getUint32(vo + i*4, endian));
-        return out;
-      }
-    }
-    if(type === 5){ // RATIONAL (numerator/denominator pairs)
-      // vo is offset to numerator/denominator
-      if(vo + count*8 > dv.byteLength) return null;
-      // if count==1, return a single rational; otherwise return array
-      if(count === 1){
-        const num = dv.getUint32(vo, endian);
-        const den = dv.getUint32(vo+4, endian);
-        return den === 0 ? null : (num/den);
-      }
-      const arr = [];
-      for(let i=0;i<count;i++){
-        const off = vo + i*8;
-        const num = dv.getUint32(off, endian);
-        const den = dv.getUint32(off+4, endian);
-        arr.push(den === 0 ? null : (num/den));
-      }
-      return arr;
-    }
-    // fallback: return raw numeric offset or null if out of bounds
-    return (vo + 0 <= dv.byteLength) ? vo : null;
-  }
-
-  // helper to read rational arrays for GPS coords
-  function readRationals(offset,count){
-    const out = [];
-    // bounds check
-    if(offset + count*8 > dv.byteLength) return out;
-    for(let i=0;i<count;i++){
-      const num = dv.getUint32(offset + i*8, endian);
-      const den = dv.getUint32(offset + i*8 + 4, endian);
-      out.push(den === 0 ? null : num/den);
-    }
-    return out;
-  }
-
-  // read 0th IFD tags
-  const ifd0 = firstIfdOffset;
-  readIFD(ifd0);
-
-  // look for tag 0x8825 GPSInfo IFD pointer
-  const GPS_TAG = 0x8825;
-  const gps = {};
-  if(tags[GPS_TAG]){
-    const gpsOffset = tags[GPS_TAG];
-    // read GPS IFD entries
-    const n = dv.getUint16(gpsOffset, endian);
-    for(let i=0;i<n;i++){
-      const o = gpsOffset + 2 + i*12;
-      const tag = dv.getUint16(o, endian);
-      const type = dv.getUint16(o+2, endian);
-      const count = dv.getUint32(o+4, endian);
-      const valueOffset = dv.getUint32(o+8, endian);
-      // GPS tags of interest:
-      // 0x0001: GPSLatitudeRef (ASCII)
-      // 0x0002: GPSLatitude (3 rationals)
-      // 0x0003: GPSLongitudeRef
-      // 0x0004: GPSLongitude
-      // 0x0006: GPSAltitude (rational)
-      if(tag===0x0001 || tag===0x0003){ // ASCII
-        gps[tag] = getString(buf, valueOffset, count-1);
-      } else if(tag===0x0002 || tag===0x0004){
-        // read 3 rationals
-        gps[tag] = readRationals(valueOffset, count);
-      } else if(tag===0x0006){
-        const num = dv.getUint32(valueOffset, endian);
-        const den = dv.getUint32(valueOffset+4, endian);
-        gps[tag] = num/den;
-      }
-    }
-  }
-
-  // get some human tags: 0x010F Make, 0x0110 Model, 0x0132 DateTime
-  const out = {
-    make: tags[0x010F] || null,
-    model: tags[0x0110] || null,
-    datetime: tags[0x0132] || null,
-    gps: gps && Object.keys(gps).length ? gps : null
+async function analyzeFileHeader(blob){
+  const header = blob.slice(0, 512);
+  const buf = await header.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  
+  // File signature detection
+  const signatures = {
+    'PNG': [0x89, 0x50, 0x4E, 0x47],
+    'JPEG': [0xFF, 0xD8, 0xFF],
+    'PDF': [0x25, 0x50, 0x44, 0x46],
+    'ZIP': [0x50, 0x4B, 0x03, 0x04],
+    'PE/EXE': [0x4D, 0x5A], // MZ header
+    'ELF': [0x7F, 0x45, 0x4C, 0x46],
+    'GIF': [0x47, 0x49, 0x46, 0x38],
+    'WEBP': [0x52, 0x49, 0x46, 0x46], // RIFF
+    'MP4': [0x66, 0x74, 0x79, 0x70], // ftyp (offset 4)
+    'DOCX': [0x50, 0x4B, 0x03, 0x04], // Office Open XML
   };
-  return out;
-}
-
-// convert GPS rationals [deg, min, sec] + ref to decimal
-function gpsToDecimal(arr, ref){
-  if(!arr || arr.length < 3) return null;
-  const deg = arr[0];
-  const min = arr[1];
-  const sec = arr[2];
-  let dec = deg + (min/60) + (sec/3600);
-  if(ref === 'S' || ref === 'W') dec = -dec;
-  return dec;
-}
-
-/* ========= Indicator extraction from text ========= */
-function extractIndicators(text){
-  const out = {emails:[],domains:[],ips:[],phones:[],handles:[]};
-  // basic regexes (not perfect but practical)
-  const emailRe = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-  const ipRe = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
-  const domainRe = /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b/gi;
-  const phoneRe = /(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/g;
-  const handleRe = /@([A-Za-z0-9_]{3,30})/g;
-
-  const addUnique = (arr, v)=>{ if(!v) return; if(!arr.includes(v)) arr.push(v) };
-
-  let m;
-  while(m = emailRe.exec(text)) addUnique(out.emails, m[0]);
-  while(m = ipRe.exec(text)) addUnique(out.ips, m[0]);
-  while(m = handleRe.exec(text)) addUnique(out.handles, '@'+m[1]);
-  while(m = domainRe.exec(text)) addUnique(out.domains, m[0]);
-  while(m = phoneRe.exec(text)) {
-    const s = m[0].replace(/\s+/g,'');
-    if(s.length>=7 && s.length<=15) addUnique(out.phones, m[0]);
+  
+  for(const [type, sig] of Object.entries(signatures)){
+    if(sig.every((byte, i) => bytes[i] === byte || (type === 'MP4' && i < 4 && bytes[i+4] === byte))){
+      return { type, suspicious: ['PE/EXE', 'ELF'].includes(type) };
+    }
   }
-  // remove emails from domains list
-  out.domains = out.domains.filter(d=> !out.emails.some(e=> e.includes(d)));
-  return out;
+  
+  return { type: 'Unknown', suspicious: false };
 }
 
-/* ========= UI interactions ========= */
+/* ========= Advanced Indicator Extraction ========= */
+function extractIntelligence(text){
+  const intel = {
+    emails: [], domains: [], ips: [], phones: [], handles: [], 
+    cryptoAddresses: [], urls: [], hashes: [], cves: [], 
+    coordinates: [], timestamps: [], userAgents: [],
+    suspiciousStrings: [], base64Strings: []
+  };
+  
+  // Enhanced regex patterns for comprehensive extraction
+  const patterns = {
+    email: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+    ip: /\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b/g,
+    domain: /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b/gi,
+    phone: /(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/g,
+    handle: /@([A-Za-z0-9_]{3,30})/g,
+    url: /https?:\/\/[^\s<>"']+/gi,
+    btcAddress: /\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b/g,
+    ethAddress: /\b0x[a-fA-F0-9]{40}\b/g,
+    md5: /\b[a-f0-9]{32}\b/gi,
+    sha1: /\b[a-f0-9]{40}\b/gi,
+    sha256: /\b[a-f0-9]{64}\b/gi,
+    cve: /CVE-\d{4}-\d{4,}/gi,
+    coordinates: /[-+]?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),\s*[-+]?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?)/g,
+    timestamp: /\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d{3})?(?:Z|[+-]\d{2}:?\d{2})?/g,
+    userAgent: /Mozilla\/[\d.]+\s*\([^)]+\)[^;]*/gi,
+    base64: /(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/g
+  };
+  
+  const addUnique = (arr, val) => { if(val && !arr.includes(val)) arr.push(val); };
+  
+  // Extract all patterns
+  let match;
+  for(const [key, regex] of Object.entries(patterns)){
+    while((match = regex.exec(text)) !== null){
+      const value = match[0];
+      
+      if(key === 'handle') addUnique(intel.handles, '@' + match[1]);
+      else if(key === 'btcAddress' || key === 'ethAddress') addUnique(intel.cryptoAddresses, value);
+      else if(key === 'md5' || key === 'sha1' || key === 'sha256') addUnique(intel.hashes, value);
+      else if(key === 'base64' && value.length > 20) addUnique(intel.base64Strings, value);
+      else if(intel[key + 's']) addUnique(intel[key + 's'], value);
+      else if(intel[key]) addUnique(intel[key], value);
+    }
+  }
+  
+  // Filter domains to remove email domains
+  intel.domains = intel.domains.filter(d => !intel.emails.some(e => e.includes(d)));
+  
+  // Detect suspicious strings
+  const suspiciousPatterns = [
+    /powershell|cmd\.exe|bash|\/bin\/sh/gi,
+    /eval\s*\(|exec\s*\(|system\s*\(/gi,
+    /base64\s*-d|atob\s*\(/gi,
+    /wget|curl|invoke-webrequest/gi
+  ];
+  
+  suspiciousPatterns.forEach(pattern => {
+    while((match = pattern.exec(text)) !== null){
+      addUnique(intel.suspiciousStrings, match[0]);
+    }
+  });
+  
+  return intel;
+}
+
+/* ========= URL Analysis ========= */
+function analyzeURL(url){
+  try {
+    const parsed = new URL(url);
+    const analysis = {
+      protocol: parsed.protocol,
+      hostname: parsed.hostname,
+      port: parsed.port || (parsed.protocol === 'https:' ? '443' : '80'),
+      path: parsed.pathname,
+      query: parsed.search,
+      fragment: parsed.hash,
+      subdomains: [],
+      parameters: {},
+      suspiciousIndicators: []
+    };
+    
+    // Extract subdomains
+    const parts = parsed.hostname.split('.');
+    if(parts.length > 2){
+      analysis.subdomains = parts.slice(0, -2);
+    }
+    
+    // Parse parameters
+    if(parsed.search){
+      const params = new URLSearchParams(parsed.search);
+      for(const [key, value] of params){
+        analysis.parameters[key] = value;
+      }
+    }
+    
+    // Detect suspicious indicators
+    const suspicious = [
+      { pattern: /bit\.ly|tinyurl|t\.co|goo\.gl/, indicator: 'URL_SHORTENER' },
+      { pattern: /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, indicator: 'IP_ADDRESS_HOST' },
+      { pattern: /[a-f0-9]{8,}/, indicator: 'HEX_SUBDOMAIN' },
+      { pattern: /\.tk$|\.ml$|\.ga$|\.cf$/, indicator: 'SUSPICIOUS_TLD' },
+      { pattern: /admin|login|secure|update|verify/, indicator: 'PHISHING_KEYWORDS' }
+    ];
+    
+    suspicious.forEach(({pattern, indicator}) => {
+      if(pattern.test(url)){
+        analysis.suspiciousIndicators.push(indicator);
+      }
+    });
+    
+    return analysis;
+  } catch(e) {
+    return { error: 'Invalid URL format' };
+  }
+}
+
+/* ========= Social Media Intelligence ========= */
+function analyzeSocialMedia(text){
+  const social = {
+    platforms: [],
+    mentions: [],
+    hashtags: [],
+    sentiment: 'neutral',
+    languages: [],
+    engagement: {}
+  };
+  
+  // Platform detection
+  const platforms = {
+    twitter: /@[A-Za-z0-9_]+|twitter\.com|t\.co/g,
+    instagram: /instagram\.com|@[a-zA-Z0-9._]+/g,
+    facebook: /facebook\.com|fb\.com/g,
+    linkedin: /linkedin\.com|in\//g,
+    telegram: /t\.me\/|@[A-Za-z0-9_]+bot/g,
+    discord: /discord\.gg\/|discord\.com/g,
+    reddit: /reddit\.com\/r\/|\/u\//g,
+    github: /github\.com/g
+  };
+  
+  Object.entries(platforms).forEach(([platform, regex]) => {
+    if(regex.test(text)){
+      social.platforms.push(platform);
+    }
+  });
+  
+  // Extract hashtags
+  const hashtagRegex = /#[A-Za-z0-9_]+/g;
+  let match;
+  while((match = hashtagRegex.exec(text)) !== null){
+    social.hashtags.push(match[0]);
+  }
+  
+  // Basic sentiment analysis
+  const positiveWords = /\b(good|great|awesome|love|amazing|excellent|perfect|wonderful)\b/gi;
+  const negativeWords = /\b(bad|terrible|awful|hate|horrible|disgusting|worst)\b/gi;
+  
+  const positiveCount = (text.match(positiveWords) || []).length;
+  const negativeCount = (text.match(negativeWords) || []).length;
+  
+  if(positiveCount > negativeCount) social.sentiment = 'positive';
+  else if(negativeCount > positiveCount) social.sentiment = 'negative';
+  
+  return social;
+}
+
+/* ========= Threat Assessment ========= */
+function assessThreat(intel, fileInfo){
+  let score = 0;
+  const indicators = [];
+  
+  // File-based indicators
+  if(fileInfo?.suspicious){
+    score += 30;
+    indicators.push('SUSPICIOUS_FILE_TYPE');
+  }
+  
+  // Network indicators
+  if(intel.ips?.length > 5){
+    score += 20;
+    indicators.push('MULTIPLE_IP_ADDRESSES');
+  }
+  
+  if(intel.cryptoAddresses?.length > 0){
+    score += 25;
+    indicators.push('CRYPTOCURRENCY_ADDRESSES');
+  }
+  
+  if(intel.suspiciousStrings?.length > 0){
+    score += 40;
+    indicators.push('SUSPICIOUS_COMMANDS');
+  }
+  
+  if(intel.base64Strings?.length > 0){
+    score += 15;
+    indicators.push('BASE64_ENCODED_DATA');
+  }
+  
+  if(intel.cves?.length > 0){
+    score += 35;
+    indicators.push('CVE_REFERENCES');
+  }
+  
+  // Determine threat level
+  let level = 'LOW';
+  if(score >= 70) level = 'CRITICAL';
+  else if(score >= 50) level = 'HIGH';
+  else if(score >= 30) level = 'MEDIUM';
+  
+  return { level, score, indicators };
+}
+
+/* ========= Intelligence Search Queries ========= */
+function buildIntelQueries(intel){
+  const queries = [];
+  
+  // IOC-based queries
+  (intel.ips || []).forEach(ip => {
+    queries.push(`"${ip}" filetype:txt OR filetype:log`);
+    queries.push(`site:virustotal.com "${ip}"`);
+  });
+  
+  (intel.domains || []).forEach(domain => {
+    queries.push(`site:${domain} OR "${domain}" -site:${domain}`);
+    queries.push(`"${domain}" malware OR phishing OR threat`);
+  });
+  
+  (intel.hashes || []).forEach(hash => {
+    queries.push(`"${hash}" filetype:txt OR filetype:log`);
+    queries.push(`site:virustotal.com "${hash}"`);
+  });
+  
+  (intel.emails || []).forEach(email => {
+    queries.push(`"${email}" -site:${email.split('@')[1]}`);
+  });
+  
+  (intel.handles || []).forEach(handle => {
+    queries.push(`"${handle}" site:twitter.com`);
+    queries.push(`"${handle.replace('@', '')}" social media`);
+  });
+  
+  return queries.slice(0, 12); // Top 12 most relevant
+}
+
+/* ========= Network Visualization ========= */
+function updateNetworkGraph(intel){
+  const networkLayer = el('#networkLayer');
+  networkLayer.innerHTML = '';
+  
+  // Clear placeholder text
+  const placeholder = el('#map text');
+  if(placeholder) placeholder.style.display = 'none';
+  
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const entities = [];
+  
+  // Collect all entities with types
+  (intel.domains || []).forEach(d => entities.push({value: d, type: 'domain', color: '#bf7b2d'}));
+  (intel.ips || []).forEach(ip => entities.push({value: ip, type: 'ip', color: '#c21a1a'}));
+  (intel.emails || []).forEach(e => entities.push({value: e, type: 'email', color: '#2d7bbf'}));
+  (intel.handles || []).forEach(h => entities.push({value: h, type: 'handle', color: '#7b2dbf'}));
+  (intel.phones || []).forEach(p => entities.push({value: p, type: 'phone', color: '#2dbf7b'}));
+  
+  if(entities.length === 0) {
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', '50%');
+    text.setAttribute('y', '50%');
+    text.setAttribute('fill', '#6b6b6b');
+    text.setAttribute('font-size', '12');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dy', '.35em');
+    text.textContent = 'No entities to visualize';
+    networkLayer.appendChild(text);
+    return;
+  }
+  
+  // Limit entities and create network layout
+  const maxEntities = 12;
+  const nodes = entities.slice(0, maxEntities);
+  
+  // Central hub for connected entities
+  const centerX = 180, centerY = 90;
+  
+  // Draw connections first (behind nodes)
+  if(nodes.length > 1) {
+    nodes.forEach((node, i) => {
+      // Connect domains to emails from same domain
+      if(node.type === 'domain') {
+        nodes.forEach((other, j) => {
+          if(other.type === 'email' && other.value.includes(node.value)) {
+            const angle1 = (i / nodes.length) * 2 * Math.PI;
+            const angle2 = (j / nodes.length) * 2 * Math.PI;
+            const x1 = centerX + Math.cos(angle1) * 70;
+            const y1 = centerY + Math.sin(angle1) * 50;
+            const x2 = centerX + Math.cos(angle2) * 70;
+            const y2 = centerY + Math.sin(angle2) * 50;
+            
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#444');
+            line.setAttribute('stroke-width', '1');
+            line.setAttribute('opacity', '0.6');
+            networkLayer.appendChild(line);
+          }
+        });
+      }
+    });
+  }
+  
+  // Draw nodes
+  nodes.forEach((node, i) => {
+    const angle = (i / nodes.length) * 2 * Math.PI;
+    const radius = nodes.length > 6 ? 70 : 50;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * (radius * 0.7); // Flatten vertically
+    
+    // Node circle
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', node.type === 'ip' ? '5' : '4');
+    circle.setAttribute('fill', node.color);
+    circle.setAttribute('stroke', '#fff');
+    circle.setAttribute('stroke-width', '1');
+    circle.setAttribute('opacity', '0.9');
+    
+    // Add subtle glow for IPs (potential threats)
+    if(node.type === 'ip') {
+      circle.setAttribute('filter', 'drop-shadow(0 0 3px #c21a1a)');
+    }
+    
+    // Node label
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y - 10);
+    text.setAttribute('fill', '#ddd');
+    text.setAttribute('font-size', '8');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-weight', '500');
+    
+    // Truncate long labels intelligently
+    let label = node.value;
+    if(node.type === 'email' && label.length > 20) {
+      const parts = label.split('@');
+      label = parts[0].substring(0, 8) + '...@' + parts[1];
+    } else if(label.length > 15) {
+      label = label.substring(0, 12) + '...';
+    }
+    text.textContent = label;
+    
+    // Type indicator
+    const typeText = document.createElementNS(svgNS, 'text');
+    typeText.setAttribute('x', x);
+    typeText.setAttribute('y', y + 15);
+    typeText.setAttribute('fill', node.color);
+    typeText.setAttribute('font-size', '6');
+    typeText.setAttribute('text-anchor', 'middle');
+    typeText.setAttribute('opacity', '0.8');
+    typeText.textContent = node.type.toUpperCase();
+    
+    networkLayer.appendChild(circle);
+    networkLayer.appendChild(text);
+    networkLayer.appendChild(typeText);
+  });
+  
+  // Add entity count indicator
+  if(entities.length > maxEntities) {
+    const moreText = document.createElementNS(svgNS, 'text');
+    moreText.setAttribute('x', '320');
+    moreText.setAttribute('y', '170');
+    moreText.setAttribute('fill', '#888');
+    moreText.setAttribute('font-size', '10');
+    moreText.setAttribute('text-anchor', 'end');
+    moreText.textContent = `+${entities.length - maxEntities} more entities`;
+    networkLayer.appendChild(moreText);
+  }
+  
+  // Legend
+  const legendY = 15;
+  const legendItems = [
+    {type: 'IP', color: '#c21a1a'},
+    {type: 'Domain', color: '#bf7b2d'},
+    {type: 'Email', color: '#2d7bbf'},
+    {type: 'Handle', color: '#7b2dbf'},
+    {type: 'Phone', color: '#2dbf7b'}
+  ];
+  
+  legendItems.forEach((item, i) => {
+    const x = 10 + i * 55;
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', legendY);
+    circle.setAttribute('r', '3');
+    circle.setAttribute('fill', item.color);
+    
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x + 8);
+    text.setAttribute('y', legendY + 1);
+    text.setAttribute('fill', '#999');
+    text.setAttribute('font-size', '8');
+    text.textContent = item.type;
+    
+    networkLayer.appendChild(circle);
+    networkLayer.appendChild(text);
+  });
+}
+
+/* ========= UI Event Handlers ========= */
 const filedrop = el('#filedrop');
 const textin = el('#textin');
+const urlin = el('#urlin');
 const metaNode = el('#meta');
 const hashNode = el('#hash');
-const coordsNode = el('#coords');
-const markerLayer = el('#markerLayer');
-let currentReport = {sources:[],indicators:{},meta:{},hashes:{}}; // accumulates
+const threatLevelNode = el('#threatLevel');
+let currentReport = {
+  timestamp: Date.now(),
+  sources: [],
+  intelligence: {},
+  threats: {},
+  queries: [],
+  files: {}
+};
 
-filedrop.addEventListener('click', ()=> {
+// File handling
+filedrop.addEventListener('click', () => {
   const inp = document.createElement('input');
-  inp.type='file'; inp.accept='image/jpeg,image/jpg';
-  inp.onchange = ()=> handleFile(inp.files[0]);
+  inp.type = 'file';
+  inp.multiple = true;
+  // Accept all file types for comprehensive analysis
+  inp.onchange = () => Array.from(inp.files).forEach(handleFile);
   inp.click();
 });
 
-filedrop.addEventListener('dragover', e=>{ e.preventDefault(); filedrop.style.background='rgba(255,0,0,.03)'; });
-filedrop.addEventListener('dragleave', e=>{ filedrop.style.background=''; });
-filedrop.addEventListener('drop', e=>{ e.preventDefault(); filedrop.style.background=''; const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
+filedrop.addEventListener('dragover', e => {
+  e.preventDefault();
+  filedrop.style.background = 'rgba(255,0,0,.03)';
+});
+
+filedrop.addEventListener('dragleave', e => {
+  filedrop.style.background = '';
+});
+
+filedrop.addEventListener('drop', e => {
+  e.preventDefault();
+  filedrop.style.background = '';
+  const files = Array.from(e.dataTransfer.files);
+  files.forEach(handleFile);
+});
 
 async function handleFile(file){
-  setStatus('processing file');
-  currentReport.sources.push({filename:file.name,size:file.size,type:file.type,ts:Date.now()});
-  // compute hash
-  try{
-    const h = await hashFile(file);
-    hashNode.textContent = h;
-    currentReport.hashes[file.name] = h;
-  }catch(e){ hashNode.textContent = 'err'; }
-  // read header bytes for EXIF
-  const header = await file.slice(0, 128000).arrayBuffer(); // first 128KB should contain APP1
-  const exif = parseEXIFFromJPEG(header);
-  let outText = '';
-  if(exif){
-    outText += `Make: ${exif.make||'—'}\n`;
-    outText += `Model: ${exif.model||'—'}\n`;
-    outText += `DateTime: ${exif.datetime||'—'}\n`;
-    if(exif.gps){
-      const lat = gpsToDecimal(exif.gps[0x0002], exif.gps[0x0001]);
-      const lon = gpsToDecimal(exif.gps[0x0004], exif.gps[0x0003]);
-      outText += `GPS lat: ${lat!==null?lat.toFixed(6):'—'} lon: ${lon!==null?lon.toFixed(6):'—'}\n`;
-      currentReport.meta.gps = {lat,lon};
-      updateMap(lat,lon);
-      coordsNode.textContent = `lat: ${lat!==null?lat.toFixed(6):'—'} lon: ${lon!==null?lon.toFixed(6):'—'}`;
-    } else {
-      outText += 'GPS: —\n';
-      clearMap();
-      coordsNode.textContent = 'lat: — lon: —';
+  setStatus('analyzing file');
+  
+  try {
+    const [hash, fileInfo] = await Promise.all([
+      hashFile(file),
+      analyzeFileHeader(file)
+    ]);
+    
+    hashNode.textContent = hash;
+    currentReport.files[file.name] = {
+      hash,
+      size: file.size,
+      type: file.type,
+      detected: fileInfo.type,
+      suspicious: fileInfo.suspicious,
+      timestamp: Date.now()
+    };
+    
+    currentReport.sources.push({
+      type: 'file',
+      name: file.name,
+      timestamp: Date.now()
+    });
+    
+    const threat = assessThreat({}, fileInfo);
+    updateThreatDisplay(threat);
+    
+    let output = `=== FILE ANALYSIS ===\n`;
+    output += `Name: ${file.name}\n`;
+    output += `Size: ${(file.size / 1024).toFixed(1)} KB\n`;
+    output += `Type: ${fileInfo.type}${fileInfo.suspicious ? ' (SUSPICIOUS)' : ''}\n`;
+    output += `SHA-256: ${hash}\n`;
+    output += `Threat Level: ${threat.level}\n`;
+    
+    if(threat.indicators.length > 0){
+      output += `\nThreat Indicators:\n`;
+      threat.indicators.forEach(ind => output += `• ${ind}\n`);
     }
-    currentReport.meta.datetime = exif.datetime || null;
-    currentReport.meta.make = exif.make || null;
-    currentReport.meta.model = exif.model || null;
-  } else {
-    outText = 'No EXIF found (or not a JPG with EXIF).';
-    clearMap();
+    
+    metaNode.textContent = output;
+    
+  } catch(e) {
+    hashNode.textContent = 'error';
+    metaNode.textContent = `Error analyzing file: ${e.message}`;
   }
-  metaNode.textContent = outText;
+  
   setStatus('idle');
 }
 
-/* ========= Map helper (simple equirect projection) ========= */
-function updateMap(lat,lon){
-  markerLayer.innerHTML = '';
-  if(lat===null || lon===null || isNaN(lat) || isNaN(lon)) return;
-  // map viewBox 0..360 (lon -180..180 => 0..360), 0..180 (lat 90..-90)
-  const x = (lon + 180) * (360/360);
-  const y = (90 - lat) * (180/180);
-  // create marker
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const g = document.createElementNS(svgNS,'g');
-  const circ = document.createElementNS(svgNS,'circle');
-  circ.setAttribute('cx', x);
-  circ.setAttribute('cy', y);
-  circ.setAttribute('r', '3');
-  circ.setAttribute('fill', '#c21a1a');
-  circ.setAttribute('stroke', '#fff');
-  circ.setAttribute('stroke-width', '0.6');
-  g.appendChild(circ);
-  const t = document.createElementNS(svgNS,'text');
-  t.setAttribute('x', x+6);
-  t.setAttribute('y', y+4);
-  t.setAttribute('fill','#ddd');
-  t.setAttribute('font-size','9');
-  t.textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-  g.appendChild(t);
-  markerLayer.appendChild(g);
-}
-
-function clearMap(){ markerLayer.innerHTML = ''; }
-
-/* ========= Text analysis & search gen ========= */
-el('#analyzeText').addEventListener('click', ()=> {
-  setStatus('analyzing text');
-  const txt = textin.value || '';
-  const inds = extractIndicators(txt);
-  currentReport.indicators = inds;
-  // build output
-  let out = '';
-  out += '=== Indicators ===\n';
-  out += 'Emails: ' + (inds.emails.length?inds.emails.join(', '):'—') + '\n';
-  out += 'Domains: ' + (inds.domains.length?inds.domains.join(', '):'—') + '\n';
-  out += 'IPs: ' + (inds.ips.length?inds.ips.join(', '):'—') + '\n';
-  out += 'Phones: ' + (inds.phones.length?inds.phones.join(', '):'—') + '\n';
-  out += 'Handles: ' + (inds.handles.length?inds.handles.join(', '):'—') + '\n\n';
-  out += '=== Search queries ===\n';
-  const queries = buildSearchQueries(inds);
-  out += queries.map(q=>'• '+q).join('\n');
-  metaNode.textContent = out;
+// URL Analysis
+el('#analyzeUrl').addEventListener('click', () => {
+  setStatus('analyzing URL');
+  const url = urlin.value.trim();
+  
+  if(!url){
+    setStatus('idle');
+    return;
+  }
+  
+  const analysis = analyzeURL(url);
+  currentReport.sources.push({
+    type: 'url',
+    value: url,
+    timestamp: Date.now()
+  });
+  
+  let output = `=== URL ANALYSIS ===\n`;
+  if(analysis.error){
+    output += `Error: ${analysis.error}\n`;
+  } else {
+    output += `Protocol: ${analysis.protocol}\n`;
+    output += `Host: ${analysis.hostname}\n`;
+    output += `Port: ${analysis.port}\n`;
+    output += `Path: ${analysis.path}\n`;
+    
+    if(analysis.subdomains.length > 0){
+      output += `Subdomains: ${analysis.subdomains.join(', ')}\n`;
+    }
+    
+    if(Object.keys(analysis.parameters).length > 0){
+      output += `\nParameters:\n`;
+      Object.entries(analysis.parameters).forEach(([key, val]) => {
+        output += `• ${key}: ${val}\n`;
+      });
+    }
+    
+    if(analysis.suspiciousIndicators.length > 0){
+      output += `\nSuspicious Indicators:\n`;
+      analysis.suspiciousIndicators.forEach(ind => output += `• ${ind}\n`);
+    }
+    
+    currentReport.intelligence.url = analysis;
+    updateNetworkGraph({ domains: [analysis.hostname] });
+  }
+  
+  metaNode.textContent = output;
   setStatus('idle');
 });
 
-function buildSearchQueries(ind){
-  const q = [];
-  (ind.emails||[]).forEach(e => q.push(`"${e}"`));
-  (ind.domains||[]).forEach(d => q.push(`site:${d} OR "${d}"`));
-  (ind.ips||[]).forEach(i => q.push(`"${i}"`));
-  (ind.handles||[]).forEach(h => q.push(`"${h}" OR "${h.replace('@','')}"`));
-  if(!q.length) q.push('site:twitter.com "username"');
-  return q.slice(0,8);
+// Text Intelligence Extraction
+el('#analyzeText').addEventListener('click', () => {
+  setStatus('extracting intelligence');
+  const text = textin.value || '';
+  const intel = extractIntelligence(text);
+  
+  currentReport.intelligence.extracted = intel;
+  currentReport.sources.push({
+    type: 'text',
+    length: text.length,
+    timestamp: Date.now()
+  });
+  
+  const threat = assessThreat(intel);
+  updateThreatDisplay(threat);
+  currentReport.threats = threat;
+  
+  const queries = buildIntelQueries(intel);
+  currentReport.queries = queries;
+  
+  let output = `=== INTELLIGENCE EXTRACTION ===\n`;
+  output += `Emails: ${intel.emails.length ? intel.emails.slice(0,5).join(', ') + (intel.emails.length > 5 ? '...' : '') : '—'}\n`;
+  output += `Domains: ${intel.domains.length ? intel.domains.slice(0,5).join(', ') + (intel.domains.length > 5 ? '...' : '') : '—'}\n`;
+  output += `IPs: ${intel.ips.length ? intel.ips.slice(0,5).join(', ') + (intel.ips.length > 5 ? '...' : '') : '—'}\n`;
+  output += `URLs: ${intel.urls.length ? intel.urls.length + ' found' : '—'}\n`;
+  output += `Crypto Addresses: ${intel.cryptoAddresses.length ? intel.cryptoAddresses.join(', ') : '—'}\n`;
+  output += `Hashes: ${intel.hashes.length ? intel.hashes.length + ' found' : '—'}\n`;
+  output += `CVEs: ${intel.cves.length ? intel.cves.join(', ') : '—'}\n`;
+  output += `Phone Numbers: ${intel.phones.length ? intel.phones.slice(0,3).join(', ') : '—'}\n`;
+  output += `Handles: ${intel.handles.length ? intel.handles.slice(0,5).join(', ') : '—'}\n`;
+  
+  if(intel.suspiciousStrings.length > 0){
+    output += `\nSuspicious Commands:\n`;
+    intel.suspiciousStrings.forEach(str => output += `• ${str}\n`);
+  }
+  
+  output += `\n=== THREAT ASSESSMENT ===\n`;
+  output += `Level: ${threat.level} (Score: ${threat.score})\n`;
+  if(threat.indicators.length > 0){
+    output += `Indicators:\n`;
+    threat.indicators.forEach(ind => output += `• ${ind}\n`);
+  }
+  
+  output += `\n=== INTELLIGENCE QUERIES ===\n`;
+  queries.slice(0,6).forEach(q => output += `• ${q}\n`);
+  
+  updateNetworkGraph(intel);
+  metaNode.textContent = output;
+  setStatus('idle');
+});
+
+// Social Media Analysis
+el('#analyzeSocial').addEventListener('click', () => {
+  setStatus('analyzing social media');
+  const text = textin.value || '';
+  const social = analyzeSocialMedia(text);
+  
+  currentReport.intelligence.social = social;
+  
+  let output = `=== SOCIAL MEDIA INTELLIGENCE ===\n`;
+  output += `Platforms: ${social.platforms.length ? social.platforms.join(', ') : '—'}\n`;
+  output += `Hashtags: ${social.hashtags.length ? social.hashtags.slice(0,8).join(', ') : '—'}\n`;
+  output += `Sentiment: ${social.sentiment}\n`;
+  
+  if(social.platforms.length > 0){
+    output += `\nPlatform-Specific Queries:\n`;
+    social.platforms.forEach(platform => {
+      output += `• site:${platform}.com "${text.substring(0,30)}..."\n`;
+    });
+  }
+  
+  metaNode.textContent = output;
+  setStatus('idle');
+});
+
+function updateThreatDisplay(threat){
+  threatLevelNode.textContent = `threat: ${threat.level}`;
+  threatLevelNode.style.color = {
+    'LOW': '#4ade80',
+    'MEDIUM': '#fbbf24', 
+    'HIGH': '#f97316',
+    'CRITICAL': '#ef4444'
+  }[threat.level] || '#9ca3af';
 }
 
-el('#copySearch').addEventListener('click', ()=> {
-  const txt = metaNode.textContent || '';
-  navigator.clipboard.writeText(txt).then(()=> alert('Copied search output to clipboard'), ()=> alert('Copy failed'));
+// Copy functions
+el('#copyIntel').addEventListener('click', () => {
+  const report = JSON.stringify(currentReport, null, 2);
+  navigator.clipboard.writeText(report).then(
+    () => setStatus('copied report'),
+    () => setStatus('copy failed')
+  );
 });
 
-/* ========= export / download ========= */
-el('#exportBtn').addEventListener('click', ()=> {
-  downloadReport();
+el('#copyIOCs').addEventListener('click', () => {
+  const intel = currentReport.intelligence.extracted || {};
+  const iocs = [
+    ...(intel.ips || []),
+    ...(intel.domains || []), 
+    ...(intel.hashes || []),
+    ...(intel.urls || [])
+  ];
+  
+  const iocText = iocs.join('\n');
+  navigator.clipboard.writeText(iocText).then(
+    () => setStatus('copied IOCs'),
+    () => setStatus('copy failed')
+  );
 });
 
-function downloadReport(){
-  const blob = new Blob([JSON.stringify(currentReport,null,2)],{type:'application/json'});
+el('#copyHash').addEventListener('click', () => {
+  const hash = hashNode.textContent || '';
+  if(!hash || hash === '—') return alert('No hash to copy');
+  navigator.clipboard.writeText(hash).then(
+    () => setStatus('copied hash'),
+    () => setStatus('copy failed')
+  );
+});
+
+// Export functionality
+el('#exportBtn').addEventListener('click', () => {
+  const timestamp = new Date().toISOString().slice(0,19).replace(/[:.]/g, '-');
+  const filename = `redfront-intel-${timestamp}.json`;
+  
+  const blob = new Blob([JSON.stringify(currentReport, null, 2)], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'redfront_report.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),2000);
-}
-
-/* allow downloading the current selected file blob (if any) - placeholder */
-el('#downloadBtn').addEventListener('click', ()=> {
-  alert('Use EXPORT to download JSON report with extracted info (file data not included).');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 });
 
-/* copy hash */
-el('#copyHash').addEventListener('click', ()=> {
-  const h = hashNode.textContent || '';
-  if(!h || h==='—') return alert('No hash to copy');
-  navigator.clipboard.writeText(h).then(()=> setStatus('copied hash'), ()=> setStatus('copy failed'));
-});
-
-/* initializations */
+// Initialize
 setStatus('idle');
+metaNode.textContent = 'No input yet. Drop files, paste URLs, or analyze text to begin.';
 </script>
 </body>
 </html>
