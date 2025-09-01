@@ -20,17 +20,17 @@ A single-file, lightning-fast, and extremely optimized Open-Source Intelligence 
 - **Testing**: Chrome DevTools > Network > Slow 2G throttling
 - **Result**: Zero bloat, instant loading, perfect functionality on dial-up speeds
 
-### Track 15: Monolith Master
-- **Challenge**: Build a complete application in a single HTML file
-- **Achievement**: All functionality contained within one sacred scroll (`index.html`)
-- **Testing**: Verified that only one `.html` file exists and works standalone
-- **Result**: No dependencies, no installation, pure intelligence power
-
 ### Track 9: Lightning Bolt Engineer
 - **Challenge**: Achieve complete page load in under 1 second on mobile 3G
 - **Achievement**: Harnessed the storm with sub-second loading times
 - **Testing**: Chrome DevTools > Network > Fast 3G + mobile device simulation
 - **Result**: Blazing fast performance that shatters expectations
+
+### Track 15: Monolith Master
+- **Challenge**: Build a complete application in a single HTML file
+- **Achievement**: All functionality contained within one sacred scroll (`index.html`)
+- **Testing**: Verified that only one `.html` file exists and works standalone
+- **Result**: No dependencies, no installation, pure intelligence power
 
 ---
 
