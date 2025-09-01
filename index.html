@@ -989,52 +989,6 @@ async function scrapeWebsite(url, deepScan = false) {
     let html = '';
     let fetchMethod = 'unknown';
     
-    // Method 1: Try direct fetch (works for same-origin or CORS-enabled sites)
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-      });
-      
-      if (response.ok) {
-        html = await response.text();
-        fetchMethod = 'direct';
-      }
-    } catch (e) {
-      console.log('Direct fetch failed, trying proxy methods...');
-    }
-    
-    // Method 2: Try CORS proxy services
-    if (!html) {
-      const proxyServices = [
-        `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        `https://cors-anywhere.herokuapp.com/${url}`
-      ];
-      
-      for (const proxyUrl of proxyServices) {
-        try {
-          const response = await fetch(proxyUrl, {
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            html = data.contents || data.data || '';
-            fetchMethod = 'proxy';
-            break;
-          }
-        } catch (e) {
-          console.log(`Proxy ${proxyUrl} failed:`, e.message);
-        }
-      }
-    }
-    
     // Method 3: Try using a different approach with fetch API
     if (!html) {
       try {
