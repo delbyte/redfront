@@ -9,13 +9,145 @@
   --bg:#080808; --panel:#0f0f0f; --muted:#bfbfbf; --red:#c21a1a; --accent:#bf7b2d;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-.container{display:grid;grid-template-rows:auto 1fr;gap:10px;padding:12px;min-height:100vh}
-.header{display:flex;gap:12px;align-items:center}
-.logo{width:64px;height:40px;flex:0 0 auto}
-.h1{font-weight:800;color:var(--red);letter-spacing:.06em}
-.top-controls{margin-left:auto;display:flex;gap:8px;align-items:center}
-.button{background:var(--red);border:0;padding:8px 10px;border-radius:6px;color:#fff;font-weight:700;cursor:pointer}
+html,body{
+  height:100%;
+  margin:0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(194,26,26,.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(194,26,26,.01) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, #060606 100%);
+  color:var(--muted);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Military grid lattice background */
+body::before{
+  content:'';
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-image:
+    linear-gradient(rgba(0,255,0,.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,0,.25) 1px, transparent 1px);
+  background-size:40px 40px;
+  animation:grid-drift 30s linear infinite;
+  z-index:0;
+  pointer-events:none;
+  opacity:0.3;
+}
+
+@keyframes grid-drift{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(40px,40px)}
+}
+
+.container{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:10px;
+  padding:12px;
+  min-height:100vh;
+  position:relative;
+  z-index:1;
+}
+.header{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background:linear-gradient(135deg,rgba(15,15,15,0.9),rgba(5,5,5,0.9));
+  border:1px solid rgba(194,26,26,.2);
+  border-radius:12px;
+  padding:16px;
+  backdrop-filter:blur(10px);
+  position:relative;
+  overflow:hidden;
+}
+
+.header::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(194,26,26,.05),transparent);
+  animation:header-sweep 6s ease-in-out infinite;
+}
+
+@keyframes header-sweep{
+  0%{left:-100%}
+  50%{left:100%}
+  100%{left:100%}
+}
+
+.logo{
+  width:64px;
+  height:40px;
+  flex:0 0 auto;
+  position:relative;
+  z-index:2;
+}
+
+.h1{
+  font-weight:800;
+  color:var(--red);
+  letter-spacing:.06em;
+  position:relative;
+  z-index:2;
+  text-shadow:0 0 20px rgba(194,26,26,0.5);
+}
+
+.top-controls{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  position:relative;
+  z-index:2;
+}
+.button{
+  background:linear-gradient(135deg,var(--red),#a01616);
+  border:1px solid rgba(255,255,255,.2);
+  padding:10px 16px;
+  border-radius:8px;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  position:relative;
+  overflow:hidden;
+}
+
+.button::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  transition:left 0.4s ease;
+}
+
+.button:hover{
+  background:linear-gradient(135deg,#d42222,var(--red));
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(194,26,26,.4);
+}
+
+.button:hover::before{
+  left:100%;
+}
+
+.button:active{
+  transform:translateY(0);
+}
 .layout{display:grid;grid-template-columns:360px 1fr;gap:12px;align-items:start}
 .panel{background:linear-gradient(180deg,#0b0b0b,#060606);border-radius:8px;padding:12px;box-shadow:0 6px 20px rgba(0,0,0,.6)}
 .small{font-size:13px;color:#b7b7b7}
@@ -110,36 +242,321 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
 /* Page System */
 .page{min-height:calc(100vh - 100px)}
 
-/* Landing Page Styles */
-.command-grid{display:grid;grid-template-rows:auto 1fr;gap:20px;max-width:1400px;margin:0 auto}
-.mission-brief{max-width:700px}
-.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
-
-.module-btn{
-  background:linear-gradient(135deg,#0d0d0d,#050505);
-  border:1px solid rgba(194,26,26,.15);
+/* Enhanced Landing Page Styles - Military Command Center */
+.command-grid{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:30px;
+  max-width:1600px;
+  margin:0 auto;
   padding:20px;
-  border-radius:12px;
+  position:relative;
+}
+
+/* Animated background grid */
+.command-grid::before{
+  content:'';
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-image:
+    linear-gradient(rgba(194,26,26,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(194,26,26,.03) 1px, transparent 1px);
+  background-size:50px 50px;
+  animation:grid-move 20s linear infinite;
+  z-index:-1;
+  pointer-events:none;
+}
+
+@keyframes grid-move{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(50px,50px)}
+}
+
+/* Mission Brief Enhancement */
+.mission-brief{
+  max-width:800px;
+  background:linear-gradient(135deg,#0a0a0a,#040404);
+  border:1px solid rgba(194,26,26,.2);
+  border-radius:16px;
+  padding:30px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    0 0 40px rgba(194,26,26,.1),
+    inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.mission-brief::before{
+  content:'';
+  position:absolute;
+  top:-2px;
+  left:-2px;
+  right:-2px;
+  bottom:-2px;
+  background:linear-gradient(45deg, 
+    transparent, 
+    rgba(194,26,26,.3), 
+    transparent, 
+    rgba(194,26,26,.1), 
+    transparent);
+  background-size:400% 400%;
+  animation:border-glow 8s ease-in-out infinite;
+  border-radius:16px;
+  z-index:-1;
+}
+
+@keyframes border-glow{
+  0%, 100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+.mission-brief .medium{
+  font-size:14px;
+  font-weight:800;
+  color:var(--red);
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  position:relative;
+  padding-left:20px;
+  margin-bottom:20px;
+}
+
+.mission-brief .medium::before{
+  content:'▶';
+  position:absolute;
+  left:0;
+  color:var(--red);
+  animation:pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%, 100%{opacity:1; transform:scale(1)}
+  50%{opacity:0.7; transform:scale(1.1)}
+}
+
+/* Fighter Jet Bento Grid Layout */
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  grid-template-rows:repeat(4, minmax(120px, auto));
+  gap:20px;
+  perspective:1000px;
+  max-width:1400px;
+  margin:0 auto;
+}
+
+/* Tactical Panel Sizes - Fighter Jet Cockpit Layout */
+.module-btn[data-module="file"]{
+  grid-column:1 / 3;
+  grid-row:1 / 2;
+}
+
+.module-btn[data-module="url"]{
+  grid-column:3 / 5;
+  grid-row:1 / 3;
+  padding:32px;
+}
+
+.module-btn[data-module="text"]{
+  grid-column:5 / 7;
+  grid-row:1 / 2;
+}
+
+.module-btn[data-module="social"]{
+  grid-column:1 / 2;
+  grid-row:2 / 4;
+  padding:32px;
+}
+
+.module-btn[data-module="network"]{
+  grid-column:2 / 4;
+  grid-row:3 / 4;
+  background:
+    linear-gradient(135deg,rgba(0,15,30,0.8),rgba(5,25,45,0.8)),
+    linear-gradient(45deg,rgba(0,150,255,0.1) 0%, rgba(0,100,200,0.1) 50%, rgba(0,150,255,0.1) 100%);
+  border:2px solid #0096ff;
+  box-shadow:
+    0 0 20px rgba(0,150,255,0.3),
+    inset 0 1px 0 rgba(0,200,255,0.4),
+    inset 0 -1px 0 rgba(0,50,100,0.4);
+}
+
+.module-btn[data-module="network"]:hover{
+  background:
+    linear-gradient(135deg,rgba(0,20,40,0.9),rgba(10,35,60,0.9)),
+    linear-gradient(45deg,rgba(0,180,255,0.15) 0%, rgba(0,120,220,0.15) 50%, rgba(0,180,255,0.15) 100%);
+  box-shadow:
+    0 0 30px rgba(0,150,255,0.5),
+    inset 0 1px 0 rgba(0,220,255,0.6),
+    inset 0 -1px 0 rgba(0,70,130,0.6);
+  transform:translateY(-8px);
+}
+
+.module-btn[data-module="aesthetic-filler"]{
+  grid-column:2 / 3;
+  grid-row:2 / 3;
+  padding:20px;
+  background:
+    linear-gradient(135deg,rgba(8,8,8,0.6),rgba(3,3,3,0.6)),
+    linear-gradient(45deg,transparent 40%, rgba(100,100,100,0.02) 50%, transparent 60%);
+  border:1px solid rgba(100,100,100,.1);
+  opacity:0.7;
+}
+
+.module-btn[data-module="email"]{
+  grid-column:5 / 7;
+  grid-row:2 / 3;
+}
+
+.module-btn[data-module="phone"]{
+  grid-column:4 / 6;
+  grid-row:3 / 4;
+}
+
+.module-btn[data-module="crypto"]{
+  grid-column:6 / 7;
+  grid-row:3 / 5;
+  padding:32px;
+}
+
+.module-btn[data-module="ip"]{
+  grid-column:1 / 3;
+  grid-row:4 / 5;
+}
+
+.module-btn[data-module="username"]{
+  grid-column:3 / 4;
+  grid-row:4 / 5;
+}
+
+.module-btn[data-module="metadata"]{
+  grid-column:4 / 5;
+  grid-row:4 / 5;
+}
+
+.module-btn[data-module="reports"]{
+  grid-column:5 / 6;
+  grid-row:4 / 5;
+}
+
+/* Responsive Fighter Jet Layout */
+@media (max-width: 1200px){
+  .modules-grid{
+    grid-template-columns:repeat(4, 1fr);
+    grid-template-rows:repeat(6, minmax(120px, auto));
+  }
+  
+  .module-btn[data-module="file"]{grid-column:1 / 3; grid-row:1 / 2;}
+  .module-btn[data-module="url"]{grid-column:3 / 5; grid-row:1 / 3;}
+  .module-btn[data-module="text"]{grid-column:1 / 2; grid-row:2 / 3;}
+  .module-btn[data-module="social"]{grid-column:2 / 3; grid-row:2 / 3;}
+  .module-btn[data-module="network"]{grid-column:1 / 3; grid-row:3 / 4;}
+  .module-btn[data-module="email"]{grid-column:3 / 5; grid-row:3 / 4;}
+  .module-btn[data-module="phone"]{grid-column:1 / 2; grid-row:4 / 5;}
+  .module-btn[data-module="crypto"]{grid-column:2 / 4; grid-row:4 / 5;}
+  .module-btn[data-module="ip"]{grid-column:4 / 5; grid-row:4 / 6;}
+  .module-btn[data-module="username"]{grid-column:1 / 2; grid-row:5 / 6;}
+  .module-btn[data-module="metadata"]{grid-column:2 / 3; grid-row:5 / 6;}
+  .module-btn[data-module="reports"]{grid-column:3 / 4; grid-row:5 / 6;}
+}
+
+@media (max-width: 768px){
+  .modules-grid{
+    grid-template-columns:repeat(2, 1fr);
+    grid-template-rows:repeat(6, minmax(140px, auto));
+    gap:16px;
+  }
+  
+  .module-btn[data-module="file"]{grid-column:1 / 2; grid-row:1 / 2;}
+  .module-btn[data-module="url"]{grid-column:2 / 3; grid-row:1 / 3;}
+  .module-btn[data-module="text"]{grid-column:1 / 2; grid-row:2 / 3;}
+  .module-btn[data-module="social"]{grid-column:1 / 3; grid-row:3 / 4;}
+  .module-btn[data-module="network"]{grid-column:1 / 2; grid-row:4 / 5;}
+  .module-btn[data-module="email"]{grid-column:2 / 3; grid-row:4 / 5;}
+  .module-btn[data-module="phone"]{grid-column:1 / 2; grid-row:5 / 6;}
+  .module-btn[data-module="crypto"]{grid-column:2 / 3; grid-row:5 / 6;}
+  .module-btn[data-module="ip"]{grid-column:1 / 2; grid-row:6 / 7;}
+  .module-btn[data-module="username"]{grid-column:2 / 3; grid-row:6 / 7;}
+  .module-btn[data-module="metadata"]{grid-column:1 / 2; grid-row:7 / 8;}
+  .module-btn[data-module="reports"]{grid-column:2 / 3; grid-row:7 / 8;}
+}
+
+/* Phone Screen - Simple Tile Layout */
+@media (max-width: 480px){
+  .modules-grid{
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto);
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  /* Reset all panels to simple single-column layout */
+  .module-btn[data-module="file"],
+  .module-btn[data-module="url"],
+  .module-btn[data-module="text"],
+  .module-btn[data-module="social"],
+  .module-btn[data-module="aesthetic-filler"],
+  .module-btn[data-module="network"],
+  .module-btn[data-module="email"],
+  .module-btn[data-module="phone"],
+  .module-btn[data-module="crypto"],
+  .module-btn[data-module="ip"],
+  .module-btn[data-module="username"],
+  .module-btn[data-module="metadata"],
+  .module-btn[data-module="reports"]{
+    grid-column: 1 / 2;
+    grid-row: auto;
+    padding: 20px;
+    margin-bottom: 8px;
+  }
+  
+  /* Hide aesthetic filler on mobile */
+  .module-btn[data-module="aesthetic-filler"]{
+    display: none;
+  }
+  
+  /* Mobile-optimized text sizes */
+  .module-btn .module-title{
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .module-btn .module-desc{
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .module-btn .module-icon{
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Military-Grade Module Cards */
+.module-btn{
+  background:
+    linear-gradient(135deg,rgba(15,15,15,0.95),rgba(5,5,5,0.95)),
+    linear-gradient(45deg,transparent 40%, rgba(194,26,26,0.05) 50%, transparent 60%);
+  border:1px solid rgba(194,26,26,.25);
+  padding:28px;
+  border-radius:16px;
   color:var(--muted);
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   text-align:left;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:12px;
   position:relative;
   overflow:hidden;
-}
-
-.module-btn:hover{
-  border-color:rgba(194,26,26,.4);
-  background:linear-gradient(135deg,#111,#080808);
-  transform:translateY(-2px);
-  box-shadow:0 8px 25px rgba(194,26,26,.15);
-}
-
-.module-btn:active{
-  transform:translateY(0);
+  transform-style:preserve-3d;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
 .module-btn::before{
@@ -149,36 +566,319 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
   left:-100%;
   width:100%;
   height:100%;
-  background:linear-gradient(90deg,transparent,rgba(194,26,26,.1),transparent);
-  transition:left 0.5s;
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(194,26,26,.15),
+    rgba(255,255,255,.1),
+    rgba(194,26,26,.15),
+    transparent);
+  transition:left 0.6s ease;
+  z-index:1;
+}
+
+.module-btn::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(194,26,26,.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(194,26,26,.05) 0%, transparent 50%);
+  opacity:0;
+  transition:opacity 0.4s ease;
+  z-index:0;
+}
+
+.module-btn:hover{
+  border-color:rgba(194,26,26,.6);
+  background:
+    linear-gradient(135deg,rgba(20,20,20,0.95),rgba(10,10,10,0.95)),
+    linear-gradient(45deg,transparent 40%, rgba(194,26,26,0.1) 50%, transparent 60%);
+  transform:translateY(-8px) rotateX(5deg);
+  box-shadow:
+    0 20px 60px rgba(194,26,26,0.2),
+    0 0 100px rgba(194,26,26,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .module-btn:hover::before{
   left:100%;
 }
 
+.module-btn:hover::after{
+  opacity:1;
+  transform:translateX(400px);
+  transition:all 0.4s ease-out;
+}
+
+.module-btn:active{
+  transform:translateY(-4px) rotateX(2deg);
+  transition:all 0.1s ease;
+}
+
+/* Tactical Module Icons */
 .module-icon{
   font-size:32px;
-  margin-bottom:4px;
-  filter:grayscale(1);
-  transition:filter 0.3s ease;
+  margin-bottom:8px;
+  filter:grayscale(1) brightness(0.8);
+  transition:all 0.4s ease;
+  position:relative;
+  z-index:2;
+  text-shadow:0 0 20px currentColor;
+  font-family:'Courier New', monospace;
+  font-weight:bold;
+  line-height:1;
 }
 
 .module-btn:hover .module-icon{
-  filter:grayscale(0) sepia(1) saturate(5) hue-rotate(-50deg) brightness(1.2);
+  filter:grayscale(1) brightness(1.3) sepia(1) saturate(2) hue-rotate(-50deg) drop-shadow(0 0 15px #c21a1a);
+  transform:scale(1.1) rotateY(5deg);
+  animation:icon-glow 2s ease-in-out infinite;
 }
 
+@keyframes icon-glow{
+  0%, 100%{text-shadow:0 0 20px currentColor}
+  50%{text-shadow:0 0 30px currentColor, 0 0 40px currentColor}
+}
+
+/* Enhanced Module Titles */
 .module-title{
-  font-size:16px;
-  font-weight:700;
+  font-size:18px;
+  font-weight:800;
   color:var(--red);
-  letter-spacing:0.05em;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  position:relative;
+  z-index:2;
+  text-shadow:0 2px 10px rgba(194,26,26,0.3);
+  transition:all 0.3s ease;
 }
 
+.module-btn:hover .module-title{
+  color:#ff3333;
+  transform:translateX(5px);
+  text-shadow:
+    0 0 20px rgba(255,51,51,0.8),
+    0 2px 10px rgba(194,26,26,0.5);
+}
+
+/* Tactical Descriptions */
 .module-desc{
+  font-size:14px;
+  color:#b0b0b0;
+  line-height:1.5;
+  position:relative;
+  z-index:2;
+  font-family:'Courier New', monospace;
+  letter-spacing:0.02em;
+  transition:all 0.3s ease;
+}
+
+.module-btn:hover .module-desc{
+  color:#d0d0d0;
+  transform:translateX(3px);
+}
+
+/* Fighter Jet Panel Variations */
+.module-btn[data-module="url"],
+.module-btn[data-module="social"],
+.module-btn[data-module="crypto"]{
+  background:
+    linear-gradient(135deg,rgba(20,20,20,0.95),rgba(8,8,8,0.95)),
+    linear-gradient(45deg,transparent 30%, rgba(194,26,26,0.08) 50%, transparent 70%);
+  border:2px solid rgba(194,26,26,.35);
+}
+
+.module-btn[data-module="url"]::after,
+.module-btn[data-module="social"]::after,
+.module-btn[data-module="crypto"]::after{
+  content:'◈';
+  position:absolute;
+  top:12px;
+  right:12px;
+  color:rgba(194,26,26,0.6);
+  font-size:16px;
+  animation:priority-pulse 3s ease-in-out infinite;
+  z-index:3;
+}
+
+@keyframes priority-pulse{
+  0%, 80%, 100%{opacity:0.6; transform:scale(1)}
+  40%{opacity:1; transform:scale(1.2)}
+}
+
+/* Tactical Status Indicators */
+.module-btn::after{
+  content:'●';
+  position:absolute;
+  top:15px;
+  right:15px;
+  color:rgba(0,255,0,0.7);
+  font-size:10px;
+  animation:status-blink 4s ease-in-out infinite;
+  z-index:3;
+  transition:all 0.6s ease-out;
+}
+
+/* Priority Panel Icons Enhancement */
+.module-btn[data-module="url"] .module-icon,
+.module-btn[data-module="social"] .module-icon,
+.module-btn[data-module="crypto"] .module-icon{
+  font-size:42px;
+}
+
+/* Compact Panel Adjustments */
+.module-btn[data-module="username"] .module-icon,
+.module-btn[data-module="metadata"] .module-icon,
+.module-btn[data-module="reports"] .module-icon{
+  font-size:28px;
+  margin-bottom:6px;
+}
+
+.module-btn[data-module="username"] .module-title,
+.module-btn[data-module="metadata"] .module-title,
+.module-btn[data-module="reports"] .module-title{
+  font-size:14px;
+}
+
+.module-btn[data-module="username"] .module-desc,
+.module-btn[data-module="metadata"] .module-desc,
+.module-btn[data-module="reports"] .module-desc{
+  font-size:11px;
+  line-height:1.3;
+}
+
+@keyframes status-blink{
+  0%, 90%, 100%{opacity:1}
+  95%{opacity:0.3}
+}
+
+/* Classified Banner Enhancement */
+.mission-brief .classified-banner{
+  background:
+    linear-gradient(135deg,rgba(194,26,26,.15),rgba(194,26,26,.08)),
+    linear-gradient(45deg,transparent 40%, rgba(255,255,255,.02) 50%, transparent 60%);
+  border:1px solid rgba(194,26,26,.3);
+  border-radius:8px;
+  border-left:4px solid var(--red);
+  padding:16px;
+  margin-top:20px;
+  position:relative;
+  overflow:hidden;
+}
+
+.mission-brief .classified-banner::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(194,26,26,.1),transparent);
+  animation:classified-sweep 4s ease-in-out infinite;
+}
+
+@keyframes classified-sweep{
+  0%{left:-100%}
+  50%{left:100%}
+  100%{left:100%}
+}
+
+.classified-label{
+  font-size:11px;
+  font-weight:900;
+  color:var(--red);
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  position:relative;
+  z-index:2;
+}
+
+.classified-text{
   font-size:13px;
-  color:#999;
-  line-height:1.4;
+  margin-top:6px;
+  color:#ddd;
+  position:relative;
+  z-index:2;
+  font-family:'Courier New', monospace;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px){
+  .command-grid{
+    padding:15px;
+  }
+  
+  .hero-section h1{
+    font-size: 28px;
+  }
+  
+  .hero-section .subtitle{
+    font-size: 16px;
+  }
+}
+
+/* Phone-Specific Mobile Optimizations */
+@media (max-width: 480px){
+  body{
+    padding: 0;
+    margin: 0;
+  }
+  
+  .hero-section{
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .hero-section h1{
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .hero-section .subtitle{
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .classified-text{
+    font-size: 11px;
+  }
+  
+  .command-grid{
+    padding: 8px;
+    margin: 0;
+  }
+  
+  /* Simplify hover effects for touch devices */
+  .module-btn{
+    transform: none !important;
+    transition: background-color 0.2s ease;
+  }
+  
+  .module-btn:hover{
+    transform: none !important;
+    background: rgba(194,26,26,0.1);
+  }
+  
+  /* Disable complex animations on mobile */
+  .module-btn::before{
+    display: none;
+  }
+  
+  .module-btn::after{
+    display: none;
+  }
+  
+  /* Make buttons more touch-friendly */
+  .module-btn{
+    min-height: 80px;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(194,26,26,0.2);
+  }
 }
 
 /* Module Header */
@@ -255,7 +955,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
     </svg>
     <div>
       <div class="h1">Redfront OSINT Workbench</div>
-      <div class="small">All-in-one tactical OSINT — multi-format analysis & intelligence extraction</div>
+      <div class="small">All-in-one tactical OSINT, multi-format analysis & intelligence extraction</div>
     </div>
     <div class="top-controls">
       <div class="badge smallmuted" id="status">idle</div>
@@ -267,86 +967,92 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);font-fami
   <div id="landingPage" class="page">
     <div class="command-grid">
       <div class="mission-brief panel">
-        <div class="small">MISSION BRIEFING</div>
+        <div class="large"><b>MISSION BRIEFING</b></div>
         <div style="margin-top:12px;line-height:1.6;color:#ddd">
           <div style="font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px">REDFRONT OSINT WORKBENCH</div>
           <div>Multi-domain intelligence analysis platform for tactical operations. Select your analysis module to begin intelligence gathering and threat assessment.</div>
-          <div style="margin-top:12px;padding:8px;background:rgba(194,26,26,.08);border-radius:6px;border-left:3px solid var(--red)">
-            <div style="font-size:12px;font-weight:700;color:var(--red)">CLASSIFIED</div>
-            <div style="font-size:12px;margin-top:4px">All operations conducted locally. Zero network exposure.</div>
+          <div class="classified-banner">
+            <div class="classified-label">CLASSIFIED</div>
+            <div class="classified-text">All operations are to be performed at your own disrcretion.</div>
           </div>
         </div>
       </div>
 
       <div class="modules-grid">
         <button class="module-btn" data-module="file">
-          <div class="module-icon">📁</div>
+          <div class="module-icon">[██]</div>
           <div class="module-title">FILE ANALYSIS</div>
           <div class="module-desc">Binary analysis, hash extraction, threat assessment</div>
         </button>
 
         <button class="module-btn" data-module="url">
-          <div class="module-icon">🌐</div>
+          <div class="module-icon">◉─◉</div>
           <div class="module-title">URL INTELLIGENCE</div>
           <div class="module-desc">Domain analysis, subdomain enumeration, IOC extraction</div>
         </button>
 
         <button class="module-btn" data-module="text">
-          <div class="module-icon">📄</div>
+          <div class="module-icon">▓▓▓</div>
           <div class="module-title">TEXT ANALYSIS</div>
           <div class="module-desc">Intelligence extraction from documents and logs</div>
         </button>
 
         <button class="module-btn" data-module="social">
-          <div class="module-icon">📱</div>
+          <div class="module-icon">◈⟦◈</div>
           <div class="module-title">SOCIAL INTEL</div>
           <div class="module-desc">Social media analysis and sentiment assessment</div>
         </button>
 
+        <div class="command-grid" data-module="aesthetic-filler">
+          <div class="module-icon" style="font-size:14px;">◆◇◆</div>
+          <div class="module-title" style="font-size:11px; opacity:0.6;">GRID SYNC</div>
+          <div class="module-desc" style="font-size:9px; opacity:0.5;">Tactical spacing calibration</div>
+        </div>
+
         <button class="module-btn" data-module="network">
-          <div class="module-icon">🔗</div>
+          <div class="module-icon">●═●</div>
           <div class="module-title">NETWORK MAPPING</div>
           <div class="module-desc">Entity relationship visualization and graph analysis</div>
         </button>
 
         <button class="module-btn" data-module="email">
-          <div class="module-icon">📧</div>
+          <div class="module-icon">⟨@⟩</div>
           <div class="module-title">EMAIL OSINT</div>
           <div class="module-desc">Email validation, breach checks, domain analysis</div>
         </button>
 
         <button class="module-btn" data-module="phone">
-          <div class="module-icon">📞</div>
+          <div class="module-icon">◣█◤</div>
           <div class="module-title">PHONE INTEL</div>
           <div class="module-desc">Number validation, carrier lookup, location data</div>
         </button>
 
         <button class="module-btn" data-module="crypto">
-          <div class="module-icon">₿</div>
+          <div class="module-icon">◉₿◉</div>
           <div class="module-title">CRYPTO TRACKER</div>
           <div class="module-desc">Blockchain analysis, wallet tracking, transaction intel</div>
         </button>
 
         <button class="module-btn" data-module="ip">
-          <div class="module-icon">🌍</div>
+          <div class="module-icon">⬢⬡⬢</div>
           <div class="module-title">IP GEOLOCATION</div>
           <div class="module-desc">IP analysis, geolocation, ISP detection, threat intel</div>
         </button>
 
         <button class="module-btn" data-module="username">
-          <div class="module-icon">👤</div>
+          <div class="module-icon">⟦◉⟧</div>
           <div class="module-title">USERNAME HUNTER</div>
           <div class="module-desc">Cross-platform username enumeration and analysis</div>
         </button>
 
         <button class="module-btn" data-module="metadata">
-          <div class="module-icon">🔍</div>
+          <div class="module-icon">◎─◉</div>
           <div class="module-title">METADATA EXTRACTOR</div>
           <div class="module-desc">EXIF data, document properties, hidden information</div>
         </button>
 
         <button class="module-btn" data-module="reports">
-          <div class="module-icon">📊</div>
+          <div class="module-icon">▓▒░</div>
           <div class="module-title">INTEL REPORTS</div>
           <div class="module-desc">Export findings and generate intelligence summaries</div>
         </button>
@@ -988,7 +1694,7 @@ async function scrapeWebsite(url, deepScan = false) {
     
     let html = '';
     let fetchMethod = 'unknown';
-    
+
     // Method 3: Try using a different approach with fetch API
     if (!html) {
       try {
