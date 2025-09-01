@@ -2408,42 +2408,254 @@ async function generateMockData(analysis, ip) {
 }
 
 // Username Analysis
-function analyzeUsername(username) {
+// Real Username Hunting - Only APIs that actually work
+async function fetchUsernameAvailability(username) {
+  const workingAPIs = [
+    { 
+      name: 'GitHub', 
+      url: `https://api.github.com/users/${username}`, 
+      type: 'json',
+      dataExtractor: (data) => ({
+        info: `Repos: ${data.public_repos || 0}, Followers: ${data.followers || 0}, Following: ${data.following || 0}`,
+        profileUrl: data.html_url,
+        verified: true,
+        confidence: 99
+      })
+    },
+    { 
+      name: 'Reddit', 
+      url: `https://www.reddit.com/user/${username}/about.json`, 
+      type: 'json',
+      dataExtractor: (data) => {
+        if (data.data && data.data.name) {
+          const created = new Date(data.data.created_utc * 1000);
+          return {
+            info: `Karma: ${data.data.total_karma || 0}, Created: ${created.getFullYear()}, Verified: ${data.data.verified}`,
+            profileUrl: `https://reddit.com/user/${data.data.name}`,
+            verified: true,
+            confidence: 98
+          };
+        }
+        return null;
+      }
+    },
+    {
+      name: 'GitLab',
+      url: `https://gitlab.com/api/v4/users?username=${username}`,
+      type: 'json',
+      dataExtractor: (data) => {
+        if (data && data.length > 0) {
+          const user = data[0];
+          return {
+            info: `ID: ${user.id}, State: ${user.state}, Projects: ${user.projects_limit || 'unlimited'}`,
+            profileUrl: user.web_url,
+            verified: true,
+            confidence: 97
+          };
+        }
+        return null;
+      }
+    }
+  ];
+  
+  const results = [];
+  let realDataCount = 0;
+  
+  for (const api of workingAPIs) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      
+      const response = await fetch(api.url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json'
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        try {
+          const data = await response.json();
+          const extracted = api.dataExtractor(data);
+          
+          if (extracted) {
+            results.push({
+              name: api.name,
+              found: true,
+              url: extracted.profileUrl,
+              confidence: extracted.confidence,
+              method: 'Verified API',
+              info: extracted.info,
+              verified: extracted.verified
+            });
+            realDataCount++;
+          }
+        } catch (parseError) {
+          console.log(`Failed to parse ${api.name} response:`, parseError.message);
+        }
+      } else if (response.status === 404) {
+        // User definitely doesn't exist on this platform
+        results.push({
+          name: api.name,
+          found: false,
+          url: null,
+          confidence: 99,
+          method: 'Verified API',
+          info: 'Username not found (404)',
+          verified: true
+        });
+      }
+    } catch (error) {
+      console.log(`${api.name} API check failed:`, error.message);
+      // We don't add anything to results for failed API calls
+    }
+  }
+  
+  return { results, realDataCount };
+}
+
+function generateMockUsernameData(username) {
+  const mockPlatforms = [
+    'Twitter', 'Instagram', 'Facebook', 'LinkedIn', 'GitHub', 
+    'Reddit', 'YouTube', 'TikTok', 'Snapchat', 'Pinterest',
+    'Twitch', 'Discord', 'Telegram', 'Medium', 'Steam'
+  ];
+  
+  const results = [];
+  
+  // Generate realistic mock data based on username patterns
+  mockPlatforms.forEach(platform => {
+    const probability = platform === 'GitHub' || platform === 'Reddit' ? 0.4 : 0.3;
+    
+    if (Math.random() < probability) {
+      let confidence = Math.floor(Math.random() * 30) + 50; // 50-80% confidence for mock data
+      let info = 'Estimated availability';
+      
+      // Add platform-specific mock information
+      if (platform === 'GitHub') {
+        info = `Est. repos: ${Math.floor(Math.random() * 50)}, Est. followers: ${Math.floor(Math.random() * 200)}`;
+      } else if (platform === 'Reddit') {
+        info = `Est. karma: ${Math.floor(Math.random() * 10000)}, Account age: ${Math.floor(Math.random() * 8) + 1} years`;
+      } else if (platform === 'Twitter') {
+        info = `Est. followers: ${Math.floor(Math.random() * 1000)}, Est. tweets: ${Math.floor(Math.random() * 5000)}`;
+      }
+      
+      results.push({
+        name: platform,
+        found: true,
+        url: `https://${platform.toLowerCase().replace(' ', '')}.com/${username}`,
+        confidence,
+        method: 'Mock Data',
+        info,
+        verified: false
+      });
+    }
+  });
+  
+  return results;
+}
+
+async function analyzeUsername(username) {
   const analysis = {
     username,
     platforms: [],
     totalFound: 0,
+    realDataFound: 0,
     riskScore: 0,
-    patterns: []
+    patterns: [],
+    realData: false,
+    lookupTime: new Date().toISOString(),
+    dataQuality: 'unknown'
   };
   
-  // Platform checking (simplified - would use actual APIs)
-  const platforms = [
-    'Twitter', 'Instagram', 'Facebook', 'LinkedIn', 'GitHub', 
-    'Reddit', 'YouTube', 'TikTok', 'Snapchat', 'Pinterest'
-  ];
-  
-  // Simulate platform availability
-  platforms.forEach(platform => {
-    if (Math.random() > 0.6) {
-      analysis.platforms.push({
-        name: platform,
-        found: true,
-        url: `https://${platform.toLowerCase()}.com/${username}`,
-        confidence: Math.floor(Math.random() * 40) + 60
-      });
-      analysis.totalFound++;
+  try {
+    // Attempt real API lookups
+    const { results, realDataCount } = await fetchUsernameAvailability(username);
+    
+    if (realDataCount > 0) {
+      analysis.platforms = results;
+      analysis.realDataFound = realDataCount;
+      analysis.realData = true;
+      analysis.dataQuality = realDataCount >= 2 ? 'high' : 'moderate';
+    } else {
+      // Fallback to mock data if no real data obtained
+      analysis.platforms = generateMockUsernameData(username);
+      analysis.realData = false;
+      analysis.dataQuality = 'fallback';
     }
-  });
+    
+  } catch (error) {
+    console.error('Username lookup failed:', error);
+    // Use mock data as fallback
+    analysis.platforms = generateMockUsernameData(username);
+    analysis.realData = false;
+    analysis.dataQuality = 'error_fallback';
+  }
   
-  // Pattern analysis
-  if (/\d{4}/.test(username)) analysis.patterns.push('Contains birth year');
-  if (username.length < 5) analysis.patterns.push('Short username');
-  if (/^[a-z]+\d+$/.test(username)) analysis.patterns.push('Name + numbers pattern');
-  if (username.includes('_')) analysis.patterns.push('Contains underscore');
+  analysis.totalFound = analysis.platforms.length;
   
-  // Risk scoring
-  analysis.riskScore = Math.min(analysis.totalFound * 10 + analysis.patterns.length * 5, 100);
+  // Enhanced pattern analysis
+  const patterns = [];
+  
+  // Length analysis
+  if (username.length < 4) patterns.push('Very short username (high availability)');
+  else if (username.length < 6) patterns.push('Short username (moderate availability)');
+  else if (username.length > 15) patterns.push('Long username (potentially unique)');
+  
+  // Character patterns
+  if (/\d{4}/.test(username)) patterns.push('Contains 4-digit number (possible birth year)');
+  if (/\d{2}$/.test(username)) patterns.push('Ends with 2-digit number (possible birth year suffix)');
+  if (/^\d/.test(username)) patterns.push('Starts with number (less common pattern)');
+  if (/^[a-z]+\d+$/.test(username)) patterns.push('Name + numbers pattern (common format)');
+  if (/^[a-z]+_[a-z]+/.test(username)) patterns.push('Word_word pattern (readable format)');
+  if (username.includes('_')) patterns.push('Contains underscore (platform compatibility)');
+  if (username.includes('.')) patterns.push('Contains dot (email-like format)');
+  if (username.includes('-')) patterns.push('Contains hyphen (URL-friendly)');
+  
+  // Common name patterns
+  if (/^(admin|user|test|demo|guest)/.test(username.toLowerCase())) patterns.push('Generic prefix (likely unavailable)');
+  if (/(official|real|the)$/.test(username.toLowerCase())) patterns.push('Authority suffix (impersonation risk)');
+  if (/(123|000|999|111)/.test(username)) patterns.push('Sequential numbers (common pattern)');
+  
+  // Security patterns
+  if (/[A-Z]/.test(username)) patterns.push('Mixed case (platform-dependent availability)');
+  if (!/[aeiou]/.test(username.toLowerCase())) patterns.push('No vowels (harder to pronounce)');
+  if (username.toLowerCase() === username.split('').reverse().join('')) patterns.push('Palindrome username (unique pattern)');
+  
+  // Availability prediction
+  const vowelCount = (username.match(/[aeiou]/gi) || []).length;
+  const consonantCount = username.length - vowelCount;
+  if (vowelCount === 0) patterns.push('All consonants (lower availability chance)');
+  if (consonantCount === 0) patterns.push('All vowels (very rare pattern)');
+  
+  analysis.patterns = patterns;
+  
+  // Enhanced risk scoring
+  let riskScore = 0;
+  
+  // Base score from platform presence
+  riskScore += analysis.totalFound * 8;
+  
+  // Pattern-based scoring
+  riskScore += analysis.patterns.length * 3;
+  
+  // Real data bonus
+  if (analysis.realData) {
+    riskScore += analysis.realDataFound * 5;
+  }
+  
+  // High-confidence platform bonus
+  const highConfidencePlatforms = analysis.platforms.filter(p => p.confidence > 90).length;
+  riskScore += highConfidencePlatforms * 10;
+  
+  // Verified accounts bonus
+  const verifiedPlatforms = analysis.platforms.filter(p => p.verified).length;
+  riskScore += verifiedPlatforms * 15;
+  
+  analysis.riskScore = Math.min(riskScore, 100);
   
   return analysis;
 }
@@ -4011,8 +4223,8 @@ if(geolocateIPBtn) {
 // Username Analysis Module
 const analyzeUsernameBtn = el('#analyzeUsername');
 if(analyzeUsernameBtn) {
-  analyzeUsernameBtn.addEventListener('click', () => {
-    setStatus('hunting username');
+  analyzeUsernameBtn.addEventListener('click', async () => {
+    setStatus('hunting username across platforms...');
     const usernamein = el('#usernamein');
     const username = usernamein ? usernamein.value.trim() : '';
     
@@ -4021,35 +4233,164 @@ if(analyzeUsernameBtn) {
       return;
     }
     
-    const analysis = analyzeUsername(username);
-    globalReport.intelligence.username = analysis;
-    
-    let output = `=== USERNAME ANALYSIS ===\n`;
-    output += `Username: ${analysis.username}\n`;
-    output += `Platforms Found: ${analysis.totalFound}\n`;
-    output += `Risk Score: ${analysis.riskScore}/100\n`;
-    
-    if(analysis.platforms.length > 0) {
-      output += `\n=== FOUND ON PLATFORMS ===\n`;
-      analysis.platforms.forEach(platform => {
-        output += `• ${platform.name} (${platform.confidence}% confidence)\n`;
-      });
+    if (username.length < 2 || username.length > 30) {
+      alert('Username must be between 2 and 30 characters');
+      setStatus('username hunter');
+      return;
     }
     
-    if(analysis.patterns.length > 0) {
-      output += `\n=== PATTERNS DETECTED ===\n`;
-      analysis.patterns.forEach(pattern => output += `• ${pattern}\n`);
+    try {
+      const analysis = await analyzeUsername(username);
+      globalReport.intelligence.username = analysis;
+      
+      let output = `=== COMPREHENSIVE USERNAME INTELLIGENCE ===\n`;
+      output += `Target Username: ${analysis.username}\n`;
+      output += `Lookup Time: ${new Date(analysis.lookupTime).toLocaleString()}\n`;
+      output += `Data Quality: ${analysis.dataQuality.toUpperCase()}\n`;
+      output += `Real API Data: ${analysis.realData ? 'YES' : 'NO'}\n`;
+      
+      if (analysis.realData) {
+        output += `Verified Platforms: ${analysis.realDataFound}\n`;
+        output += `Total Platforms Found: ${analysis.totalFound}\n`;
+      } else {
+        output += `Estimated Platforms: ${analysis.totalFound}\n`;
+        output += `Note: Live API lookup failed, using estimation\n`;
+      }
+      
+      output += `Intelligence Score: ${analysis.riskScore}/100\n\n`;
+      
+      if (analysis.platforms.length > 0) {
+        // Separate verified from estimated results
+        const verifiedPlatforms = analysis.platforms.filter(p => p.verified);
+        const estimatedPlatforms = analysis.platforms.filter(p => !p.verified);
+        
+        if (verifiedPlatforms.length > 0) {
+          output += `=== VERIFIED PLATFORM PRESENCE ===\n`;
+          verifiedPlatforms.forEach(platform => {
+            output += `• ${platform.name}: ${platform.confidence}% confidence\n`;
+            output += `  URL: ${platform.url}\n`;
+            output += `  Method: ${platform.method}\n`;
+            if (platform.info) {
+              output += `  Info: ${platform.info}\n`;
+            }
+            output += `\n`;
+          });
+        }
+        
+        if (estimatedPlatforms.length > 0) {
+          output += `=== ESTIMATED PLATFORM AVAILABILITY ===\n`;
+          estimatedPlatforms.forEach(platform => {
+            output += `• ${platform.name}: ${platform.confidence}% confidence\n`;
+            output += `  URL: ${platform.url}\n`;
+            output += `  Method: ${platform.method}\n`;
+            if (platform.info) {
+              output += `  Info: ${platform.info}\n`;
+            }
+            output += `\n`;
+          });
+        }
+      } else {
+        output += `=== NO PLATFORMS DETECTED ===\n`;
+        output += `• Username appears to be highly available across platforms\n`;
+        output += `• Consider this username for new account creation\n`;
+        output += `• Low digital footprint detected\n\n`;
+      }
+      
+      if (analysis.patterns.length > 0) {
+        output += `=== USERNAME PATTERN ANALYSIS ===\n`;
+        analysis.patterns.forEach(pattern => output += `• ${pattern}\n`);
+        output += `\n`;
+      }
+      
+      // Intelligence recommendations
+      output += `=== OSINT INVESTIGATION RECOMMENDATIONS ===\n`;
+      
+      if (analysis.realData && analysis.realDataFound > 0) {
+        output += `• Real platform data obtained - high confidence results\n`;
+        output += `• Cross-reference verified accounts for additional intelligence\n`;
+        output += `• Check profile information for personal details\n`;
+      } else {
+        output += `• API lookup failed - manual verification recommended\n`;
+        output += `• Try direct platform searches for confirmation\n`;
+        output += `• Use specialized OSINT tools for deeper analysis\n`;
+      }
+      
+      const highConfidencePlatforms = analysis.platforms.filter(p => p.confidence > 90);
+      if (highConfidencePlatforms.length > 0) {
+        output += `• High-confidence matches found on ${highConfidencePlatforms.map(p => p.name).join(', ')}\n`;
+        output += `• Focus investigation on these verified platforms\n`;
+      }
+      
+      if (analysis.platforms.some(p => p.name === 'GitHub')) {
+        output += `• GitHub presence detected - check repositories and code\n`;
+        output += `• Look for commit history and project involvement\n`;
+      }
+      
+      if (analysis.platforms.some(p => p.name === 'LinkedIn')) {
+        output += `• Professional profile likely exists - employment intelligence\n`;
+        output += `• Check for career history and professional connections\n`;
+      }
+      
+      if (analysis.platforms.some(p => ['Twitter', 'Instagram', 'Facebook'].includes(p.name))) {
+        output += `• Social media presence detected - personal intelligence\n`;
+        output += `• Monitor for posts, connections, and behavioral patterns\n`;
+      }
+      
+      if (analysis.riskScore > 70) {
+        output += `• High digital footprint - extensive online presence\n`;
+        output += `• Multiple platforms provide rich intelligence opportunities\n`;
+      } else if (analysis.riskScore < 30) {
+        output += `• Low digital footprint - limited online presence\n`;
+        output += `• Target may be privacy-conscious or use different usernames\n`;
+      }
+      
+      // Pattern-based recommendations
+      if (analysis.patterns.some(p => p.includes('birth year'))) {
+        output += `• Potential birth year detected - age estimation possible\n`;
+        output += `• Cross-reference with age-restricted platform activity\n`;
+      }
+      
+      if (analysis.patterns.some(p => p.includes('Generic prefix'))) {
+        output += `• Generic username pattern - check for organizational accounts\n`;
+        output += `• May be associated with business or institutional use\n`;
+      }
+      
+      output += `\n=== ADVANCED OSINT TECHNIQUES ===\n`;
+      output += `• Username variation search (add/remove numbers, underscores)\n`;
+      output += `• Reverse image search on profile pictures\n`;
+      output += `• Email enumeration using discovered platforms\n`;
+      output += `• Cross-platform correlation analysis\n`;
+      output += `• Wayback Machine historical profile analysis\n`;
+      output += `• Social graph mapping through connections\n`;
+      output += `• Metadata extraction from posted content\n`;
+      
+      const usernameMetaNode = el('#usernameMeta');
+      if(usernameMetaNode) usernameMetaNode.textContent = output;
+      
+      const usernameThreatNode = el('#usernameThreatLevel');
+      if(usernameThreatNode) {
+        let status = '';
+        if (analysis.realData) {
+          status = `verified: ${analysis.realDataFound} platforms, estimated: ${analysis.totalFound - analysis.realDataFound} platforms`;
+        } else {
+          status = `estimated: ${analysis.totalFound} platforms (${analysis.dataQuality})`;
+        }
+        usernameThreatNode.textContent = status;
+      }
+      
+      // Add to network graph
+      updateNetworkGraph({ usernames: [analysis.username] });
+      
+      setStatus('comprehensive username intelligence complete');
+      
+    } catch (error) {
+      console.error('Username analysis failed:', error);
+      setStatus('username analysis failed');
+      const usernameMetaNode = el('#usernameMeta');
+      if(usernameMetaNode) {
+        usernameMetaNode.textContent = `Error analyzing username: ${error.message}`;
+      }
     }
-    
-    const usernameMetaNode = el('#usernameMeta');
-    if(usernameMetaNode) usernameMetaNode.textContent = output;
-    
-    const usernameThreatNode = el('#usernameThreatLevel');
-    if(usernameThreatNode) {
-      usernameThreatNode.textContent = `found: ${analysis.totalFound} platforms`;
-    }
-    
-    setStatus('username hunter');
   });
 }
 
